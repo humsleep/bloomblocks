@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#141A33"/>
+      <stop offset="0.45" stop-color="#2B2350"/>
+      <stop offset="0.78" stop-color="#5B4470"/>
+      <stop offset="1" stop-color="#C97B84"/>
+    </linearGradient>
+    <radialGradient id="horizon" cx="512" cy="1024" r="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E8A08A" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#E8A08A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lit" cx="512" cy="520" r="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF4D6"/>
+      <stop offset="0.35" stop-color="#FFC864"/>
+      <stop offset="0.75" stop-color="#F2C46D"/>
+      <stop offset="1" stop-color="#B9814A"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="512" cy="520" r="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC864" stop-opacity="0.55"/>
+      <stop offset="0.45" stop-color="#FFC864" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FFC864" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="body" cx="512" cy="515" r="160" fx="512" fy="505" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF4D6"/>
+      <stop offset="0.30" stop-color="#FFC864"/>
+      <stop offset="0.72" stop-color="#F08A5D"/>
+      <stop offset="1" stop-color="#B9814A"/>
+    </radialGradient>
+    <mask id="moonCut"><rect width="1024" height="1024" fill="#fff"/><circle cx="776" cy="180" r="58" fill="#000"/></mask>
+    <clipPath id="bodyClip"><ellipse cx="512" cy="520" rx="138" ry="114"/></clipPath>
+  </defs>
+
+  <!-- L0 background (Android: background layer, without the moon) -->
+  <g id="background">
+    <rect width="1024" height="1024" fill="url(#sky)"/>
+    <rect width="1024" height="1024" fill="url(#horizon)"/>
+    <path d="M0 920 C 240 880, 400 872, 512 886 C 660 902, 820 876, 1024 908 L1024 1024 L0 1024 Z" fill="#231F40"/>
+  </g>
+  <g id="moon"><!-- optional, iOS only -->
+    <circle cx="800" cy="196" r="64" fill="#F4EBD0" mask="url(#moonCut)"/>
+  </g>
+
+  <!-- L1–L4 foreground (Android: scale 0.82 about 512,512) -->
+  <g id="courtyard">
+    <rect x="226" y="262" width="572" height="572" rx="64" fill="#11142A" stroke="#2E3354" stroke-width="10"/>
+    <g fill="#232946">
+      <rect x="258" y="294" width="160" height="160" rx="28"/>
+      <rect x="606" y="294" width="160" height="160" rx="28"/>
+      <rect x="258" y="642" width="160" height="160" rx="28"/>
+      <rect x="606" y="642" width="160" height="160" rx="28"/>
+    </g>
+    <g fill="url(#lit)">
+      <rect x="432" y="294" width="160" height="160" rx="28"/>
+      <rect x="258" y="468" width="160" height="160" rx="28"/>
+      <rect x="432" y="468" width="160" height="160" rx="28"/>
+      <rect x="606" y="468" width="160" height="160" rx="28"/>
+      <rect x="432" y="642" width="160" height="160" rx="28"/>
+    </g>
+  </g>
+  <g id="lantern">
+    <circle cx="512" cy="520" r="320" fill="url(#halo)"/>
+    <ellipse cx="512" cy="662" rx="100" ry="14" fill="#11142A" opacity="0.30"/>
+    <path d="M476 392 A36 36 0 0 1 548 392" fill="none" stroke="#4A3328" stroke-width="18" stroke-linecap="round"/>
+    <rect x="452" y="386" width="120" height="30" rx="12" fill="#4A3328"/>
+    <rect x="452" y="386" width="120" height="8" rx="4" fill="#6E4C38"/>
+    <ellipse cx="512" cy="520" rx="138" ry="114" fill="url(#body)"/>
+    <g clip-path="url(#bodyClip)" fill="none" stroke="#B9814A" stroke-opacity="0.55" stroke-width="10">
+      <ellipse cx="512" cy="520" rx="46" ry="114"/>
+      <ellipse cx="512" cy="520" rx="92" ry="114"/>
+    </g>
+    <rect x="466" y="622" width="92" height="26" rx="10" fill="#4A3328"/>
+    <rect x="504" y="648" width="16" height="32" rx="6" fill="#4A3328"/>
+  </g>
+</svg>

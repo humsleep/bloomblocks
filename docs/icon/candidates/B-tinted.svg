@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<title>Duskwick icon B (tinted)</title>
+<defs>
+<radialGradient id="bt-rg1" gradientUnits="userSpaceOnUse" cx="428" cy="454" r="240"><stop offset="0" stop-color="#F2F2F2"/><stop offset="1" stop-color="#B2B2B2"/></radialGradient>
+<radialGradient id="bt-rg2" gradientUnits="userSpaceOnUse" cx="690" cy="515.5" r="94.5"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.6" stop-color="#F4F4F4"/><stop offset="1" stop-color="#C8C8C8"/></radialGradient>
+<linearGradient id="bt-lg3" gradientUnits="userSpaceOnUse" x1="0" y1="432.5" x2="0" y2="455"><stop offset="0" stop-color="#9E9E9E"/><stop offset="1" stop-color="#808080"/></linearGradient>
+<linearGradient id="bt-lg4" gradientUnits="userSpaceOnUse" x1="0" y1="601.2" x2="0" y2="620"><stop offset="0" stop-color="#9E9E9E"/><stop offset="1" stop-color="#808080"/></linearGradient>
+</defs>
+<rect x="268" y="286" width="320" height="336" rx="26" fill="#1F1F1F"/>
+<rect x="296" y="314" width="117" height="125" rx="10" fill="url(#bt-rg1)"/>
+<rect x="296" y="469" width="117" height="125" rx="10" fill="url(#bt-rg1)"/>
+<rect x="443" y="314" width="117" height="125" rx="10" fill="url(#bt-rg1)"/>
+<rect x="443" y="469" width="117" height="125" rx="10" fill="url(#bt-rg1)"/>
+<rect x="228" y="616" width="572" height="44" rx="12" fill="#525252"/>
+<path d="M665.3 421.1 A25 25 0 0 1 714.7 421.1" fill="none" stroke="#808080" stroke-width="13.8" stroke-linecap="round"/>
+<ellipse cx="690" cy="527.5" rx="87.5" ry="80" fill="url(#bt-rg2)" stroke="#141414" stroke-width="10"/>
+<rect x="645" y="432.5" width="90" height="22.5" rx="7.9" fill="url(#bt-lg3)"/>
+<rect x="655" y="601.2" width="70" height="18.8" rx="6.6" fill="url(#bt-lg4)"/>
+</svg>

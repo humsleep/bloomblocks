@@ -1,0 +1,570 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face { font-family: Fredoka; font-weight: 400; src: url(../../apps/client/node_modules/@fontsource/fredoka/files/fredoka-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: Fredoka; font-weight: 500; src: url(../../apps/client/node_modules/@fontsource/fredoka/files/fredoka-latin-500-normal.woff2) format("woff2"); }
+  @font-face { font-family: Fredoka; font-weight: 600; src: url(../../apps/client/public/fonts/fredoka-latin-600-normal.woff2) format("woff2"); }
+  html, body { margin: 0; padding: 0; background: #14112A; }
+  #root { display: inline-block; line-height: 0; }
+</style>
+<script src="wick2.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const view = q.get("view") || "variants";
+const DPR = +(q.get("dpr") || 2);
+const W2 = window.Wick2;
+const root = document.getElementById("root");
+const CREAM = "#FFF3DE", SUB = "#B9AED6", SHEET = "#2C2752", SHEET_HI = "#3A3468", INK = W2.INK;
+const SHOTS = "../shots/v11/";
+const FONT = 'Fredoka, "Apple SD Gothic Neo", "Hiragino Sans", sans-serif';
+
+function mk(w, h) {
+  const c = document.createElement("canvas");
+  c.width = Math.round(w * DPR); c.height = Math.round(h * DPR);
+  c.style.width = w + "px"; c.style.height = h + "px";
+  root.appendChild(c);
+  const ctx = c.getContext("2d");
+  ctx.scale(DPR, DPR);
+  return ctx;
+}
+function T(ctx, s, x, y, size = 16, weight = 500, col = CREAM, align = "left") {
+  ctx.font = `${weight} ${size}px ${FONT}`; ctx.fillStyle = col; ctx.textAlign = align; ctx.textBaseline = "alphabetic"; ctx.fillText(s, x, y);
+}
+function rr(ctx, x, y, w, h, r, fill, stroke, lw = 2) {
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke(); }
+}
+const imgs = {};
+function load(name) {
+  return new Promise((res, rej) => { const im = new Image(); im.onload = () => { imgs[name] = im; res(im); }; im.onerror = rej; im.src = SHOTS + name; });
+}
+// draw a pt-space crop of a v11 shot (shots are @2x: 393×852 pt)
+function crop(ctx, name, sx, sy, sw, sh, dx, dy, scale = 1) {
+  ctx.drawImage(imgs[name], sx * 2, sy * 2, sw * 2, sh * 2, dx, dy, sw * scale, sh * scale);
+}
+function clip(ctx, x, y, w, h, r, fn) { ctx.save(); ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.clip(); fn(); ctx.restore(); }
+function duskGrad(ctx, x, y, w, h) {
+  const g = ctx.createLinearGradient(0, y, 0, y + h);
+  g.addColorStop(0, "#1F1C40"); g.addColorStop(0.55, "#3A2F63"); g.addColorStop(0.85, "#7A5A8E"); g.addColorStop(1, "#C98A9C");
+  return g;
+}
+function stars(ctx, x, y, w, h, n, seed = 3) {
+  let s = seed;
+  const r = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296);
+  for (let i = 0; i < n; i++) { ctx.globalAlpha = 0.3 + r() * 0.5; ctx.fillStyle = CREAM; ctx.beginPath(); ctx.arc(x + r() * w, y + r() * h, 0.6 + r() * 0.9, 0, 7); ctx.fill(); }
+  ctx.globalAlpha = 1;
+}
+// warm the white-hot glass core so ink + blush read (proposed renderer tweak, spec §5.5)
+function warmGlass(ctx, cx, cy, r) {
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  g.addColorStop(0, "rgba(255,236,196,.55)"); g.addColorStop(1, "rgba(255,236,196,0)");
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
+}
+// Wick placed by ground contact point (gx, gy) in pt
+function wickAt(ctx, gx, gy, size, o = {}) { W2.draw(ctx, { ...o, x: gx - size / 2 + (o.dx || 0) * size / 100, y: gy - size * 0.92, size }); }
+function bubble(ctx, x, y, w, h, text, tail) {
+  ctx.fillStyle = "rgba(10,8,30,.3)"; ctx.beginPath(); ctx.roundRect(x + 2, y + 4, w, h, 16); ctx.fill();
+  rr(ctx, x, y, w, h, 16, "#FFF6E6", "#E8D4B8", 2);
+  if (tail) { ctx.fillStyle = "#FFF6E6"; ctx.beginPath(); ctx.moveTo(tail[0] - 7, y + h - 1); ctx.lineTo(tail[0], y + h + 9); ctx.lineTo(tail[0] + 7, y + h - 1); ctx.fill(); }
+  const lines = text.split("\n");
+  lines.forEach((l, i) => T(ctx, l, x + w / 2, y + h / 2 + 6 - (lines.length - 1) * 10 + i * 20, 16, 600, INK, "center"));
+}
+function simpleLantern(ctx, cx, cy, w, pal, expr) {
+  // mini board-lantern (for friend cards / town): frame + tinted glass + face
+  const h = w * 1.25;
+  ctx.strokeStyle = "#4A3328"; ctx.lineWidth = w * 0.07; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.arc(cx, cy - h * 0.5, w * 0.24, Math.PI, 0); ctx.stroke();
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, w * 0.6);
+  g.addColorStop(0, pal.core); g.addColorStop(0.6, pal.body); g.addColorStop(1, pal.rim);
+  rr(ctx, cx - w * 0.42, cy - h * 0.42, w * 0.84, h * 0.84, w * 0.3, g);
+  rr(ctx, cx - w * 0.5, cy - h * 0.5, w, h * 0.12, w * 0.06, "#6E4C38");
+  rr(ctx, cx - w * 0.5, cy + h * 0.4, w, h * 0.12, w * 0.06, "#6E4C38");
+  ctx.fillStyle = "#4A3328"; ctx.fillRect(cx - w * 0.5, cy - h * 0.42, w * 0.08, h * 0.84); ctx.fillRect(cx + w * 0.42, cy - h * 0.42, w * 0.08, h * 0.84);
+  W2.lanternFace(ctx, cx, cy, w * 0.82, expr);
+}
+
+// ---------- shared data ----------
+const VARIANTS = [
+  { id: "A", key: "v1", name: "A · v1 (current)", ko: "현재 v1 — 뾰족 물방울", o: { variant: "v1" }, high: true },
+  { id: "B", key: "mochi", name: "B · Mochi", ko: "모찌 몸 + 떠 있는 불꽃, 낮은 눈", o: { variant: "mochi" } },
+  { id: "C", key: "ears", name: "C · Flame ears", ko: "불꽃 귀 두 개, 중앙 불꽃 없음", o: { variant: "ears" } },
+  { id: "D", key: "cap", name: "D · Lantern cap", ko: "한지 등불 모자 + 작은 불꽃", o: { variant: "cap" } },
+];
+const FRIENDS = [
+  { name: "Wick", ko: "윅", pal: "wick", flame: "drop", expr: "idle", sx: 1, sy: 1, en: "steady little guide", kr: "든든한 길잡이. 첫날부터 함께", unlock: "start" },
+  { name: "Momo", ko: "모모", pal: "momo", flame: "petal", expr: "shy", sx: 1, sy: 1, en: "shy — blushes when praised", kr: "칭찬받으면 빨개지는 수줍음쟁이", unlock: "streak 3" },
+  { name: "Sage", ko: "세이지", pal: "sage", flame: "leaf", expr: "sleepy", sx: 1.04, sy: 0.97, en: "naps in flowerpots", kr: "화분에서 낮잠 자는 정원사", unlock: "house 10" },
+  { name: "Luna", ko: "루나", pal: "luna", flame: "moon", expr: "curious", sx: 0.95, sy: 1.06, en: "stargazer, up past bedtime", kr: "잘 시간에도 별 보는 몽상가", unlock: "streak 7" },
+  { name: "Pip", ko: "핍", pal: "pip", flame: "twin", expr: "cheer", sx: 1, sy: 1, bodyScale: 0.84, en: "tiny, always first to cheer", kr: "제일 작고 제일 먼저 환호", unlock: "no-hint ×5" },
+  { name: "Kuri", ko: "쿠리", pal: "kuri", flame: "drop", acc: "scarf", expr: "happy", sx: 1.06, sy: 0.96, en: "cozy, knits by the fire", kr: "난롯가에서 뜨개질하는 포근함", unlock: "autumn" },
+  { name: "Yuki", ko: "유키", pal: "yuki", flame: "spark", expr: "idle", sx: 1, sy: 1, en: "quiet, loves the first snow", kr: "첫눈을 좋아하는 조용한 아이", unlock: "winter" },
+];
+
+// ================= views =================
+const views = {};
+
+views.variants = async () => {
+  await Promise.all([load("en15-18-L1-board-after-tutorial.png"), load("en15-23-L1-solved-moment.png")]);
+  const w = 1640, h = 1030, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  T(ctx, "Wick v2 — 4 variants at app scale (pt, @2x)", 40, 58, 34, 600);
+  T(ctx, "hero 96 pt on the real v11 stepping stone · 26 pt face on the real v11 board lantern · small sizes · expressions", 40, 88, 17, 400, SUB);
+  VARIANTS.forEach((v, i) => {
+    const x0 = 40 + i * 400;
+    T(ctx, v.name, x0, 132, 24, 600);
+    T(ctx, v.ko, x0, 156, 15, 500, SUB);
+    // hero panel: crop of the actual v11 screen around the stepping stones
+    const py = 172, cx0 = 6.5, cy0 = 250;
+    clip(ctx, x0, py, 380, 250, 18, () => {
+      crop(ctx, "en15-18-L1-board-after-tutorial.png", cx0, cy0, 380, 250, x0, py);
+      wickAt(ctx, x0 + (196.5 - cx0), py + (424 - cy0), 96, { ...v.o, expr: "idle" });
+    });
+    T(ctx, "96 pt hero", x0 + 12, py + 240, 13, 600, "rgba(255,243,222,.75)");
+    // lantern panel: 1× crop + 2.5× zoom
+    const ly = 436;
+    clip(ctx, x0, ly, 380, 110, 18, () => {
+      ctx.fillStyle = "#14112A"; ctx.fillRect(x0, ly, 380, 110);
+      crop(ctx, "en15-23-L1-solved-moment.png", 105, 466, 180, 96, x0, ly + 7);
+      const lx = x0 + (195.3 - 105), lyy = ly + 7 + (523.7 - 466);
+      warmGlass(ctx, lx, lyy, 14);
+      W2.lanternFace(ctx, lx, lyy + (v.high ? -2.5 : 0), 26, "happy");
+      // zoom
+      ctx.save(); ctx.beginPath(); ctx.roundRect(x0 + 190, ly + 5, 185, 100, 12); ctx.clip();
+      const Z = 2.5, zx = x0 + 190, zy = ly + 5, sx = 195.3 - 37, sy = 523.7 - 20;
+      crop(ctx, "en15-23-L1-solved-moment.png", sx, sy, 74, 40, zx, zy, Z);
+      ctx.translate(zx, zy); ctx.scale(Z, Z); ctx.translate(-sx, -sy);
+      warmGlass(ctx, 195.3, 523.7, 14);
+      W2.lanternFace(ctx, 195.3, 523.7 + (v.high ? -2.5 : 0), 26, "idle", {});
+      ctx.restore();
+    });
+    T(ctx, "26 pt face · 1× | zoom 2.5×", x0 + 12, ly + 102, 12, 600, "rgba(255,243,222,.8)");
+    // sizes panel
+    const sy2 = 580;
+    rr(ctx, x0, sy2, 380, 140, 18, SHEET);
+    let gx = x0 + 44;
+    [64, 48, 32, 22].forEach((s) => { wickAt(ctx, gx, sy2 + 100, s, { ...v.o, expr: "idle", glow: s > 30 }); T(ctx, s + "", gx, sy2 + 126, 12, 500, SUB, "center"); gx += s * 0.7 + 34; });
+    wickAt(ctx, x0 + 330, sy2 + 100, 64, { ...v.o, mono: "#0C0A20" });
+    T(ctx, "silhouette", x0 + 330, sy2 + 126, 12, 500, SUB, "center");
+    // expressions
+    const ey = 734;
+    clip(ctx, x0, ey, 380, 170, 18, () => {
+      ctx.fillStyle = duskGrad(ctx, x0, ey, 380, 170); ctx.fillRect(x0, ey, 380, 170); stars(ctx, x0, ey, 380, 80, 14, i + 5);
+      ["idle", "happy", "worried", "sleepy"].forEach((e, k) => {
+        wickAt(ctx, x0 + 50 + k * 93, ey + 132, 80, { ...v.o, expr: e, look: e === "worried" ? [-1.5, 0] : [0, 0] });
+        T(ctx, e, x0 + 50 + k * 93, ey + 160, 12, 600, CREAM, "center");
+      });
+    });
+  });
+  // proportions footer
+  const f = 924;
+  rr(ctx, 40, f, 1560, 80, 18, SHEET);
+  T(ctx, "A  eye line 50% down the body · tip makes onion/dumpling silhouette · wisp grows from body", 60, f + 32, 15, 500, CREAM);
+  T(ctx, "B/C/D  eye line 61% down (y71 in 38..92) · eye gap 30% of width · eye height ≈14% of body · blush right under eyes · mouth ≤ 3.6 units · no tip", 60, f + 58, 15, 500, CREAM);
+};
+
+views.anim = async () => {
+  const w = 1640, h = 1010, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  T(ctx, "Wick v2 motion — frame sheet (winner B+, 110-unit box)", 40, 56, 32, 600);
+  T(ctx, "all motion = transform of one body path (sx, sy, dy, rot) + flame scale/rotation + face swap. Ground contact never slides. prefers-reduced-motion: expression swap only.", 40, 86, 16, 400, SUB);
+  const rows = [
+    { name: "idle breathe", sub: "3200 ms loop · sy ±2.2% · sx ∓1.4% · flame flicker 900+370 ms · sway ±4° /2100 ms", frames: [0, 400, 800, 1200, 1600, 2000, 2400, 2800].map((t) => ({ t, o: W2.breathe(t) })) },
+    { name: "blink", sub: "140 ms (close 50 · hold 30 · open 60) · every 2.8–5.5 s random · 20% double blink", frames: [0, 25, 50, 65, 80, 100, 120, 140].map((t) => ({ t, o: { blink: W2.blinkAt(t) } })) },
+    { name: "happy hop", sub: "620 ms · anticipation squash 90 → rise 210 (dy −14%) → fall 180 → land squash 80 → settle 60 · sparkles at apex", frames: [0, 60, 90, 180, 300, 400, 480, 520, 560, 620].map((t) => ({ t, o: W2.hop(t), spark: t === 300 })) },
+    { name: "worried", sub: "react 120 ms (flame −20%, leans away 8°) · shiver 14 Hz ±0.8% decaying 360 ms · hold lean −3°", frames: [0, 60, 120, 160, 200, 260, 340, 480, 700].map((t) => ({ t, o: W2.worry(t) })) },
+  ];
+  rows.forEach((r, ri) => {
+    const y = 112 + ri * 222;
+    rr(ctx, 40, y, 1560, 206, 18, SHEET);
+    T(ctx, r.name, 60, y + 32, 20, 600);
+    T(ctx, r.sub, 220, y + 32, 14, 400, SUB);
+    r.frames.forEach((f, k) => {
+      const cx = 100 + k * 150, gy = y + 170;
+      ctx.strokeStyle = "rgba(255,243,222,.12)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx - 60, gy); ctx.lineTo(cx + 60, gy); ctx.stroke();
+      const o = { ...f.o };
+      const dx = o.dx || 0; delete o.dx;
+      wickAt(ctx, cx, gy, 110, { variant: "final", expr: o.expr || "idle", ...o, dx });
+      if (f.spark) { W2.sparkle(ctx, cx + 40, gy - 96, 7); W2.sparkle(ctx, cx - 38, gy - 84, 5, "#FFE59A"); W2.sparkle(ctx, cx + 30, gy - 60, 4); }
+      T(ctx, f.t + " ms", cx, gy + 26, 13, 500, SUB, "center");
+    });
+  });
+};
+
+views.friends = async () => {
+  const w = 1640, h = 820, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  T(ctx, "Wick & friends — 7 lantern spirits (collection meta)", 40, 58, 32, 600);
+  T(ctx, "same body path + same face rig. A friend = palette · flame shape · ≤1 accessory · body scale/aspect · default expression. All procedural, ~0 KB art.", 40, 88, 16, 400, SUB);
+  FRIENDS.forEach((f, i) => {
+    const x = 40 + i * 225, y = 116, cw = 210, ch = 660;
+    clip(ctx, x, y, cw, ch, 20, () => {
+      ctx.fillStyle = duskGrad(ctx, x, y, cw, 300); ctx.fillRect(x, y, cw, 300); stars(ctx, x, y, cw, 110, 12, i * 7 + 1);
+      ctx.fillStyle = SHEET; ctx.fillRect(x, y + 300, cw, ch - 300);
+      ctx.fillStyle = "#2A2550"; ctx.beginPath(); ctx.ellipse(x + cw / 2, y + 300, cw * 0.7, 26, 0, Math.PI, 0); ctx.fill();
+    });
+    const o = { variant: "final", pal: f.pal, flame: f.flame, acc: f.acc, expr: f.expr, sx: f.sx, sy: f.sy, bodyScale: f.bodyScale, arms: f.expr === "cheer" ? "up" : null, sparkleEyes: f.name === "Pip" || f.name === "Yuki" };
+    wickAt(ctx, x + cw / 2, y + 282, 150, o);
+    T(ctx, f.name, x + 18, y + 340, 26, 600);
+    T(ctx, f.ko, x + cw - 18, y + 340, 16, 500, SUB, "right");
+    T(ctx, f.en, x + 18, y + 366, 13, 500, CREAM);
+    T(ctx, f.kr, x + 18, y + 388, 13, 400, SUB);
+    // small sizes
+    wickAt(ctx, x + 40, y + 470, 56, { ...o, glow: false });
+    wickAt(ctx, x + 96, y + 470, 32, { ...o, glow: false });
+    simpleLantern(ctx, x + 158, y + 444, 34, W2.PAL[f.pal], f.expr === "shy" ? "happy" : f.expr);
+    T(ctx, "56 · 32 · lantern 34", x + 18, y + 498, 11, 500, SUB);
+    // swatches
+    const P = W2.PAL[f.pal];
+    [P.core, P.body, P.rim, P.fA, P.fB, P.blush].forEach((c, k) => { rr(ctx, x + 18 + k * 30, y + 516, 24, 24, 7, c, "rgba(255,255,255,.2)", 1); });
+    T(ctx, "flame: " + f.flame + (f.acc ? " · " + f.acc : ""), x + 18, y + 566, 13, 500, CREAM);
+    T(ctx, "scale " + (f.bodyScale || 1) + " · sx " + f.sx + " · sy " + f.sy, x + 18, y + 586, 12, 400, SUB);
+    rr(ctx, x + 18, y + 604, 174, 34, 17, "rgba(255,200,100,.16)", "rgba(255,200,100,.5)", 1.5);
+    T(ctx, "unlock: " + f.unlock, x + 105, y + 626, 13, 600, "#FFC864", "center");
+  });
+};
+
+// ---- silhouette misread test ----
+const ARCH = {
+  onion: "M50 14 C52 26 56 34 68 44 C82 55 84 72 74 84 C67 91 58 93 50 93 C42 93 33 91 26 84 C16 72 18 55 32 44 C44 34 48 26 50 14 Z",
+  dumpling: "M50 30 C54 30 56 33 57 36 C70 38 86 52 86 70 C86 84 72 92 50 92 C28 92 14 84 14 70 C14 52 30 38 43 36 C44 33 46 30 50 30 Z",
+  ghost: "M50 16 C70 16 80 32 80 50 L80 88 C76 92 72 84 68 88 C64 92 60 84 56 88 C52 92 48 84 44 88 C40 92 36 84 32 88 C28 92 24 84 20 88 L20 50 C20 32 30 16 50 16 Z",
+  "fire sprite": "M50 10 C54 22 60 20 62 14 C66 24 72 30 70 40 C76 36 78 30 78 28 C86 44 86 62 80 74 C74 86 62 92 50 92 C38 92 26 86 20 74 C14 62 14 44 22 28 C22 30 24 36 30 40 C28 30 34 24 38 14 C40 20 46 22 50 10 Z",
+};
+function maskOf(drawFn) {
+  const S = 200, c = document.createElement("canvas"); c.width = S; c.height = S;
+  const x = c.getContext("2d"); drawFn(x, S);
+  const d = x.getImageData(0, 0, S, S).data;
+  let x0 = S, y0 = S, x1 = 0, y1 = 0;
+  for (let y = 0; y < S; y++) for (let i = 0; i < S; i++) if (d[(y * S + i) * 4 + 3] > 127) { x0 = Math.min(x0, i); x1 = Math.max(x1, i); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  // normalise: longest side → 60 cells, bottom-centre anchored in 64×64
+  const N = 64, k = 60 / Math.max(x1 - x0 + 1, y1 - y0 + 1), m = new Uint8Array(N * N);
+  const bw = (x1 - x0 + 1) * k, bh = (y1 - y0 + 1) * k, ox = (N - bw) / 2, oy = N - 2 - bh;
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const sx = Math.floor(x0 + (i - ox) / k), sy = Math.floor(y0 + (j - oy) / k);
+    if (sx >= x0 && sx <= x1 && sy >= y0 && sy <= y1 && d[(sy * S + sx) * 4 + 3] > 127) m[j * N + i] = 1;
+  }
+  return m;
+}
+function iou(a, b) { let I = 0, U = 0; for (let i = 0; i < a.length; i++) { I += a[i] & b[i]; U += a[i] | b[i]; } return I / U; }
+
+views.misread = async () => {
+  const w = 1640, h = 930, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  T(ctx, "Misread test — onion · dumpling · ghost · fire sprite", 40, 58, 32, 600);
+  T(ctx, "Silhouette IoU after size-normalising (64×64, bottom-centre). Lower = less confusable. Colour/feature cues judged separately (r1-visual §4).", 40, 88, 16, 400, SUB);
+  const cand = [...VARIANTS, { id: "B+", name: "B+ final", o: { variant: "final" } }];
+  if (q.get("explore")) {
+    const ex = [];
+    for (const dx of [2.5, 5]) for (const lift of [0, 3]) for (const tilt of [10, 20]) for (const s of [0.7, 0.85]) ex.push({ id: `dx${dx}_l${lift}_t${tilt}_s${s}`, o: { variant: "final", fx: { dx, lift, tilt, s } } });
+    ex.push({ id: "ellipse", o: null });
+    const archKeys = Object.keys(ARCH);
+    const am = archKeys.map((k) => maskOf((x, S) => { x.scale(S / 100, S / 100); x.fill(new Path2D(ARCH[k])); }));
+    const r = {};
+    for (const e of ex) {
+      const m = e.o ? maskOf((x, S) => W2.draw(x, { ...e.o, x: 0, y: 0, size: S, mono: "#000" })) : maskOf((x, S) => { x.scale(S / 100, S / 100); x.beginPath(); x.ellipse(50, 66, 35, 26, 0, 0, 7); x.fill(); });
+      r[e.id] = archKeys.map((k, j) => +iou(m, am[j]).toFixed(3));
+    }
+    window.__results = r; return;
+  }
+  const archKeys = Object.keys(ARCH);
+  const am = archKeys.map((k) => maskOf((x, S) => { x.scale(S / 100, S / 100); x.fill(new Path2D(ARCH[k])); }));
+  const results = {};
+  // header: archetype icons
+  archKeys.forEach((k, j) => {
+    const cx = 520 + j * 190;
+    rr(ctx, cx - 80, 112, 160, 150, 18, SHEET);
+    ctx.save(); ctx.translate(cx - 45, 130); ctx.scale(0.9, 0.9);
+    ctx.fillStyle = { onion: "#D9B3E0", dumpling: "#F1E6D6", ghost: "#F4F4FA", "fire sprite": "#FF8A4C" }[k];
+    ctx.fill(new Path2D(ARCH[k]));
+    if (k === "onion") { ctx.strokeStyle = "#8A6A9E"; ctx.lineWidth = 1.5; ctx.stroke(new Path2D("M44 93 L42 99 M50 93 L50 100 M56 93 L58 99 M50 20 C40 40 36 70 44 92 M50 20 C60 40 64 70 56 92")); }
+    if (k === "dumpling") { ctx.strokeStyle = "#D6C2A6"; ctx.lineWidth = 1.5; ctx.stroke(new Path2D("M50 34 C44 40 36 46 30 52 M50 34 C50 42 50 46 50 52 M50 34 C56 40 64 46 70 52")); }
+    if (k === "ghost" || k === "fire sprite") { ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(42, 56, 3.4, 0, 7); ctx.arc(58, 56, 3.4, 0, 7); ctx.fill(); }
+    ctx.restore();
+    T(ctx, k, cx, 252, 15, 600, CREAM, "center");
+  });
+  cand.forEach((v, i) => {
+    const y = 276 + i * 122;
+    rr(ctx, 40, y, 1560, 110, 16, i === 4 ? "#3A3468" : SHEET);
+    wickAt(ctx, 100, y + 100, 92, { ...v.o, expr: "idle" });
+    wickAt(ctx, 210, y + 100, 92, { ...v.o, mono: "#0C0A20" });
+    T(ctx, v.name, 280, y + 50, 20, 600);
+    T(ctx, v.id === "B+" ? "B + body 73×52 · flame 0.85× off-axis" : (v.ko || ""), 280, y + 74, 12, 400, SUB);
+    const m = maskOf((x, S) => W2.draw(x, { ...v.o, x: 0, y: 0, size: S, mono: "#000" }));
+    results[v.id] = {};
+    archKeys.forEach((k, j) => {
+      const s = iou(m, am[j]); results[v.id][k] = +s.toFixed(3);
+      const cx = 520 + j * 190;
+      const col = s >= 0.8 ? "#F2907A" : s >= 0.7 ? "#FFC864" : "#A8DCC8";
+      rr(ctx, cx - 70, y + 24, 140, 62, 14, "rgba(0,0,0,.18)", col, 2);
+      T(ctx, s.toFixed(2), cx, y + 66, 28, 600, col, "center");
+    });
+    // max
+    const mx = Math.max(...Object.values(results[v.id]));
+    T(ctx, "max " + mx.toFixed(2), 1380, y + 66, 22, 600, mx >= 0.8 ? "#F2907A" : mx >= 0.7 ? "#FFC864" : "#A8DCC8");
+  });
+  T(ctx, "≥0.80 red · 0.70–0.79 amber · <0.70 mint. Silhouette alone cannot separate a round blob from a bun — the flame gap, warm glow and face are the distinguishing cues.", 40, h - 20, 14, 500, SUB);
+  window.__results = results;
+};
+
+views.board = async () => {
+  await Promise.all([load("en15-20-L1-conflict-line.png"), load("en15-23-L1-solved-moment.png")]);
+  const w = 393 * 2 + 60, h = 852 + 70, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  T(ctx, "conflict — two faces worry at each other · Wick worried", 20, 30, 15, 600);
+  T(ctx, "solved — all lanterns happy · Wick hops", 393 + 40, 30, 15, 600);
+  const L = 20, R = 393 + 40, Y = 50;
+  clip(ctx, L, Y, 393, 852, 28, () => {
+    ctx.drawImage(imgs["en15-20-L1-conflict-line.png"], L, Y, 393, 852);
+    for (const [cx, look] of [[55, 1.3], [267.5, -1.3]]) { warmGlass(ctx, L + cx, Y + 497.5, 13); W2.lanternFace(ctx, L + cx, Y + 497.5, 26, "worried", { look: [look, 0] }); }
+    wickAt(ctx, L + 196.5, Y + 424, 96, { variant: "final", ...W2.worry(700), dx: 0, look: [-1.4, 1] });
+  });
+  clip(ctx, R, Y, 393, 852, 28, () => {
+    ctx.drawImage(imgs["en15-23-L1-solved-moment.png"], R, Y, 393, 852);
+    for (const [c, r] of [[2, 0], [0, 1], [4, 1], [2, 2], [2, 4]]) {
+      const cx = 56.5 + 70 * c, cy = 523.7 + 70 * r;
+      if (r === 4) continue; // under the button in this frame
+      warmGlass(ctx, R + cx, Y + cy, 13); W2.lanternFace(ctx, R + cx, Y + cy, 26, "happy");
+    }
+    const hp = W2.hop(300);
+    wickAt(ctx, R + 196.5, Y + 424, 96, { variant: "final", ...hp, arms: "up", expr: "cheer" });
+    W2.sparkle(ctx, R + 236, Y + 334, 7); W2.sparkle(ctx, R + 150, Y + 350, 5, "#FFE59A"); W2.sparkle(ctx, R + 246, Y + 372, 4);
+  });
+};
+
+views.tutorial = async () => {
+  await load("en15-05-tut-T2-light-every-tile.png");
+  const w = 393 + 40, h = 852 + 40, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  clip(ctx, 20, 20, 393, 852, 28, () => {
+    ctx.translate(20, 20);
+    ctx.drawImage(imgs["en15-05-tut-T2-light-every-tile.png"], 0, 0, 393, 852);
+    // Wick perches on the hint bubble's top-left corner, looking at the board
+    wickAt(ctx, 92, 443, 72, { variant: "final", expr: "happy", arms: "wave" });
+    // Wick lives in the placed lantern too
+    warmGlass(ctx, 132.5, 627.5, 12); W2.lanternFace(ctx, 132.5, 627.5, 24, "happy");
+    // stepping stone: sleepy Wick is NOT shown during tutorial (one Wick on screen rule)
+    ctx.translate(-20, -20);
+  });
+};
+
+views.result = async () => {
+  await load("en15-31-daily-result-sheet.png");
+  const w = 393 + 40 + 420, h = 852 + 40, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  clip(ctx, 20, 20, 393, 852, 28, () => {
+    ctx.translate(20, 20);
+    ctx.drawImage(imgs["en15-31-daily-result-sheet.png"], 0, 0, 393, 852);
+    // Wick sits on the sheet's top edge, right side; friend-progress chip replaces nothing
+    wickAt(ctx, 318, 580, 84, { variant: "final", expr: "cheer", arms: "up", sy: 1.04, sx: 0.97 });
+    W2.sparkle(ctx, 352, 498, 6); W2.sparkle(ctx, 280, 510, 4, "#FFE59A");
+    ctx.translate(-20, -20);
+  });
+  // share postcard (1080×1350 → drawn at 360×450)
+  const x = 453, y = 120, pw = 380, ph = 475;
+  ctx.save(); ctx.translate(x + pw / 2, y + ph / 2); ctx.rotate(-0.02); ctx.translate(-(x + pw / 2), -(y + ph / 2));
+  ctx.fillStyle = "rgba(10,8,30,.35)"; ctx.beginPath(); ctx.roundRect(x + 5, y + 10, pw, ph, 22); ctx.fill();
+  rr(ctx, x, y, pw, ph, 22, "#FFF3DE");
+  ctx.setLineDash([6, 6]); rr(ctx, x + 12, y + 12, pw - 24, ph - 24, 14, null, "#E8D4B8", 2); ctx.setLineDash([]);
+  // mini solved board
+  const bx = x + 30, by = y + 34, cs = 30;
+  rr(ctx, bx - 5, by - 5, cs * 6 + 10, cs * 6 + 10, 12, "#433C72");
+  const stones = new Set([2, 5, 12, 15, 16, 20, 23, 30, 33]), lan = new Set([1, 4, 6, 14, 19, 27, 35]);
+  for (let i = 0; i < 36; i++) {
+    const cx = bx + (i % 6) * cs, cy = by + Math.floor(i / 6) * cs;
+    if (stones.has(i)) { rr(ctx, cx + 1.5, cy + 1.5, cs - 3, cs - 3, 6, "#2F2A57"); ctx.fillStyle = "#CFCBE2"; ctx.beginPath(); ctx.arc(cx + cs / 2, cy + cs / 2, cs * 0.3, 0, 7); ctx.fill(); }
+    else { const g = ctx.createLinearGradient(0, cy, 0, cy + cs); g.addColorStop(0, "#FBD48E"); g.addColorStop(1, "#E9A963"); rr(ctx, cx + 1.5, cy + 1.5, cs - 3, cs - 3, 6, g); }
+    if (lan.has(i)) { ctx.fillStyle = "#FFF6DC"; ctx.beginPath(); ctx.roundRect(cx + 7, cy + 5, cs - 14, cs - 10, 6); ctx.fill(); W2.lanternFace(ctx, cx + cs / 2, cy + cs / 2 - 1, 15, "happy"); }
+  }
+  // stamp with Wick
+  const sx = x + 248, sy = y + 34, sw = 104, sh = 124;
+  ctx.save(); ctx.translate(sx + sw / 2, sy + sh / 2); ctx.rotate(0.06); ctx.translate(-(sx + sw / 2), -(sy + sh / 2));
+  rr(ctx, sx, sy, sw, sh, 4, "#E9A5B4");
+  ctx.fillStyle = "#FFF3DE";
+  for (let i = 0; i <= 9; i++) { ctx.beginPath(); ctx.arc(sx + (i * sw) / 9, sy, 4, 0, 7); ctx.arc(sx + (i * sw) / 9, sy + sh, 4, 0, 7); ctx.fill(); }
+  for (let i = 0; i <= 10; i++) { ctx.beginPath(); ctx.arc(sx, sy + (i * sh) / 10, 4, 0, 7); ctx.arc(sx + sw, sy + (i * sh) / 10, 4, 0, 7); ctx.fill(); }
+  rr(ctx, sx + 9, sy + 9, sw - 18, sh - 18, 6, "#3A2F63");
+  wickAt(ctx, sx + sw / 2, sy + 88, 76, { variant: "final", expr: "happy" });
+  T(ctx, "DUSKWICK", sx + sw / 2, sy + sh - 16, 11, 600, CREAM, "center");
+  ctx.restore();
+  // postmark + stats
+  ctx.globalAlpha = 0.75; ctx.strokeStyle = "#7A6A86"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x + 300, y + 200, 32, 0, 7); ctx.stroke();
+  T(ctx, "OCT 16", x + 300, y + 197, 12, 600, "#7A6A86", "center"); T(ctx, "Daily", x + 300, y + 213, 11, 500, "#7A6A86", "center"); ctx.globalAlpha = 1;
+  ctx.strokeStyle = "#E8D4B8"; ctx.beginPath(); ctx.moveTo(x + 30, y + 262); ctx.lineTo(x + pw - 30, y + 262); ctx.stroke();
+  T(ctx, "0:07", x + 34, y + 306, 34, 600, INK); T(ctx, "time", x + 34, y + 326, 13, 500, "#7A6A86");
+  T(ctx, "1", x + 170, y + 306, 34, 600, INK); T(ctx, "day streak", x + 170, y + 326, 13, 500, "#7A6A86");
+  // friends row
+  T(ctx, "lantern friends 1 / 7", x + 34, y + 362, 14, 600, INK);
+  FRIENDS.forEach((f, k) => {
+    const cx = x + 52 + k * 46, cy = y + 410;
+    if (k === 0) { ctx.fillStyle = "#FFE6AD"; ctx.beginPath(); ctx.arc(cx, cy, 19, 0, 7); ctx.fill(); wickAt(ctx, cx, cy + 14, 34, { variant: "final", pal: f.pal, flame: f.flame, expr: "happy", glow: false, shadow: false }); }
+    else { ctx.setLineDash([3, 4]); ctx.strokeStyle = "#C8B9A6"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 19, 0, 7); ctx.stroke(); ctx.setLineDash([]); wickAt(ctx, cx, cy + 12, 30, { variant: "final", pal: f.pal, flame: f.flame, mono: "rgba(122,106,134,.28)" }); }
+  });
+  T(ctx, "duskwick.app", x + pw - 30, y + ph - 26, 12, 500, "#7A6A86", "right");
+  ctx.restore();
+  T(ctx, "in-app result sheet (left) · share postcard 4:5 (right)", 453, 660, 15, 600, CREAM);
+  T(ctx, "Wick sits on the sheet edge (84 pt, cheer). Postcard: Wick stamp", 453, 684, 13, 400, SUB);
+  T(ctx, "+ grey silhouettes of locked friends = gentle collection pull.", 453, 704, 13, 400, SUB);
+};
+
+views.town = async () => {
+  const w = 393, h = 852, W = w + 40, ctx = mk(W, h + 40);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, W, h + 40);
+  clip(ctx, 20, 20, w, h, 28, () => {
+    ctx.translate(20, 20);
+    ctx.fillStyle = duskGrad(ctx, 0, 0, w, 520); ctx.fillRect(0, 0, w, 520); stars(ctx, 0, 0, w, 260, 50, 9);
+    ctx.fillStyle = "#FFF3DE"; ctx.beginPath(); ctx.arc(320, 90, 20, 0, 7); ctx.fill(); ctx.fillStyle = "#2B2550"; ctx.beginPath(); ctx.arc(330, 84, 18, 0, 7); ctx.fill();
+    T(ctx, "Lantern Lane", 24, 70, 30, 600); T(ctx, "3 of 7 friends moved in", 24, 96, 15, 500, SUB);
+    ctx.fillStyle = "#5F4A7E"; ctx.beginPath(); ctx.moveTo(0, 470); ctx.bezierCurveTo(120, 420, 260, 450, w, 410); ctx.lineTo(w, 852); ctx.lineTo(0, 852); ctx.fill();
+    ctx.fillStyle = "#2A2550"; ctx.fillRect(0, 560, w, 300);
+    // path
+    ctx.fillStyle = "#3B3263"; ctx.beginPath(); ctx.moveTo(0, 640); ctx.bezierCurveTo(140, 600, 250, 690, w, 640); ctx.lineTo(w, 690); ctx.bezierCurveTo(250, 740, 140, 650, 0, 690); ctx.fill();
+    const houses = [
+      { x: 70, y: 560, w: 96, col: "#46396C", f: FRIENDS[0], lit: true },
+      { x: 200, y: 540, w: 86, col: "#55407A", f: FRIENDS[1], lit: true },
+      { x: 320, y: 565, w: 92, col: "#3F3A6E", f: FRIENDS[2], lit: true },
+      { x: 120, y: 820, w: 100, col: "#3A3363", f: null, lit: false },
+      { x: 280, y: 815, w: 96, col: "#3A3363", f: null, lit: false },
+    ];
+    houses.forEach((hs) => {
+      const x0 = hs.x - hs.w / 2, top = hs.y - 110;
+      ctx.fillStyle = hs.col; ctx.beginPath(); ctx.roundRect(x0, top, hs.w, 110, 8); ctx.fill();
+      ctx.fillStyle = "#2A2148"; ctx.beginPath(); ctx.moveTo(x0 - 10, top + 4); ctx.lineTo(hs.x, top - 50); ctx.lineTo(x0 + hs.w + 10, top + 4); ctx.closePath(); ctx.fill();
+      for (const k of [-1, 1]) { ctx.fillStyle = hs.lit ? "#FFE3A0" : "#57497F"; ctx.beginPath(); ctx.roundRect(hs.x + k * 24 - 11, top + 22, 22, 26, 8); ctx.fill(); }
+      ctx.fillStyle = "#2A2148"; ctx.beginPath(); ctx.roundRect(hs.x - 13, hs.y - 44, 26, 44, [13, 13, 0, 0]); ctx.fill();
+      if (hs.f) { wickAt(ctx, hs.x + hs.w / 2 - 6, hs.y + 4, 44, { variant: "final", pal: hs.f.pal, flame: hs.f.flame, expr: hs.f.expr, acc: hs.f.acc }); }
+      else { T(ctx, "?", hs.x, top + 74, 30, 600, "rgba(255,243,222,.35)", "center"); }
+    });
+    // Wick walking the lane carrying nothing — hero
+    wickAt(ctx, 196, 668, 72, { variant: "final", expr: "happy", rot: 4, ...W2.breathe(800) });
+    rr(ctx, 24, 760, 345, 64, 20, "rgba(44,39,82,.92)", "rgba(255,243,222,.25)", 1.5);
+    T(ctx, "Luna moves in at a 7-day streak", 196, 788, 16, 600, CREAM, "center");
+    T(ctx, "next: 4 more days", 196, 810, 13, 500, SUB, "center");
+    ctx.translate(-20, -20);
+  });
+};
+
+function iconA(ctx, x, y, s) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s / 100, s / 100);
+  ctx.beginPath(); ctx.roundRect(0, 0, 100, 100, 22.5); ctx.clip();
+  const g = ctx.createLinearGradient(0, 0, 0, 100); g.addColorStop(0, "#2A2552"); g.addColorStop(0.6, "#5A4382"); g.addColorStop(1, "#E3A1A4"); ctx.fillStyle = g; ctx.fillRect(0, 0, 100, 100);
+  stars(ctx, 0, 0, 100, 40, 10, 4);
+  W2.draw(ctx, { variant: "final", x: -9, y: 2, size: 118, expr: "idle", shadow: false });
+  ctx.restore();
+}
+function iconB(ctx, x, y, s) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s / 100, s / 100);
+  ctx.beginPath(); ctx.roundRect(0, 0, 100, 100, 22.5); ctx.clip();
+  const g = ctx.createLinearGradient(0, 0, 0, 100); g.addColorStop(0, "#2A2552"); g.addColorStop(1, "#4A3B78"); ctx.fillStyle = g; ctx.fillRect(0, 0, 100, 100);
+  const gl = ctx.createRadialGradient(50, 56, 0, 50, 56, 50); gl.addColorStop(0, "rgba(255,217,138,.6)"); gl.addColorStop(1, "rgba(255,217,138,0)"); ctx.fillStyle = gl; ctx.fillRect(0, 0, 100, 100);
+  simpleLantern(ctx, 50, 58, 52, W2.PAL.wick, "idle");
+  ctx.restore();
+}
+views.icon = async () => {
+  const w = 1000, h = 560, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  T(ctx, "App icon A/B (Product Page Optimization)", 40, 54, 28, 600);
+  iconA(ctx, 40, 90, 300); T(ctx, "A · Wick face (character-first)", 40, 420, 17, 600);
+  iconB(ctx, 380, 90, 300); T(ctx, "B · Wick inside lantern (object-first)", 380, 420, 17, 600);
+  // home-screen scale
+  rr(ctx, 720, 90, 240, 420, 28, "#C9B6F0");
+  const g = ctx.createLinearGradient(0, 90, 0, 510); g.addColorStop(0, "#F6BFA2"); g.addColorStop(1, "#7A5A8E"); rr(ctx, 720, 90, 240, 420, 28, g);
+  const others = ["#5BA0E8", "#F2C14E", "#E8706B", "#7CC79B", "#FFFFFF", "#333"];
+  for (let i = 0; i < 12; i++) {
+    const cx = 738 + (i % 4) * 56, cy = 110 + Math.floor(i / 4) * 76;
+    if (i === 5) iconA(ctx, cx, cy, 44); else if (i === 10) iconB(ctx, cx, cy, 44); else rr(ctx, cx, cy, 44, 44, 10, others[i % others.length] + "", null);
+    T(ctx, i === 5 ? "Duskwick" : i === 10 ? "Duskwick" : "", cx + 22, cy + 58, 9, 500, "#2A2148", "center");
+  }
+  T(ctx, "home-screen 60 pt (shown 44)", 720, 540, 13, 500, SUB);
+  T(ctx, "Both keep the flame visible at 29 pt (Settings) — silhouette never loses its tip-flame.", 40, 470, 14, 400, SUB);
+  iconA(ctx, 40, 490, 29); iconB(ctx, 80, 490, 29); iconA(ctx, 130, 490, 40); iconB(ctx, 180, 490, 40);
+};
+
+views.store = async () => {
+  await load("en15-23-L1-solved-moment.png");
+  const w = 430, h = 932, ctx = mk(w, h);
+  const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#2C2752"); g.addColorStop(1, "#5A4382"); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  stars(ctx, 0, 0, w, 220, 40, 21);
+  W2.sparkle(ctx, 46, 60, 7); W2.sparkle(ctx, 392, 132, 6, "#FFE59A");
+  T(ctx, "A tiny friend", 215, 78, 36, 600, CREAM, "center");
+  T(ctx, "in every lantern", 215, 120, 36, 600, "#FFC864", "center");
+  T(ctx, "Calm logic puzzles · one cozy town", 215, 156, 17, 400, "#CFC3EA", "center");
+  // phone
+  const px = 52, py = 236, pw = 326, ph = 706, sc = pw / 393;
+  ctx.fillStyle = "rgba(10,8,30,.4)"; ctx.beginPath(); ctx.roundRect(px + 4, py + 10, pw, ph, 40); ctx.fill();
+  clip(ctx, px, py, pw, ph, 38, () => {
+    ctx.translate(px, py); ctx.scale(sc, sc);
+    ctx.drawImage(imgs["en15-23-L1-solved-moment.png"], 0, 0, 393, 852);
+    for (const [c, r] of [[2, 0], [0, 1], [4, 1], [2, 2]]) { const cx = 56.5 + 70 * c, cy = 523.7 + 70 * r; warmGlass(ctx, cx, cy, 13); W2.lanternFace(ctx, cx, cy, 26, "happy"); }
+    wickAt(ctx, 196.5, 424, 96, { variant: "final", expr: "happy" });
+  });
+  rr(ctx, px, py, pw, ph, 38, null, "rgba(255,243,222,.55)", 3);
+  // hero Wick breaking the frame
+  wickAt(ctx, 82, 300, 150, { variant: "final", expr: "cheer", arms: "up", rot: -6 });
+  wickAt(ctx, 372, 270, 70, { variant: "final", pal: "momo", flame: "petal", expr: "shy", rot: 6 });
+  W2.sparkle(ctx, 140, 196, 6); W2.sparkle(ctx, 30, 226, 4, "#FFE59A");
+};
+
+views.construction = async () => {
+  const w = 1640, h = 940, ctx = mk(w, h);
+  ctx.fillStyle = "#1E1B3B"; ctx.fillRect(0, 0, w, h);
+  T(ctx, "Wick v2 (B+) — construction & handoff", 40, 58, 32, 600);
+  T(ctx, "100×100 box · ground (50,92) · body 73×52 · flame 0.85×, base (55,32.8), tilt 10°, gap 7.2 · eyes y71 (60% down) gap 21 · blush y78.3 · Path2D in wick2.js", 40, 88, 16, 400, SUB);
+  // big construction
+  rr(ctx, 40, 110, 520, 520, 24, SHEET);
+  ctx.save(); ctx.translate(60, 130); ctx.scale(4.8, 4.8);
+  ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 0.2;
+  for (let i = 0; i <= 100; i += 10) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 100); ctx.moveTo(0, i); ctx.lineTo(100, i); ctx.stroke(); }
+  ctx.globalAlpha = 0.35; W2.draw(ctx, { variant: "final", glow: false, shadow: false }); ctx.globalAlpha = 1;
+  ctx.lineWidth = 0.45; ctx.strokeStyle = CREAM; ctx.stroke(new Path2D(W2.P.bodyF)); ctx.save(); ctx.translate(55, 32.8); ctx.rotate(Math.PI / 18); ctx.scale(0.85, 0.85); ctx.translate(-50, -35.8); ctx.strokeStyle = "#FFC864"; ctx.lineWidth = 0.53; ctx.stroke(new Path2D(W2.P.flame)); ctx.restore();
+  ctx.strokeStyle = "#A8DCC8"; ctx.setLineDash([1, 1]);
+  for (const yy of [40, 71, 78.3, 92]) { ctx.beginPath(); ctx.moveTo(4, yy); ctx.lineTo(96, yy); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(13.5, 30); ctx.lineTo(13.5, 96); ctx.moveTo(86.5, 30); ctx.lineTo(86.5, 96); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = "#F6A7B8"; for (const p of [[39.5, 71], [60.5, 71], [50, 92], [50, 40], [55, 32.8]]) { ctx.beginPath(); ctx.arc(p[0], p[1], 0.9, 0, 7); ctx.fill(); }
+  ctx.restore();
+  T(ctx, "y40 top", 520, 130 + 40 * 4.8 + 4, 11, 500, "#A8DCC8", "right"); T(ctx, "y71 eyes", 520, 130 + 71 * 4.8 + 4, 11, 500, "#A8DCC8", "right");
+  T(ctx, "y78.3 blush", 520, 130 + 78.3 * 4.8 + 14, 11, 500, "#A8DCC8", "right"); T(ctx, "y92 ground", 520, 130 + 92 * 4.8 + 4, 11, 500, "#A8DCC8", "right");
+  // expressions
+  rr(ctx, 580, 110, 1020, 250, 24, SHEET);
+  T(ctx, "expressions (8) — one rig", 600, 142, 18, 600);
+  ["idle", "happy", "cheer", "curious", "sleepy", "worried", "shy", "surprised"].forEach((e, k) => {
+    const cx = 650 + k * 122;
+    wickAt(ctx, cx, 312, 104, { variant: "final", expr: e, arms: e === "cheer" ? "up" : null, look: e === "curious" ? [1, 0.5] : [0, 0] });
+    T(ctx, e, cx, 344, 13, 600, CREAM, "center");
+  });
+  // palette
+  rr(ctx, 580, 376, 1020, 254, 24, SHEET);
+  T(ctx, "palette (Wick)", 600, 408, 18, 600);
+  const P = W2.PAL.wick;
+  [["core", P.core], ["body", P.body], ["rim", P.rim], ["line", P.line], ["flameA", P.fA], ["flameB", P.fB], ["flameCore", P.fC], ["blush", P.blush], ["glow", P.glow], ["ink", INK]].forEach(([n, c], k) => {
+    const x = 600 + (k % 5) * 196, y = 424 + Math.floor(k / 5) * 100;
+    rr(ctx, x, y, 72, 56, 12, c, "rgba(255,255,255,.18)", 1);
+    T(ctx, n, x + 82, y + 24, 14, 600); T(ctx, c, x + 82, y + 44, 13, 500, SUB);
+  });
+  // sizes ladder on dusk
+  clip(ctx, 40, 646, 1560, 260, 24, () => {
+    ctx.fillStyle = duskGrad(ctx, 40, 646, 1560, 260); ctx.fillRect(40, 646, 1560, 260); stars(ctx, 40, 646, 1560, 100, 40, 2);
+  });
+  T(ctx, "size ladder (pt): hero 96 · guide 72 · result 84 · town 44 · stamp 34 · collection 32 · lantern face 26 · icon 29 min", 60, 678, 16, 600);
+  let gx = 110;
+  [[96, "hero"], [84, "result"], [72, "guide"], [44, "town"], [34, "stamp"], [32, "slot"], [20, "min"]].forEach(([s, n]) => {
+    wickAt(ctx, gx, 860, s, { variant: "final", expr: "idle", glow: s >= 44 });
+    T(ctx, s + " · " + n, gx, 890, 12, 600, CREAM, "center"); gx += s + 70;
+  });
+  simpleLantern(ctx, gx + 20, 820, 40, P, "idle"); T(ctx, "26 face", gx + 20, 890, 12, 600, CREAM, "center");
+  iconA(ctx, gx + 90, 790, 60); T(ctx, "icon A", gx + 120, 890, 12, 600, CREAM, "center");
+};
+
+(async () => {
+  try { await Promise.all(["400", "500", "600"].map((wt) => document.fonts.load(wt + " 20px Fredoka"))); await document.fonts.ready; await views[view](); }
+  catch (e) { console.error(e); document.body.dataset.err = String(e); }
+  document.body.dataset.ready = "1";
+})();
+</script>
+</body>
+</html>

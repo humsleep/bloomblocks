@@ -1,0 +1,9 @@
+{
+  "//": "core/ 와 games/ 는 엔진 중립이어야 한다: DOM 없음, Node 타입 없음. 여기서 컴파일되면 Workers/WebView/Node 어디서든 돈다.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": []
+  },
+  "include": ["core", "games"]
+}

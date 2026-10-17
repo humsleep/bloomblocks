@@ -1,0 +1,226 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "J",
+  "index": 8,
+  "date": null,
+  "seedKey": null,
+  "levelId": 8,
+  "tag": "b0-peak",
+  "level": {
+    "w": 6,
+    "h": 6,
+    "budget": null,
+    "rows": [
+      "......",
+      "#...#.",
+      "0.3..1",
+      "1..#.#",
+      ".#...2",
+      "......"
+    ]
+  },
+  "lanterns": [
+    "B1",
+    "C2",
+    "F2",
+    "D3",
+    "C4",
+    "A5",
+    "E5",
+    "F6"
+  ],
+  "history": [
+    "C2",
+    "D3",
+    "C4",
+    "A5",
+    "F2",
+    "E5",
+    "F6",
+    "B1"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T23:11:09.371Z",
+  "completedAt": "2026-10-12T23:11:30.113Z",
+  "actions": [
+    {
+      "t": "2026-10-12T23:11:09.373Z",
+      "ms": 2,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:25.531Z",
+      "ms": 16160,
+      "cmd": "move",
+      "cell": "C2",
+      "result": "placed",
+      "used": 1,
+      "lit": 4,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:25.753Z",
+      "ms": 16382,
+      "cmd": "move",
+      "cell": "D3",
+      "result": "placed",
+      "used": 2,
+      "lit": 7,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:25.971Z",
+      "ms": 16600,
+      "cmd": "move",
+      "cell": "C4",
+      "result": "placed",
+      "used": 3,
+      "lit": 11,
+      "conflicts": 0,
+      "stones": {
+        "ok": 2,
+        "under": 3,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:26.192Z",
+      "ms": 16821,
+      "cmd": "move",
+      "cell": "A5",
+      "result": "placed",
+      "used": 4,
+      "lit": 13,
+      "conflicts": 0,
+      "stones": {
+        "ok": 3,
+        "under": 2,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:26.412Z",
+      "ms": 17041,
+      "cmd": "move",
+      "cell": "F2",
+      "result": "placed",
+      "used": 5,
+      "lit": 15,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 1,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:26.632Z",
+      "ms": 17261,
+      "cmd": "move",
+      "cell": "E5",
+      "result": "placed",
+      "used": 6,
+      "lit": 19,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 1,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:26.870Z",
+      "ms": 17499,
+      "cmd": "move",
+      "cell": "F6",
+      "result": "placed",
+      "used": 7,
+      "lit": 22,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:27.095Z",
+      "ms": 17724,
+      "cmd": "show",
+      "result": "shown",
+      "used": 7,
+      "lit": 22,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:30.115Z",
+      "ms": 20744,
+      "cmd": "move",
+      "cell": "B1",
+      "result": "placed",
+      "used": 8,
+      "lit": 26,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": true
+    }
+  ]
+}

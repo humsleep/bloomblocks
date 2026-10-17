@@ -1,0 +1,128 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "garden7-solution",
+  "levelId": 4026531844,
+  "level": {
+    "rows": [
+      "...#...",
+      ".......",
+      ".#...#.",
+      "...#...",
+      ".#...#.",
+      ".......",
+      "...#..."
+    ],
+    "budget": 8
+  },
+  "mode": 0,
+  "flags": 0,
+  "seedKey": "lanterns:free:garden7",
+  "moves": "0609141a1d2b3035",
+  "seed": "4d40e85560832bb9809d5377f572958c",
+  "initialStateBytes": "0707080008002208220008000000000000000000",
+  "initialStateHash": "202d8b7b",
+  "perMoveHashes": [
+    "788553bb",
+    "e1300db1",
+    "1bd08e21",
+    "366dad2d",
+    "0b56a58d",
+    "028c3fe5",
+    "dc89c57c",
+    "9cd9129c"
+  ],
+  "perMoveStateBytes": [
+    "0707080008002208220008004000000000000000",
+    "0707080008002208220008004002000000000000",
+    "0707080008002208220008004002100000000000",
+    "0707080008002208220008004002100400000000",
+    "0707080008002208220008004002102400000000",
+    "0707080008002208220008004002102400080000",
+    "0707080008002208220008004002102400080100",
+    "0707080008002208220008004002102400082100"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "40404070",
+        "hi": "00404040"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "40407f72",
+        "hi": "00404040"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "505c7f72",
+        "hi": "00505050"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "575c7f76",
+        "hi": "00545454"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "775c7f76",
+        "hi": "00545454"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "775c7f76",
+        "hi": "00547f5c"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "775d7f77",
+        "hi": "00577f5d"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "775d7f77",
+        "hi": "00777f5d"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 8,
+      "complete": true
+    }
+  ],
+  "final": {
+    "stateHash": "9cd9129c",
+    "complete": true,
+    "lanternsUsed": 8,
+    "conflicts": 0,
+    "lit": 42
+  },
+  "runBin": "504c010100004d40e85560832bb9809d5377f572958c040000f008009c12d99c0609141a1d2b303564e3b144"
+}

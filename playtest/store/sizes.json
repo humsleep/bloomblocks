@@ -1,0 +1,8 @@
+{
+  "//": "Store screenshot device classes. w×h = the App Store Connect size (and the simulator's native capture). taps are device points (simulator pt) on that device, calibrated against the 1.0 build; boardCrop = [y, height] px of the 6×6 street board in a capture (rules shot). Only 6.9 is calibrated; another size needs one calibration pass (README).",
+  "6.9": {
+    "w": 1320, "h": 2868, "simulator": "iPhone 17 Pro Max",
+    "taps": { "village": [40, 418], "mailbox": [256, 850], "openGift": [220, 664], "putInCottage": [220, 817], "settings": [33, 88] },
+    "boardCrop": [1440, 1340]
+  }
+}

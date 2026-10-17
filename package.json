@@ -1,0 +1,33 @@
+{
+  "name": "puzzle-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic TypeScript core (canonical rules) for the puzzle prototype portfolio",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.core.json",
+    "sim": "tsx sim/run.ts",
+    "fixtures": "tsx scripts/fixtures.ts",
+    "fixtures:daily": "tsx scripts/dailyFreeze.ts",
+    "sim:curve": "tsx sim/curve.ts",
+    "gen:stats": "tsx scripts/genStats.ts",
+    "play": "tsx tools/play.ts",
+    "depth": "tsx scripts/depthCheck.ts",
+    "gen:stats:pips": "tsx scripts/pipsStats.ts",
+    "test:fuzz": "vitest run --config tests/fuzz/vitest.config.ts",
+    "test:fuzz:slow": "FUZZ_SLOW=1 vitest run --config tests/fuzz/vitest.config.ts tests/fuzz/generation.fuzz.ts",
+    "test:client": "npm --prefix apps/client run test",
+    "test:e2e": "npm --prefix apps/client run test:e2e",
+    "verify": "npm run typecheck && npm --prefix apps/client run typecheck:all && npm test && npm run test:client && npm run test:fuzz && npm run test:e2e && npm --prefix apps/client run build:m1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.4"
+  }
+}

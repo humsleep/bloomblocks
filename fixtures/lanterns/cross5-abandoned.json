@@ -1,0 +1,93 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "cross5-abandoned",
+  "levelId": 4026531842,
+  "level": {
+    "rows": [
+      "..#..",
+      ".....",
+      "#...#",
+      ".....",
+      "..#.."
+    ],
+    "budget": 5
+  },
+  "mode": 2,
+  "flags": 0,
+  "seedKey": "lanterns:bud:cross5",
+  "moves": "0109010913",
+  "seed": "f727c6f904a2b5e3eb478ccf176d3680",
+  "initialStateBytes": "0505050004001100040000000000000000000000",
+  "initialStateHash": "c6cc7973",
+  "perMoveHashes": [
+    "0c09bb31",
+    "a35f013b",
+    "2f773369",
+    "c6cc7973",
+    "e41cb9ab"
+  ],
+  "perMoveStateBytes": [
+    "0505050004001100040000000200000000000000",
+    "0505050004001100040000000202000000000000",
+    "0505050004001100040000000002000000000000",
+    "0505050004001100040000000000000000000000",
+    "0505050004001100040000000000080000000000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "02020203",
+        "hi": "00000002"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "02021f03",
+        "hi": "00000002"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "02021f02",
+        "hi": "00000002"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "00000000",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 0,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "080e0808",
+        "hi": "00000008"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    }
+  ],
+  "final": {
+    "stateHash": "e41cb9ab",
+    "complete": false,
+    "lanternsUsed": 1,
+    "conflicts": 0,
+    "lit": 7
+  },
+  "runBin": "504c01010200f727c6f904a2b5e3eb478ccf176d3680020000f00500abb91ce401090109132d0d5ef9"
+}

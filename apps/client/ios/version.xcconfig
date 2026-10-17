@@ -1,0 +1,3 @@
+// Written by scripts/bump-build.mjs. APP_BUILD_NUMBER = CFBundleVersion, APP_MARKETING_VERSION = CFBundleShortVersionString.
+APP_MARKETING_VERSION = 1.0
+APP_BUILD_NUMBER = 1

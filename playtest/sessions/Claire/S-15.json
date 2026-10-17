@@ -1,0 +1,208 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "S",
+  "index": 15,
+  "date": null,
+  "seedKey": null,
+  "levelId": 15,
+  "tag": "mid",
+  "level": {
+    "w": 7,
+    "h": 7,
+    "budget": 6,
+    "rows": [
+      ".......",
+      "#.....#",
+      ".#...#.",
+      ".......",
+      ".#####.",
+      ".......",
+      ".#...#."
+    ]
+  },
+  "lanterns": [
+    "D1",
+    "B2",
+    "C3",
+    "A4",
+    "G6",
+    "D7"
+  ],
+  "history": [
+    "D7",
+    "A4",
+    "G6",
+    "D1",
+    "B2",
+    "C3"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:37:26.418Z",
+  "completedAt": "2026-10-12T16:38:13.056Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:37:26.420Z",
+      "ms": 2,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:49.660Z",
+      "ms": 23242,
+      "cmd": "move",
+      "cell": "D4",
+      "result": "placed",
+      "used": 1,
+      "lit": 10,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:50.620Z",
+      "ms": 24202,
+      "cmd": "move",
+      "cell": "A1",
+      "result": "placed",
+      "used": 2,
+      "lit": 16,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:51.357Z",
+      "ms": 24939,
+      "cmd": "move",
+      "cell": "A6",
+      "result": "placed",
+      "used": 3,
+      "lit": 26,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:53.545Z",
+      "ms": 27127,
+      "cmd": "move",
+      "cell": "G7",
+      "result": "placed",
+      "used": 4,
+      "lit": 29,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:54.522Z",
+      "ms": 28104,
+      "cmd": "move",
+      "cell": "C2",
+      "result": "placed",
+      "used": 5,
+      "lit": 34,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:59.719Z",
+      "ms": 33301,
+      "cmd": "undo",
+      "cell": "C2",
+      "result": "un-placed",
+      "used": 4,
+      "lit": 29,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:00.191Z",
+      "ms": 33773,
+      "cmd": "move",
+      "cell": "E2",
+      "result": "placed",
+      "used": 5,
+      "lit": 34,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:05.084Z",
+      "ms": 38666,
+      "cmd": "restart",
+      "result": "cleared",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:05.780Z",
+      "ms": 39362,
+      "cmd": "move",
+      "cell": "D7",
+      "result": "placed",
+      "used": 1,
+      "lit": 4,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:06.633Z",
+      "ms": 40215,
+      "cmd": "move",
+      "cell": "A4",
+      "result": "placed",
+      "used": 2,
+      "lit": 15,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:07.488Z",
+      "ms": 41070,
+      "cmd": "move",
+      "cell": "G6",
+      "result": "placed",
+      "used": 3,
+      "lit": 23,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:09.152Z",
+      "ms": 42734,
+      "cmd": "move",
+      "cell": "D1",
+      "result": "placed",
+      "used": 4,
+      "lit": 32,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:10.838Z",
+      "ms": 44420,
+      "cmd": "move",
+      "cell": "B2",
+      "result": "placed",
+      "used": 5,
+      "lit": 36,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:13.072Z",
+      "ms": 46654,
+      "cmd": "move",
+      "cell": "C3",
+      "result": "placed",
+      "used": 6,
+      "lit": 38,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

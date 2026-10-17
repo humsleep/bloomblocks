@@ -1,0 +1,218 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "C",
+  "index": 8,
+  "date": null,
+  "seedKey": null,
+  "levelId": 8,
+  "tag": "hard",
+  "level": {
+    "w": 6,
+    "h": 6,
+    "budget": 8,
+    "rows": [
+      "..#.##",
+      "....#.",
+      "..#...",
+      "#..#..",
+      "....#.",
+      ".#...."
+    ]
+  },
+  "lanterns": [
+    "A1",
+    "D1",
+    "C2",
+    "F2",
+    "E3",
+    "B5",
+    "A6",
+    "C6"
+  ],
+  "history": [
+    "A1",
+    "D1",
+    "F2",
+    "C2",
+    "E3",
+    "B4",
+    "C5",
+    "D6",
+    "A6",
+    "C5",
+    "D6",
+    "C6",
+    "B4",
+    "B5"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:40:07.665Z",
+  "completedAt": "2026-10-12T16:40:42.864Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:40:07.667Z",
+      "ms": 2,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:18.547Z",
+      "ms": 10882,
+      "cmd": "move",
+      "cell": "A1",
+      "result": "placed",
+      "used": 1,
+      "lit": 4,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:18.915Z",
+      "ms": 11250,
+      "cmd": "move",
+      "cell": "D1",
+      "result": "placed",
+      "used": 2,
+      "lit": 7,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:19.245Z",
+      "ms": 11580,
+      "cmd": "move",
+      "cell": "F2",
+      "result": "placed",
+      "used": 3,
+      "lit": 12,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:19.574Z",
+      "ms": 11909,
+      "cmd": "move",
+      "cell": "C2",
+      "result": "placed",
+      "used": 4,
+      "lit": 14,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:21.121Z",
+      "ms": 13456,
+      "cmd": "move",
+      "cell": "E3",
+      "result": "placed",
+      "used": 5,
+      "lit": 16,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:28.145Z",
+      "ms": 20480,
+      "cmd": "move",
+      "cell": "B4",
+      "result": "placed",
+      "used": 6,
+      "lit": 20,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:29.449Z",
+      "ms": 21784,
+      "cmd": "move",
+      "cell": "C5",
+      "result": "placed",
+      "used": 7,
+      "lit": 24,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:30.523Z",
+      "ms": 22858,
+      "cmd": "move",
+      "cell": "D6",
+      "result": "placed",
+      "used": 8,
+      "lit": 26,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:31.213Z",
+      "ms": 23548,
+      "cmd": "move",
+      "cell": "A6",
+      "result": "placed",
+      "used": 9,
+      "lit": 27,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:38.585Z",
+      "ms": 30920,
+      "cmd": "move",
+      "cell": "C5",
+      "result": "removed",
+      "used": 8,
+      "lit": 26,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:39.985Z",
+      "ms": 32320,
+      "cmd": "move",
+      "cell": "D6",
+      "result": "removed",
+      "used": 7,
+      "lit": 22,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:40.717Z",
+      "ms": 33052,
+      "cmd": "move",
+      "cell": "C6",
+      "result": "placed",
+      "used": 8,
+      "lit": 26,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:41.819Z",
+      "ms": 34154,
+      "cmd": "move",
+      "cell": "B4",
+      "result": "removed",
+      "used": 7,
+      "lit": 23,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:42.866Z",
+      "ms": 35201,
+      "cmd": "move",
+      "cell": "B5",
+      "result": "placed",
+      "used": 8,
+      "lit": 27,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

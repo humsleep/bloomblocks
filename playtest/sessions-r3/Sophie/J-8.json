@@ -1,0 +1,320 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "J",
+  "index": 8,
+  "date": null,
+  "seedKey": null,
+  "levelId": 8,
+  "tag": "b0-peak",
+  "level": {
+    "w": 6,
+    "h": 6,
+    "budget": null,
+    "rows": [
+      "......",
+      "#...#.",
+      "0.3..1",
+      "1..#.#",
+      ".#...2",
+      "......"
+    ]
+  },
+  "lanterns": [
+    "B1",
+    "C2",
+    "F2",
+    "D3",
+    "C4",
+    "A5",
+    "E5",
+    "F6"
+  ],
+  "history": [
+    "C2",
+    "D3",
+    "B3",
+    "B3",
+    "C4",
+    "A5",
+    "F2",
+    "E5",
+    "F6",
+    "A1",
+    "A1",
+    "B1"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T23:11:12.848Z",
+  "completedAt": "2026-10-12T23:11:52.547Z",
+  "actions": [
+    {
+      "t": "2026-10-12T23:11:12.850Z",
+      "ms": 2,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:34.338Z",
+      "ms": 21490,
+      "cmd": "move",
+      "cell": "C2",
+      "result": "placed",
+      "used": 1,
+      "lit": 4,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:34.612Z",
+      "ms": 21764,
+      "cmd": "move",
+      "cell": "D3",
+      "result": "placed",
+      "used": 2,
+      "lit": 7,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:34.859Z",
+      "ms": 22011,
+      "cmd": "move",
+      "cell": "B3",
+      "result": "placed",
+      "used": 3,
+      "lit": 10,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 3,
+        "over": 1,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:38.035Z",
+      "ms": 25187,
+      "cmd": "move",
+      "cell": "B3",
+      "result": "removed",
+      "used": 2,
+      "lit": 7,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:38.283Z",
+      "ms": 25435,
+      "cmd": "move",
+      "cell": "C4",
+      "result": "placed",
+      "used": 3,
+      "lit": 11,
+      "conflicts": 0,
+      "stones": {
+        "ok": 2,
+        "under": 3,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:38.560Z",
+      "ms": 25712,
+      "cmd": "move",
+      "cell": "A5",
+      "result": "placed",
+      "used": 4,
+      "lit": 13,
+      "conflicts": 0,
+      "stones": {
+        "ok": 3,
+        "under": 2,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:38.859Z",
+      "ms": 26011,
+      "cmd": "move",
+      "cell": "F2",
+      "result": "placed",
+      "used": 5,
+      "lit": 15,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 1,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:39.164Z",
+      "ms": 26316,
+      "cmd": "move",
+      "cell": "E5",
+      "result": "placed",
+      "used": 6,
+      "lit": 19,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 1,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:39.465Z",
+      "ms": 26617,
+      "cmd": "move",
+      "cell": "F6",
+      "result": "placed",
+      "used": 7,
+      "lit": 22,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:42.380Z",
+      "ms": 29532,
+      "cmd": "move",
+      "cell": "A1",
+      "result": "placed",
+      "used": 8,
+      "lit": 25,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 1,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:49.015Z",
+      "ms": 36167,
+      "cmd": "hint",
+      "cell": "A1",
+      "result": "given",
+      "used": 8,
+      "lit": 25,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 1,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:52.325Z",
+      "ms": 39477,
+      "cmd": "move",
+      "cell": "A1",
+      "result": "removed",
+      "used": 7,
+      "lit": 22,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T23:11:52.548Z",
+      "ms": 39700,
+      "cmd": "move",
+      "cell": "B1",
+      "result": "placed",
+      "used": 8,
+      "lit": 26,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": true
+    },
+    {
+      "t": "2026-10-12T23:14:57.765Z",
+      "ms": 224917,
+      "cmd": "show",
+      "result": "shown",
+      "used": 8,
+      "lit": 26,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": true
+    }
+  ]
+}

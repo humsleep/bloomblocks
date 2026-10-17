@@ -1,0 +1,95 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "garden7-abandoned",
+  "levelId": 4026531844,
+  "level": {
+    "rows": [
+      "...#...",
+      ".......",
+      ".#...#.",
+      "...#...",
+      ".#...#.",
+      ".......",
+      "...#..."
+    ],
+    "budget": 8
+  },
+  "mode": 2,
+  "flags": 0,
+  "seedKey": "lanterns:bud:garden7",
+  "moves": "2e28121635",
+  "seed": "f359b1fbad0b1de259e8dd51d1d7a6e6",
+  "initialStateBytes": "0707080008002208220008000000000000000000",
+  "initialStateHash": "202d8b7b",
+  "perMoveHashes": [
+    "d9da5e3b",
+    "9af3aaf0",
+    "8c4b8ad4",
+    "2e6fe394",
+    "6e209674"
+  ],
+  "perMoveStateBytes": [
+    "0707080008002208220008000000000000400000",
+    "0707080008002208220008000000000000410000",
+    "0707080008002208220008000000040000410000",
+    "0707080008002208220008000000440000410000",
+    "0707080008002208220008000000440000412000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "40404040",
+        "hi": "00407f40"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "41414141",
+        "hi": "00417f41"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "455d4545",
+        "hi": "00457f45"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "455d4545",
+        "hi": "00457f45"
+      },
+      "conflicts": 3,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "455d4545",
+        "hi": "00757f45"
+      },
+      "conflicts": 3,
+      "lanternsUsed": 5,
+      "complete": false
+    }
+  ],
+  "final": {
+    "stateHash": "6e209674",
+    "complete": false,
+    "lanternsUsed": 5,
+    "conflicts": 3,
+    "lit": 29
+  },
+  "runBin": "504c01010200f359b1fbad0b1de259e8dd51d1d7a6e6040000f005007496206e2e281216359a033731"
+}

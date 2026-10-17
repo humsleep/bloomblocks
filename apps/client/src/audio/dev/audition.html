@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>Duskwick audio audition (DEV)</title>
+    <style>
+      body { margin: 0; padding: 16px; background: #0f1222; color: #e8e2d0; font: 15px/1.4 -apple-system, system-ui, sans-serif; }
+      h1 { font-size: 18px; margin: 0 0 12px; }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; align-items: center; }
+      button { background: #2a2f4a; color: #f4e3b5; border: 1px solid #4a5075; border-radius: 10px; padding: 10px 14px; font-size: 15px; }
+      button:active { background: #3a4066; }
+      label { font-size: 13px; opacity: 0.85; }
+      input[type="range"] { width: 140px; }
+      input[type="text"] { width: 160px; background: #1b1f35; color: inherit; border: 1px solid #4a5075; border-radius: 8px; padding: 6px; }
+      table { border-collapse: collapse; font-size: 13px; margin-top: 8px; width: 100%; max-width: 640px; }
+      td, th { border-bottom: 1px solid #2a2f4a; padding: 4px 6px; text-align: right; }
+      td:first-child, th:first-child { text-align: left; }
+      #status { font-size: 13px; opacity: 0.8; min-height: 1.4em; }
+    </style>
+  </head>
+  <body>
+    <h1>Duskwick · audio audition (DEV)</h1>
+    <div id="status">Tap any button (the first tap unlocks audio).</div>
+    <div class="row">
+      <label>pitchIndex <input id="pitch" type="range" min="0" max="14" value="4" /> <span id="pitchV">4</span></label>
+      <label>litCount <input id="lit" type="range" min="0" max="12" value="4" /> <span id="litV">4</span></label>
+      <label>sequence <input id="seq" type="text" value="2,5,3,7,9,6,10" /></label>
+    </div>
+    <div class="row" id="cues"></div>
+    <div class="row">
+      <button id="all">▶ Play all cues</button>
+      <button id="mute">Mute: off</button>
+      <span>Ambient:</span>
+      <button data-amb="0">0</button><button data-amb="1">1 wind</button><button data-amb="2">2 +crickets</button><button data-amb="3">3 +water</button>
+    </div>
+    <div class="row"><button id="measure">Measure levels (offline)</button></div>
+    <table id="table"></table>
+    <script type="module" src="./audition.ts"></script>
+  </body>
+</html>

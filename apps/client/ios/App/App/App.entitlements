@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  iCloud key-value storage only (CloudKV.swift). No CloudKit containers, no iCloud Documents.
+  Associated Domains (R2, decision A5): Universal Links for https://humsleep.github.io/duskwick/*
+  (the share text's link); the site's /.well-known/apple-app-site-association is docs/web/.
+  Until that file is live the link simply opens in Safari (no app behaviour depends on it).
+  Used by every configuration (Debug / Measure / Release) via CODE_SIGN_ENTITLEMENTS.
+-->
+<plist version="1.0">
+<dict>
+	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:humsleep.github.io</string>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["68BP5NY48R.com.humsleep.duskwick"],
+        "components": [
+          { "/": "/duskwick", "comment": "the dailies' home: opens today's daily" },
+          { "/": "/duskwick/", "comment": "the dailies' home: opens today's daily" },
+          { "/": "/duskwick/*", "comment": "daily #n (the share text's link): opens today's daily" }
+        ]
+      }
+    ]
+  }
+}

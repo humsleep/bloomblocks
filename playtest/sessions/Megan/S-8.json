@@ -1,0 +1,120 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "S",
+  "index": 8,
+  "date": null,
+  "seedKey": null,
+  "levelId": 8,
+  "tag": "hard",
+  "level": {
+    "w": 6,
+    "h": 6,
+    "budget": 6,
+    "rows": [
+      "..#...",
+      "....#.",
+      ".##...",
+      "...##.",
+      ".#....",
+      "...#.."
+    ]
+  },
+  "lanterns": [
+    "F1",
+    "B2",
+    "E3",
+    "A4",
+    "E5",
+    "B6"
+  ],
+  "history": [
+    "B2",
+    "E5",
+    "A4",
+    "B6",
+    "F1",
+    "E3"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:38:20.138Z",
+  "completedAt": "2026-10-12T16:38:48.946Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:38:20.150Z",
+      "ms": 12,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:44.688Z",
+      "ms": 24550,
+      "cmd": "move",
+      "cell": "B2",
+      "result": "placed",
+      "used": 1,
+      "lit": 5,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:45.771Z",
+      "ms": 25633,
+      "cmd": "move",
+      "cell": "E5",
+      "result": "placed",
+      "used": 2,
+      "lit": 10,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:46.499Z",
+      "ms": 26361,
+      "cmd": "move",
+      "cell": "A4",
+      "result": "placed",
+      "used": 3,
+      "lit": 17,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:47.341Z",
+      "ms": 27203,
+      "cmd": "move",
+      "cell": "B6",
+      "result": "placed",
+      "used": 4,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:48.385Z",
+      "ms": 28247,
+      "cmd": "move",
+      "cell": "F1",
+      "result": "placed",
+      "used": 5,
+      "lit": 26,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:48.948Z",
+      "ms": 28810,
+      "cmd": "move",
+      "cell": "E3",
+      "result": "placed",
+      "used": 6,
+      "lit": 28,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

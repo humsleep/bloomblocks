@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<title>Duskwick icon B (dark)</title>
+<defs>
+<radialGradient id="bd-rg1" gradientUnits="userSpaceOnUse" cx="428" cy="454" r="380"><stop offset="0" stop-color="#FFD682" stop-opacity="0.4"/><stop offset="0.4" stop-color="#FFBE64" stop-opacity="0.2"/><stop offset="1" stop-color="#FFAA50" stop-opacity="0"/></radialGradient>
+<radialGradient id="bd-rg2" gradientUnits="userSpaceOnUse" cx="428" cy="447.3" r="230.4"><stop offset="0" stop-color="#FFF4D6"/><stop offset="0.5" stop-color="#FFDD94"/><stop offset="0.8" stop-color="#FFC864"/><stop offset="1" stop-color="#E9A94E"/></radialGradient>
+<linearGradient id="bd-lg3" gradientUnits="userSpaceOnUse" x1="0" y1="616" x2="0" y2="660"><stop offset="0" stop-color="#5B4470"/><stop offset="0.3" stop-color="#3A2D58"/><stop offset="1" stop-color="#2A2042"/></linearGradient>
+<radialGradient id="bd-rg4" gradientUnits="userSpaceOnUse" cx="690" cy="616" r="200" gradientTransform="translate(690 616) scale(1 0.35) translate(-690 -616)"><stop offset="0" stop-color="#FFC864" stop-opacity="0.6"/><stop offset="1" stop-color="#FFC864" stop-opacity="0"/></radialGradient>
+<radialGradient id="bd-rg5" gradientUnits="userSpaceOnUse" cx="690" cy="527.5" r="260"><stop offset="0" stop-color="#FFCE78" stop-opacity="0.5"/><stop offset="0.3" stop-color="#FFBE64" stop-opacity="0.2"/><stop offset="0.7" stop-color="#FFAA50" stop-opacity="0.1"/><stop offset="1" stop-color="#FFA046" stop-opacity="0"/></radialGradient>
+<radialGradient id="bd-rg6" gradientUnits="userSpaceOnUse" cx="690" cy="515.5" r="94.5"><stop offset="0" stop-color="#FFF0C2"/><stop offset="0.3" stop-color="#FFC864"/><stop offset="0.8" stop-color="#E89A4E"/><stop offset="1" stop-color="#B5683A"/></radialGradient>
+<clipPath id="bd-cp7"><ellipse cx="690" cy="527.5" rx="87.5" ry="80"/></clipPath>
+<radialGradient id="bd-rg8" gradientUnits="userSpaceOnUse" cx="690" cy="527.5" r="90"><stop offset="0" stop-color="#FFFAE8"/><stop offset="0.2" stop-color="#FFF4D6" stop-opacity="0.9"/><stop offset="0.5" stop-color="#FFD27A" stop-opacity="0.6"/><stop offset="0.8" stop-color="#FFB050" stop-opacity="0.1"/><stop offset="1" stop-color="#FF963C" stop-opacity="0"/></radialGradient>
+<linearGradient id="bd-lg9" gradientUnits="userSpaceOnUse" x1="602.5" y1="0" x2="777.5" y2="0"><stop offset="0" stop-color="#3C190A" stop-opacity="0.3"/><stop offset="0.3" stop-color="#3C190A" stop-opacity="0"/><stop offset="0.7" stop-color="#3C190A" stop-opacity="0"/><stop offset="1" stop-color="#3C190A" stop-opacity="0.4"/></linearGradient>
+<linearGradient id="bd-lg10" gradientUnits="userSpaceOnUse" x1="0" y1="432.5" x2="0" y2="455"><stop offset="0" stop-color="#6E4C38"/><stop offset="1" stop-color="#4A3328"/></linearGradient>
+<linearGradient id="bd-lg11" gradientUnits="userSpaceOnUse" x1="0" y1="601.2" x2="0" y2="620"><stop offset="0" stop-color="#6E4C38"/><stop offset="1" stop-color="#4A3328"/></linearGradient>
+</defs>
+<circle cx="428" cy="454" r="380" fill="url(#bd-rg1)"/>
+<rect x="268" y="286" width="320" height="336" rx="26" fill="#140F24"/>
+<path d="M272 592 V312 Q272 290 294 290 H558" fill="none" stroke="#D88BA6" stroke-opacity="0.6" stroke-width="10" stroke-linecap="round"/>
+<rect x="296" y="314" width="117" height="125" rx="10" fill="url(#bd-rg2)"/>
+<rect x="296" y="469" width="117" height="125" rx="10" fill="url(#bd-rg2)"/>
+<rect x="443" y="314" width="117" height="125" rx="10" fill="url(#bd-rg2)"/>
+<rect x="443" y="469" width="117" height="125" rx="10" fill="url(#bd-rg2)"/>
+<rect x="228" y="626" width="572" height="44" rx="12" fill="#0B0A18" opacity="0.5"/>
+<rect x="228" y="616" width="572" height="44" rx="12" fill="url(#bd-lg3)"/>
+<rect x="234" y="616" width="560" height="44" rx="12" fill="url(#bd-rg4)"/>
+<circle cx="690" cy="527.5" r="260" fill="url(#bd-rg5)"/>
+<path d="M665.3 421.1 A25 25 0 0 1 714.7 421.1" fill="none" stroke="#4A3328" stroke-width="13.8" stroke-linecap="round"/>
+<ellipse cx="690" cy="527.5" rx="87.5" ry="80" fill="url(#bd-rg6)"/>
+<g clip-path="url(#bd-cp7)"><circle cx="690" cy="527.5" r="90" fill="url(#bd-rg8)"/><ellipse cx="690" cy="527.5" rx="58.3" ry="80" fill="none" stroke="#783A18" stroke-opacity="0.2" stroke-width="5"/><line x1="690" y1="447.5" x2="690" y2="607.5" stroke="#783A18" stroke-opacity="0.16" stroke-width="5"/><rect x="602.5" y="447.5" width="175" height="160" fill="url(#bd-lg9)"/></g>
+<ellipse cx="690" cy="527.5" rx="87.5" ry="80" fill="none" stroke="#46200C" stroke-opacity="0.6" stroke-width="7"/>
+<rect x="645" y="432.5" width="90" height="22.5" rx="7.9" fill="url(#bd-lg10)"/>
+<rect x="655" y="601.2" width="70" height="18.8" rx="6.6" fill="url(#bd-lg11)"/>
+</svg>

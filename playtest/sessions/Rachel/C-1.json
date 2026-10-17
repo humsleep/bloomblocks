@@ -1,0 +1,103 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "C",
+  "index": 1,
+  "date": null,
+  "seedKey": null,
+  "levelId": 1,
+  "tag": "intro",
+  "level": {
+    "w": 5,
+    "h": 5,
+    "budget": 6,
+    "rows": [
+      "..#.#",
+      "..#..",
+      ".....",
+      "..#..",
+      "#.#.."
+    ]
+  },
+  "lanterns": [
+    "D1",
+    "A3",
+    "E4",
+    "B5"
+  ],
+  "history": [
+    "D1",
+    "B5",
+    "A3",
+    "E4"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:38:19.398Z",
+  "completedAt": "2026-10-12T16:38:27.637Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:38:19.401Z",
+      "ms": 3,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:26.563Z",
+      "ms": 7165,
+      "cmd": "move",
+      "cell": "D1",
+      "result": "placed",
+      "used": 1,
+      "lit": 5,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:26.919Z",
+      "ms": 7521,
+      "cmd": "move",
+      "cell": "B5",
+      "result": "placed",
+      "used": 2,
+      "lit": 10,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:27.275Z",
+      "ms": 7877,
+      "cmd": "move",
+      "cell": "A3",
+      "result": "placed",
+      "used": 3,
+      "lit": 16,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:27.639Z",
+      "ms": 8241,
+      "cmd": "move",
+      "cell": "E4",
+      "result": "placed",
+      "used": 4,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": true
+    },
+    {
+      "t": "2026-10-12T16:38:27.971Z",
+      "ms": 8573,
+      "cmd": "show",
+      "result": "shown",
+      "used": 4,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

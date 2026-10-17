@@ -1,0 +1,222 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "J",
+  "index": 3,
+  "date": null,
+  "seedKey": null,
+  "levelId": 3,
+  "tag": "b0-peak",
+  "level": {
+    "w": 5,
+    "h": 5,
+    "budget": null,
+    "rows": [
+      "....0",
+      ".3...",
+      "1...2",
+      "...#.",
+      "#...."
+    ]
+  },
+  "lanterns": [
+    "B1",
+    "A2",
+    "C2",
+    "D3",
+    "B4",
+    "E4",
+    "D5"
+  ],
+  "history": [
+    "D3",
+    "E4",
+    "B1",
+    "A2",
+    "C2",
+    "D5",
+    "B4"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T17:36:37.212Z",
+  "completedAt": "2026-10-12T17:36:53.682Z",
+  "actions": [
+    {
+      "t": "2026-10-12T17:36:37.227Z",
+      "ms": 15,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 3,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:51.309Z",
+      "ms": 14097,
+      "cmd": "move",
+      "cell": "D3",
+      "result": "placed",
+      "used": 1,
+      "lit": 5,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 3,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:51.683Z",
+      "ms": 14471,
+      "cmd": "move",
+      "cell": "E4",
+      "result": "placed",
+      "used": 2,
+      "lit": 7,
+      "conflicts": 0,
+      "stones": {
+        "ok": 2,
+        "under": 2,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:52.043Z",
+      "ms": 14831,
+      "cmd": "move",
+      "cell": "B1",
+      "result": "placed",
+      "used": 3,
+      "lit": 10,
+      "conflicts": 0,
+      "stones": {
+        "ok": 2,
+        "under": 2,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:52.370Z",
+      "ms": 15158,
+      "cmd": "move",
+      "cell": "A2",
+      "result": "placed",
+      "used": 4,
+      "lit": 11,
+      "conflicts": 0,
+      "stones": {
+        "ok": 3,
+        "under": 1,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:52.692Z",
+      "ms": 15480,
+      "cmd": "move",
+      "cell": "C2",
+      "result": "placed",
+      "used": 5,
+      "lit": 15,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:53.022Z",
+      "ms": 15810,
+      "cmd": "move",
+      "cell": "D5",
+      "result": "placed",
+      "used": 6,
+      "lit": 17,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:53.347Z",
+      "ms": 16135,
+      "cmd": "show",
+      "result": "shown",
+      "used": 6,
+      "lit": 17,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T17:36:53.684Z",
+      "ms": 16472,
+      "cmd": "move",
+      "cell": "B4",
+      "result": "placed",
+      "used": 7,
+      "lit": 19,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": true
+    },
+    {
+      "t": "2026-10-12T17:40:41.404Z",
+      "ms": 244192,
+      "cmd": "show",
+      "result": "shown",
+      "used": 7,
+      "lit": 19,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "complete": true
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`lanterns generator > pins the generated level for a few seeds (cross-port canary) 1`] = `
+[
+  "#..#./.#.../...../...#./.#..# b6",
+  "....../#...../.#.#../..#.#./....../..#... b6",
+  "......./#.....#/.#...#./......./.#####./......./.#...#. b6",
+]
+`;

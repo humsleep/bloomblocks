@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face { font-family: Fredoka; font-weight: 400; src: url(../../apps/client/node_modules/@fontsource/fredoka/files/fredoka-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: Fredoka; font-weight: 500; src: url(../../apps/client/node_modules/@fontsource/fredoka/files/fredoka-latin-500-normal.woff2) format("woff2"); }
+  @font-face { font-family: Fredoka; font-weight: 600; src: url(../../apps/client/public/fonts/fredoka-latin-600-normal.woff2) format("woff2"); }
+  html, body { margin: 0; padding: 0; background: #14112A; }
+  #root { display: inline-block; }
+  svg text { font-family: Fredoka, ui-rounded, sans-serif; }
+</style>
+<script src="wick.js"></script>
+<script src="scenes.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const view = new URLSearchParams(location.search).get("view") || "play";
+const S = window.Scenes, W = window.Wick, T = S.T;
+const root = document.getElementById("root");
+
+function sheet() {
+  const w = 1600, h = 1000;
+  const exprs = ["idle", "happy", "curious", "sleepy", "cheer", "worried"];
+  const ko = { idle: "idle 기본", happy: "happy 기쁨", curious: "curious 궁금", sleepy: "sleepy 졸림", cheer: "cheer 환호", worried: "worried 걱정" };
+  let s = `<rect width="${w}" height="${h}" fill="#1E1B3B"/>
+    <text x="48" y="70" font-weight="600" font-size="40" fill="${T.cream}">Wick — Duskwick lantern spirit</text>
+    <text x="48" y="104" font-weight="400" font-size="20" fill="#B9AED6">mascot sheet v0 · 100×100 construction box · ground contact (50,92) · no limbs, no mouth by default</text>`;
+  // construction
+  s += `<g transform="translate(48 140)"><rect width="300" height="300" rx="24" fill="#2C2752"/>
+    <g transform="translate(20 20) scale(2.6)">
+      <rect width="100" height="100" fill="none" stroke="#4A4378" stroke-width=".4" stroke-dasharray="1.5 1.5"/>
+      <line x1="50" y1="0" x2="50" y2="100" stroke="#4A4378" stroke-width=".3"/><line x1="0" y1="65" x2="100" y2="65" stroke="#4A4378" stroke-width=".3"/>
+      <path d="${W.P.body}" fill="none" stroke="${T.cream}" stroke-width=".7"/>
+      <path d="${W.P.wisp}" fill="none" stroke="${T.primary}" stroke-width=".7"/>
+      <circle cx="40" cy="65" r="1" fill="${T.pink}"/><circle cx="60" cy="65" r="1" fill="${T.pink}"/>
+      <circle cx="50" cy="27" r="1" fill="${T.mint}"/><circle cx="50" cy="92" r="1" fill="${T.mint}"/><circle cx="18" cy="66" r="1" fill="${T.mint}"/><circle cx="82" cy="66" r="1" fill="${T.mint}"/>
+    </g>
+    <text x="16" y="290" font-size="13" fill="#B9AED6">body 64×65 · eyes y65, gap 20 · blush y73 · tip (50,27)</text></g>`;
+  // expressions
+  exprs.forEach((e, i) => {
+    const x = 380 + i * 196;
+    s += `<g><rect x="${x}" y="140" width="180" height="230" rx="22" fill="#2C2752"/>
+      ${W.wick(e, { x: x + 20, y: 150, size: 140, look: e === "worried" ? [-2, 0] : e === "curious" ? [1.5, 1] : [0, 0] })}
+      <text x="${x + 90}" y="350" text-anchor="middle" font-weight="600" font-size="20" fill="${T.cream}">${ko[e]}</text></g>`;
+  });
+  // sizes
+  s += `<g transform="translate(380 400)"><rect width="560" height="200" rx="22" fill="#2C2752"/>
+    <text x="20" y="34" font-weight="600" font-size="18" fill="${T.cream}">sizes (pt) — 96 hero · 72 guide · 48 stamp · 26 slot · lantern</text>
+    ${W.wick("idle", { x: 20, y: 64, size: 96 })}${W.wick("idle", { x: 140, y: 88, size: 72 })}${W.wick("happy", { x: 236, y: 112, size: 48 })}${W.wick("sleepy", { x: 306, y: 134, size: 26, glow: false })}
+    ${W.lantern("idle", { x: 360, y: 92, size: 66 })}${W.lantern("happy", { x: 440, y: 112, size: 44 })}${W.lantern("idle", { x: 500, y: 128, size: 30, glow: false })}</g>`;
+  // lantern faces
+  s += `<g transform="translate(960 400)"><rect width="592" height="200" rx="22" fill="#2C2752"/>
+    <text x="20" y="34" font-weight="600" font-size="18" fill="${T.cream}">board lantern faces — placed · lit · conflict pair · solved</text>
+    ${W.lantern("idle", { x: 20, y: 60, size: 120, squash: true })}
+    ${W.lantern("happy", { x: 140, y: 60, size: 120 })}
+    ${W.lantern("worried", { x: 270, y: 60, size: 120, look: [2, 0], lean: 6, coral: true })}
+    ${W.lantern("worried", { x: 360, y: 60, size: 120, look: [-2, 0], lean: -6, coral: true })}
+    ${W.lantern("happy", { x: 470, y: 52, size: 120 })}${W.sparkle(560, 70, 8)}${W.sparkle(486, 80, 5)}</g>`;
+  // palette
+  const sw = [["sheet", T.sheet], ["sheetHi", T.sheetHi], ["paper", T.paper], ["ink", T.ink], ["primary", T.primary], ["primaryLip", T.primaryLip], ["wickBody", W.C.body], ["wickBlush", W.C.blush], ["pink", T.pink], ["mint", T.mint], ["lilac", T.lilac], ["lemon", T.lemon], ["skyRose", T.skyRose], ["skyPeach", T.skyPeach]];
+  s += `<g transform="translate(48 630)"><rect width="880" height="320" rx="22" fill="#2C2752"/><text x="20" y="38" font-weight="600" font-size="20" fill="${T.cream}">tokens</text>`;
+  sw.forEach(([n, c], i) => {
+    const x = 20 + (i % 7) * 122, y = 60 + Math.floor(i / 7) * 128;
+    s += `<rect x="${x}" y="${y}" width="108" height="64" rx="14" fill="${c}" stroke="rgba(255,255,255,.15)"/><text x="${x}" y="${y + 86}" font-size="15" font-weight="500" fill="${T.cream}">${n}</text><text x="${x}" y="${y + 106}" font-size="14" fill="#B9AED6">${c}</text>`;
+  });
+  s += `</g>`;
+  // UI kit
+  s += `<g transform="translate(960 630)"><rect width="592" height="320" rx="22" fill="#2C2752"/><text x="20" y="38" font-weight="600" font-size="20" fill="${T.cream}">UI kit — chunky lip 4pt · pill · 52pt icon disc · Fredoka 600</text>
+    ${S.pill(24, 64, 200, 56, `<text x="124" y="100" text-anchor="middle" font-weight="600" font-size="22" fill="${T.ink}">Play</text>`)}
+    ${S.pill(240, 64, 160, 56, `<text x="320" y="100" text-anchor="middle" font-weight="600" font-size="22" fill="${T.cream}">Later</text>`, { ghost: true })}
+    ${S.chunkyCircle(450, 92, 52, S.icons.undo(452, 94))}${S.chunkyCircle(522, 92, 52, S.icons.hint(522, 92))}
+    ${S.pill(24, 154, 120, 56, `<text x="84" y="190" text-anchor="middle" font-weight="600" font-size="22" fill="${T.ink}">pressed</text>`).replace(/y="154"/g, 'y="157"')}
+    ${S.calendarChip(170, 150, 17)}
+    <g transform="translate(240 150)"><rect width="320" height="62" rx="18" fill="${T.paper}"/><text x="18" y="40" font-weight="600" font-size="26" fill="${T.ink}">0123456789</text></g>
+    <text x="24" y="270" font-weight="600" font-size="34" fill="${T.cream}">Light up a tiny town.</text>
+    <text x="24" y="300" font-weight="400" font-size="17" fill="#B9AED6">display 34/40 · title 22/28 · body 17/24 · caption 13/18</text></g>`;
+  return { w, h, s };
+}
+
+function phone(inner) {
+  return { w: S.PW, h: S.PH, s: inner };
+}
+
+function store() {
+  const w = 430, h = 932;
+  const inner = S.playScene();
+  return { w, h, s: `<defs><linearGradient id="cap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2C2752"/><stop offset="1" stop-color="#4A3B78"/></linearGradient>
+    <clipPath id="scr"><rect x="34" y="214" width="362" height="785" rx="40"/></clipPath></defs>
+    <rect width="${w}" height="${h}" fill="url(#cap)"/>
+    ${W.sparkle(48, 60, 7)}${W.sparkle(392, 140, 6, T.lemon)}${W.sparkle(380, 48, 4)}
+    <text x="215" y="86" text-anchor="middle" font-weight="600" font-size="34" fill="${T.cream}">Light up a tiny town</text>
+    <text x="215" y="126" text-anchor="middle" font-weight="600" font-size="34" fill="${T.primary}">one calm puzzle a day</text>
+    <text x="215" y="166" text-anchor="middle" font-weight="400" font-size="17" fill="#CFC3EA">Wick wakes up in every lantern you place</text>
+    <g clip-path="url(#scr)"><g transform="translate(34 214) scale(0.842)">${inner}</g></g>
+    <rect x="34" y="214" width="362" height="785" rx="40" fill="none" stroke="#FFF3DE" stroke-opacity=".5" stroke-width="3"/>
+    ${W.wick("happy", { x: 318, y: 196, size: 96, wave: true })}` };
+}
+
+const v = view === "sheet" ? sheet() : view === "result" ? phone(S.resultScene()) : view === "store" ? store() : phone(S.playScene());
+root.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${v.w}" height="${v.h}" viewBox="0 0 ${v.w} ${v.h}">${v.s}</svg>`;
+Promise.all(["400","500","600"].map((w) => document.fonts.load(w + " 20px Fredoka"))).then(() => document.fonts.ready).then(() => { document.body.dataset.ready = "1"; });
+</script>
+</body>
+</html>

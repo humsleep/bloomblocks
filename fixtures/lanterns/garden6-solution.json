@@ -1,0 +1,105 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "garden6-solution",
+  "levelId": 4026531843,
+  "level": {
+    "rows": [
+      "..#...",
+      "......",
+      ".#..#.",
+      "......",
+      "...#..",
+      "#....."
+    ],
+    "budget": 6
+  },
+  "mode": 0,
+  "flags": 0,
+  "seedKey": "lanterns:free:garden6",
+  "moves": "05091b20242a",
+  "seed": "a2641121c57de346e63de56f14dc99f1",
+  "initialStateBytes": "0606060004001200080100000000000000000000",
+  "initialStateHash": "afe06fc2",
+  "perMoveHashes": [
+    "5c0c53e2",
+    "f36199ec",
+    "289bd804",
+    "78c81715",
+    "7b8c0825",
+    "7ff13af9"
+  ],
+  "perMoveStateBytes": [
+    "0606060004001200080100002000000000000000",
+    "0606060004001200080100002002000000000000",
+    "0606060004001200080100002002000800000000",
+    "0606060004001200080100002002000801000000",
+    "0606060004001200080100002002000811000000",
+    "0606060004001200080100002002000811040000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "20202038",
+        "hi": "00002020"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "20203f3a",
+        "hi": "00002020"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "3f283f3a",
+        "hi": "00002020"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "3f293f3b",
+        "hi": "00002027"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "3f293f3b",
+        "hi": "00003037"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "3f2d3f3b",
+        "hi": "00003e37"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 6,
+      "complete": true
+    }
+  ],
+  "final": {
+    "stateHash": "7ff13af9",
+    "complete": true,
+    "lanternsUsed": 6,
+    "conflicts": 0,
+    "lit": 31
+  },
+  "runBin": "504c01010000a2641121c57de346e63de56f14dc99f1030000f00600f93af17f05091b20242abf42501c"
+}

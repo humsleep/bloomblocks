@@ -1,0 +1,147 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "C",
+  "index": 15,
+  "date": null,
+  "seedKey": null,
+  "levelId": 15,
+  "tag": "mid",
+  "level": {
+    "w": 7,
+    "h": 7,
+    "budget": 8,
+    "rows": [
+      "..#..#.",
+      ".......",
+      "..###..",
+      ".......",
+      "..###..",
+      ".......",
+      ".#..#.."
+    ]
+  },
+  "lanterns": [
+    "D1",
+    "G1",
+    "A2",
+    "B3",
+    "F3",
+    "D4",
+    "E6",
+    "D7"
+  ],
+  "history": [
+    "A2",
+    "G1",
+    "D4",
+    "E6",
+    "D1",
+    "D7",
+    "F3",
+    "B3"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:37:04.150Z",
+  "completedAt": "2026-10-12T16:37:32.486Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:37:04.152Z",
+      "ms": 2,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:30.073Z",
+      "ms": 25923,
+      "cmd": "move",
+      "cell": "A2",
+      "result": "placed",
+      "used": 1,
+      "lit": 13,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:30.426Z",
+      "ms": 26276,
+      "cmd": "move",
+      "cell": "G1",
+      "result": "placed",
+      "used": 2,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:30.765Z",
+      "ms": 26615,
+      "cmd": "move",
+      "cell": "D4",
+      "result": "placed",
+      "used": 3,
+      "lit": 24,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:31.116Z",
+      "ms": 26966,
+      "cmd": "move",
+      "cell": "E6",
+      "result": "placed",
+      "used": 4,
+      "lit": 29,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:31.498Z",
+      "ms": 27348,
+      "cmd": "move",
+      "cell": "D1",
+      "result": "placed",
+      "used": 5,
+      "lit": 31,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:31.830Z",
+      "ms": 27680,
+      "cmd": "move",
+      "cell": "D7",
+      "result": "placed",
+      "used": 6,
+      "lit": 33,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:32.162Z",
+      "ms": 28012,
+      "cmd": "move",
+      "cell": "F3",
+      "result": "placed",
+      "used": 7,
+      "lit": 36,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:37:32.487Z",
+      "ms": 28337,
+      "cmd": "move",
+      "cell": "B3",
+      "result": "placed",
+      "used": 8,
+      "lit": 39,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

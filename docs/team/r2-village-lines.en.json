@@ -1,0 +1,2232 @@
+{
+ "schema": "duskwick.village-lines/0.1-draft",
+ "locale": "en",
+ "generatedFrom": "docs/team/r2-village-narrative.md (narrative draft, 2026-10-17)",
+ "limits": {
+  "enCharsPerLine": 60,
+  "koCharsPerLine": 32,
+  "giftTagEnChars": 30,
+  "otherLatinLocales": "<= 78 chars (130%)",
+  "jaZh": "<= 30 chars"
+ },
+ "tokens": {
+  "{cp}": "resident catchphrase, from residents[].catchphrase[locale]; always a standalone interjection (own sentence), max 2 per line; never translate literally",
+  "\\n": "letter line break; letters are 2-3 lines, each line within the limit"
+ },
+ "timeBands": {
+  "dawn": "05-09",
+  "day": "09-17",
+  "dusk": "17-21",
+  "night": "21-05"
+ },
+ "seasons": {
+  "north": {
+   "spring": "Mar-May",
+   "summer": "Jun-Aug",
+   "autumn": "Sep-Nov",
+   "winter": "Dec-Feb"
+  },
+  "south": {
+   "spring": "Sep-Nov",
+   "summer": "Dec-Feb",
+   "autumn": "Mar-May",
+   "winter": "Jun-Aug"
+  },
+  "hemisphereFrom": "device region (AU, NZ, BR, AR, CL, ZA, ... = south); Settings override"
+ },
+ "furnitureCategories": [
+  "lighting",
+  "seating",
+  "table",
+  "bed",
+  "plant",
+  "storage",
+  "rug",
+  "wall",
+  "small"
+ ],
+ "selection": {
+  "priority": [
+   "move_in",
+   "friend.level",
+   "return",
+   "event.first_snow",
+   "request.visit",
+   "puzzle.hard",
+   "puzzle.solved",
+   "request.ask",
+   "request.again",
+   "greet",
+   "season",
+   "chat"
+  ],
+  "noRepeatWindow": "per resident: exclude the last min(6, eligible-1) shown ids",
+  "seed": "hash(dayIndex, residentId, talkIndexToday) -> same visit re-entry shows the same line",
+  "linesPerTap": 1,
+  "maxTapsPerVisit": 3
+ },
+ "friendship": {
+  "points": "chatDays + 2 * requestsDone (both derived from v.ch / v.q bitsets)",
+  "levels": {
+   "0": 0,
+   "1": 2,
+   "2": 5,
+   "3": 9,
+   "4": 14,
+   "5": 21
+  },
+  "neverDecreases": true
+ },
+ "residents": [
+  {
+   "id": "wick",
+   "catchphrase": {
+    "en": "Pom",
+    "ko": "퐁",
+    "ja": "ぽっ",
+    "de": "Plopp",
+    "fr": "Pof",
+    "es": "Pom",
+    "pt-BR": "Pom",
+    "it": "Pof",
+    "zh-Hans": "啵",
+    "zh-Hant": "啵"
+   },
+   "name": "Wick",
+   "moveInLitDays": 0,
+   "flame": "drop",
+   "voice": "steady host",
+   "likes": [
+    "lighting",
+    "table"
+   ],
+   "request": [
+    "lighting",
+    "table"
+   ]
+  },
+  {
+   "id": "momo",
+   "catchphrase": {
+    "en": "Eep",
+    "ko": "힛",
+    "ja": "ひゃっ",
+    "de": "Huch",
+    "fr": "Oh",
+    "es": "Ay",
+    "pt-BR": "Ai",
+    "it": "Oh",
+    "zh-Hans": "呀",
+    "zh-Hant": "呀"
+   },
+   "name": "Momo",
+   "moveInLitDays": 1,
+   "flame": "petal",
+   "voice": "shy, trails off",
+   "likes": [
+    "seating",
+    "plant"
+   ],
+   "request": [
+    "seating",
+    "plant"
+   ]
+  },
+  {
+   "id": "sage",
+   "catchphrase": {
+    "en": "Fwaah",
+    "ko": "하암",
+    "ja": "ふぁ〜",
+    "de": "Gähn",
+    "fr": "Ouaah",
+    "es": "Aaah",
+    "pt-BR": "Aaah",
+    "it": "Uaah",
+    "zh-Hans": "哈啊～",
+    "zh-Hant": "哈啊～"
+   },
+   "name": "Sage",
+   "moveInLitDays": 2,
+   "flame": "leaf",
+   "voice": "slow, sleepy gardener",
+   "likes": [
+    "plant",
+    "rug"
+   ],
+   "request": [
+    "plant",
+    "rug"
+   ]
+  },
+  {
+   "id": "luna",
+   "catchphrase": {
+    "en": "Twinkle",
+    "ko": "반짝",
+    "ja": "きらっ",
+    "de": "Funkel",
+    "fr": "Cling",
+    "es": "Tilín",
+    "pt-BR": "Plim",
+    "it": "Dlin",
+    "zh-Hans": "闪闪",
+    "zh-Hant": "閃閃"
+   },
+   "name": "Luna",
+   "moveInLitDays": 4,
+   "flame": "moon",
+   "voice": "dreamy, asks questions",
+   "likes": [
+    "wall",
+    "lighting"
+   ],
+   "request": [
+    "wall",
+    "lighting"
+   ]
+  },
+  {
+   "id": "pip",
+   "catchphrase": {
+    "en": "Hop",
+    "ko": "폴짝",
+    "ja": "ぴょん",
+    "de": "Hopp",
+    "fr": "Hop",
+    "es": "Hop",
+    "pt-BR": "Hop",
+    "it": "Hop",
+    "zh-Hans": "蹦",
+    "zh-Hant": "蹦"
+   },
+   "name": "Pip",
+   "moveInLitDays": 7,
+   "flame": "twin",
+   "voice": "tiny, loud cheers",
+   "likes": [
+    "rug",
+    "small"
+   ],
+   "request": [
+    "rug",
+    "small"
+   ]
+  },
+  {
+   "id": "kuri",
+   "catchphrase": {
+    "en": "Hm-hm♪",
+    "ko": "흠흠♪",
+    "ja": "ふんふん♪",
+    "de": "La-la♪",
+    "fr": "La-la♪",
+    "es": "La-la♪",
+    "pt-BR": "La-la♪",
+    "it": "La-la♪",
+    "zh-Hans": "啦啦♪",
+    "zh-Hant": "啦啦♪"
+   },
+   "name": "Kuri",
+   "moveInLitDays": 10,
+   "flame": "ember",
+   "voice": "cozy, hums, offers tea",
+   "likes": [
+    "small",
+    "seating"
+   ],
+   "request": [
+    "small",
+    "seating"
+   ]
+  },
+  {
+   "id": "yuki",
+   "catchphrase": {
+    "en": "Shh",
+    "ko": "쉿",
+    "ja": "しーっ",
+    "de": "Pssst",
+    "fr": "Chut",
+    "es": "Shh",
+    "pt-BR": "Shh",
+    "it": "Shh",
+    "zh-Hans": "嘘",
+    "zh-Hant": "噓"
+   },
+   "name": "Yuki",
+   "moveInLitDays": 14,
+   "flame": "spark",
+   "voice": "few words, quiet",
+   "likes": [
+    "bed",
+    "storage"
+   ],
+   "request": [
+    "bed",
+    "storage"
+   ]
+  }
+ ],
+ "triggers": {
+  "move_in": "First talk after this resident moved in (move-in day). Shown once each, in order.",
+  "greet": "First talk of a visit. cond.time = dawn 05-09 | day 09-17 | dusk 17-21 | night 21-05 (device local time).",
+  "puzzle.solved": "Player lit >=1 board today and has not heard a puzzle line today.",
+  "puzzle.hard": "Today: a deduce-track board, or Today's puzzle, solved with no hints (the ✨ flag).",
+  "return": "First village visit after a gap of >=3 calendar days since the last village visit. Never states the gap.",
+  "season": "cond.season from the real calendar + hemisphere (device region; Settings override). Max 1 per resident per day.",
+  "event.first_snow": "First village visit on/after Dec 1 (N) or Jun 1 (S), once per year; 1.0 approximates snow by date.",
+  "request.ask": "Opens this resident's single open request (cond.category = furniture category). No deadline.",
+  "request.again": "Same open request, re-said gently. Only if >=3 days since the ask.",
+  "request.visit": "Request fulfilled: resident sits in the player's cabin next to the placed item. Tap line.",
+  "letter.move_in": "Mailbox letter with the resident's signature furniture on move-in.",
+  "letter.gift": "Mailbox letter when the lantern-drop jar fills (one resident per jar, round-robin over residents).",
+  "letter.thanks": "Mailbox letter the day after a request was fulfilled (+ a furniture item of a liked category).",
+  "letter.return": "Wick only. Mailbox letter on the first visit after a gap of >=7 days.",
+  "gift.tag": "Paper tag on a second+ jar gift the same day (letters are max 1/day). <=30 chars.",
+  "friend.level": "Once, when friendship reaches cond.level (3 or 5).",
+  "chat": "Small talk; cond.requires = residents who must live here. Lowest priority.",
+  "tap.again": "Player taps the same resident again during the same visit.",
+  "host": "Wick as village host (village, market, cabin, mailbox). Only when there is news; else Wick uses normal lines."
+ },
+ "lines": [
+  {
+   "id": "wick.host.01",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "firstVillageVisit"
+   },
+   "ship": "1.0",
+   "text": "Welcome. This is our village. Small, for now."
+  },
+  {
+   "id": "wick.host.02",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "firstVillageVisit"
+   },
+   "ship": "1.0",
+   "text": "Every light you make gives someone a home."
+  },
+  {
+   "id": "wick.host.03",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "mailWaiting"
+   },
+   "ship": "1.0",
+   "text": "Something came for you. The mailbox looks proud."
+  },
+  {
+   "id": "wick.host.04",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "moveInEve"
+   },
+   "ship": "1.0",
+   "text": "That dark window? Someone's coming tomorrow."
+  },
+  {
+   "id": "wick.host.05",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "residentMovedIn"
+   },
+   "ship": "1.0",
+   "text": "Someone new moved in. Say hi whenever you like."
+  },
+  {
+   "id": "wick.host.06",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "marketOpen"
+   },
+   "ship": "1.0",
+   "text": "Pick one you like. The others will come around again."
+  },
+  {
+   "id": "wick.host.07",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "firstCabinVisit"
+   },
+   "ship": "1.0",
+   "text": "This is your room. Put things wherever feels right."
+  },
+  {
+   "id": "wick.host.08",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "seasonChanged"
+   },
+   "ship": "1.0",
+   "text": "The season turned while we weren't looking. {cp}."
+  },
+  {
+   "id": "wick.host.09",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "marketPicked"
+   },
+   "ship": "1.0",
+   "text": "Good pick. It'll look nice somewhere."
+  },
+  {
+   "id": "wick.host.10",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "marketLocked"
+   },
+   "ship": "1.0",
+   "text": "The stall opens once a lantern is lit today. No rush."
+  },
+  {
+   "id": "wick.host.11",
+   "resident": "wick",
+   "trigger": "host",
+   "cond": {
+    "event": "postcardTaken"
+   },
+   "ship": "1.0",
+   "text": "Nice room. It looks properly lived-in now."
+  },
+  {
+   "id": "wick.move_in.01",
+   "resident": "wick",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "I'm Wick. I keep the lamps. And an eye on things."
+  },
+  {
+   "id": "wick.move_in.02",
+   "resident": "wick",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "The cabin by the gate is yours. I'm right next door."
+  },
+  {
+   "id": "wick.greet.01",
+   "resident": "wick",
+   "trigger": "greet",
+   "cond": {
+    "time": "dawn"
+   },
+   "ship": "1.0",
+   "text": "Early. The lanterns are still yawning."
+  },
+  {
+   "id": "wick.greet.02",
+   "resident": "wick",
+   "trigger": "greet",
+   "cond": {
+    "time": "day"
+   },
+   "ship": "1.0",
+   "text": "Good day. The village is quiet and doing fine."
+  },
+  {
+   "id": "wick.greet.03",
+   "resident": "wick",
+   "trigger": "greet",
+   "cond": {
+    "time": "dusk"
+   },
+   "ship": "1.0",
+   "text": "Dusk. My favorite hour. Everything's a bit gold."
+  },
+  {
+   "id": "wick.greet.04",
+   "resident": "wick",
+   "trigger": "greet",
+   "cond": {
+    "time": "night"
+   },
+   "ship": "1.0",
+   "text": "Late night? Me too. The lights don't mind."
+  },
+  {
+   "id": "wick.greet.05",
+   "resident": "wick",
+   "trigger": "greet",
+   "cond": {
+    "minLevel": 2
+   },
+   "ship": "1.0",
+   "text": "Ah, it's you. The path got brighter just now."
+  },
+  {
+   "id": "wick.puzzle.solved.01",
+   "resident": "wick",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Nicely lit. I watched from the stepping stone."
+  },
+  {
+   "id": "wick.puzzle.solved.02",
+   "resident": "wick",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Clean and calm. That's the way. {cp}."
+  },
+  {
+   "id": "wick.puzzle.hard.01",
+   "resident": "wick",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "That one was a thinker. Sit a while."
+  },
+  {
+   "id": "wick.puzzle.hard.02",
+   "resident": "wick",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "I got worried twice. You didn't. Well done."
+  },
+  {
+   "id": "wick.return.01",
+   "resident": "wick",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "There you are. Everything kept glowing."
+  },
+  {
+   "id": "wick.return.02",
+   "resident": "wick",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "Welcome back. Your bench is still warm. Somehow."
+  },
+  {
+   "id": "wick.season.01",
+   "resident": "wick",
+   "trigger": "season",
+   "cond": {
+    "season": "spring"
+   },
+   "ship": "1.0",
+   "text": "Spring. Sage keeps waking up in new pots."
+  },
+  {
+   "id": "wick.season.02",
+   "resident": "wick",
+   "trigger": "season",
+   "cond": {
+    "season": "summer"
+   },
+   "ship": "1.0",
+   "text": "Long evenings. More dusk for everyone."
+  },
+  {
+   "id": "wick.season.03",
+   "resident": "wick",
+   "trigger": "season",
+   "cond": {
+    "season": "autumn"
+   },
+   "ship": "1.0",
+   "text": "Leaves on the path. I like how they crunch."
+  },
+  {
+   "id": "wick.season.04",
+   "resident": "wick",
+   "trigger": "season",
+   "cond": {
+    "season": "winter"
+   },
+   "ship": "1.0",
+   "text": "Winter. Lanterns look their best in the cold."
+  },
+  {
+   "id": "wick.request.ask.01",
+   "resident": "wick",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "lighting"
+   },
+   "ship": "1.0",
+   "text": "Your cabin corner is dark. Any lamp would do."
+  },
+  {
+   "id": "wick.request.ask.02",
+   "resident": "wick",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "table"
+   },
+   "ship": "1.0",
+   "text": "A little table, maybe? Somewhere to set the tea."
+  },
+  {
+   "id": "wick.request.again.01",
+   "resident": "wick",
+   "trigger": "request.again",
+   "ship": "1.0",
+   "text": "That lamp idea still stands. Whenever. {cp}."
+  },
+  {
+   "id": "wick.request.visit.01",
+   "resident": "wick",
+   "trigger": "request.visit",
+   "ship": "1.0",
+   "text": "There. Nobody sits in the dark now."
+  },
+  {
+   "id": "wick.letter.move_in.01",
+   "resident": "wick",
+   "trigger": "letter.move_in",
+   "ship": "1.0",
+   "text": "Hello,\nThis lamp was the first one I ever lit.\nIt's yours now. Welcome home. — Wick"
+  },
+  {
+   "id": "wick.letter.gift.01",
+   "resident": "wick",
+   "trigger": "letter.gift",
+   "ship": "1.0",
+   "text": "Hello,\nThe lantern jar is full again. Your doing.\nHere's something for the room. — Wick"
+  },
+  {
+   "id": "wick.letter.thanks.01",
+   "resident": "wick",
+   "trigger": "letter.thanks",
+   "ship": "1.0",
+   "text": "Hello,\nThe corner's lit now. People stop there to talk.\nThank you. — Wick"
+  },
+  {
+   "id": "wick.letter.return.01",
+   "resident": "wick",
+   "trigger": "letter.return",
+   "ship": "1.0",
+   "text": "Hello,\nThe village kept your place warm.\nNothing's missing. Come by anytime. — Wick"
+  },
+  {
+   "id": "wick.gift.tag.01",
+   "resident": "wick",
+   "trigger": "gift.tag",
+   "ship": "1.0",
+   "text": "One more, for the room."
+  },
+  {
+   "id": "wick.friend.level.01",
+   "resident": "wick",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 3
+   },
+   "ship": "1.0",
+   "text": "You know, the village talks about you. All good things."
+  },
+  {
+   "id": "wick.friend.level.02",
+   "resident": "wick",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 5
+   },
+   "ship": "1.0",
+   "text": "I'm glad it was you who came. Truly."
+  },
+  {
+   "id": "wick.chat.01",
+   "resident": "wick",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "pip"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Pip cheered for a leaf today. The leaf seemed pleased."
+  },
+  {
+   "id": "wick.chat.02",
+   "resident": "wick",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "momo"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Momo waved at me today. Then hid. Progress."
+  },
+  {
+   "id": "wick.tap.again.01",
+   "resident": "wick",
+   "trigger": "tap.again",
+   "ship": "1.0",
+   "text": "Still here. I usually am. {cp}."
+  },
+  {
+   "id": "momo.move_in.01",
+   "resident": "momo",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Oh—hi. I'm Momo. I practiced saying hello. {cp}."
+  },
+  {
+   "id": "momo.move_in.02",
+   "resident": "momo",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "You lit this house? For… me? Oh. Thank you."
+  },
+  {
+   "id": "momo.greet.01",
+   "resident": "momo",
+   "trigger": "greet",
+   "cond": {
+    "time": "dawn"
+   },
+   "ship": "1.0",
+   "text": "Morning… I meant to fix my petal first."
+  },
+  {
+   "id": "momo.greet.02",
+   "resident": "momo",
+   "trigger": "greet",
+   "cond": {
+    "time": "day"
+   },
+   "ship": "1.0",
+   "text": "Hi! Oh, that was loud. Hi."
+  },
+  {
+   "id": "momo.greet.03",
+   "resident": "momo",
+   "trigger": "greet",
+   "cond": {
+    "time": "dusk"
+   },
+   "ship": "1.0",
+   "text": "The sky's pink now. It's showing off. I like it."
+  },
+  {
+   "id": "momo.greet.04",
+   "resident": "momo",
+   "trigger": "greet",
+   "cond": {
+    "time": "night"
+   },
+   "ship": "1.0",
+   "text": "You're up late too? Let's be quiet together."
+  },
+  {
+   "id": "momo.greet.05",
+   "resident": "momo",
+   "trigger": "greet",
+   "cond": {
+    "minLevel": 2
+   },
+   "ship": "1.0",
+   "text": "Hi! I didn't even hide this time. Progress!"
+  },
+  {
+   "id": "momo.puzzle.solved.01",
+   "resident": "momo",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "You did it! Um. I clapped. You didn't see."
+  },
+  {
+   "id": "momo.puzzle.solved.02",
+   "resident": "momo",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "That was lovely. Like petals opening, one by one."
+  },
+  {
+   "id": "momo.puzzle.hard.01",
+   "resident": "momo",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "I watched. I forgot to breathe. You did it!"
+  },
+  {
+   "id": "momo.puzzle.hard.02",
+   "resident": "momo",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "That was hard, wasn't it? You looked so calm."
+  },
+  {
+   "id": "momo.return.01",
+   "resident": "momo",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "Oh! Hi! I saved you the good cushion."
+  },
+  {
+   "id": "momo.return.02",
+   "resident": "momo",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "You're here. I was hoping. Um. Hi."
+  },
+  {
+   "id": "momo.season.01",
+   "resident": "momo",
+   "trigger": "season",
+   "cond": {
+    "season": "spring"
+   },
+   "ship": "1.0",
+   "text": "Blossom season. I blend right in. So relaxing."
+  },
+  {
+   "id": "momo.season.02",
+   "resident": "momo",
+   "trigger": "season",
+   "cond": {
+    "season": "summer"
+   },
+   "ship": "1.0",
+   "text": "It's warm. My cheeks are pink for real reasons now."
+  },
+  {
+   "id": "momo.season.03",
+   "resident": "momo",
+   "trigger": "season",
+   "cond": {
+    "season": "autumn"
+   },
+   "ship": "1.0",
+   "text": "The leaves are turning red. I know the feeling."
+  },
+  {
+   "id": "momo.season.04",
+   "resident": "momo",
+   "trigger": "season",
+   "cond": {
+    "season": "winter"
+   },
+   "ship": "1.0",
+   "text": "Cold noses, pink cheeks. Everyone matches me!"
+  },
+  {
+   "id": "momo.request.ask.01",
+   "resident": "momo",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "seating"
+   },
+   "ship": "1.0",
+   "text": "Um… a cushion, maybe? For sitting bravely."
+  },
+  {
+   "id": "momo.request.ask.02",
+   "resident": "momo",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "plant"
+   },
+   "ship": "1.0",
+   "text": "Could there be flowers somewhere? Only if it's easy."
+  },
+  {
+   "id": "momo.request.again.01",
+   "resident": "momo",
+   "trigger": "request.again",
+   "ship": "1.0",
+   "text": "The cushion thing… no rush. Really. {cp}."
+  },
+  {
+   "id": "momo.request.visit.01",
+   "resident": "momo",
+   "trigger": "request.visit",
+   "ship": "1.0",
+   "text": "I'm sitting in your room! Is this okay? It's okay."
+  },
+  {
+   "id": "momo.letter.move_in.01",
+   "resident": "momo",
+   "trigger": "letter.move_in",
+   "ship": "1.0",
+   "text": "Um, hello,\nI hugged this cushion whenever I got scared.\nNow it's yours. — Momo"
+  },
+  {
+   "id": "momo.letter.gift.01",
+   "resident": "momo",
+   "trigger": "letter.gift",
+   "ship": "1.0",
+   "text": "Um, hello,\nI saw this and thought of your room.\nI hope that's not strange. {cp}. — Momo"
+  },
+  {
+   "id": "momo.letter.thanks.01",
+   "resident": "momo",
+   "trigger": "letter.thanks",
+   "ship": "1.0",
+   "text": "Um, hello,\nI sat in your room. I wasn't scared at all.\nThank you. Truly. — Momo"
+  },
+  {
+   "id": "momo.gift.tag.01",
+   "resident": "momo",
+   "trigger": "gift.tag",
+   "ship": "1.0",
+   "text": "Me again. Sorry! {cp}."
+  },
+  {
+   "id": "momo.friend.level.01",
+   "resident": "momo",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 3
+   },
+   "ship": "1.0",
+   "text": "Can I tell you something? I like when you visit."
+  },
+  {
+   "id": "momo.friend.level.02",
+   "resident": "momo",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 5
+   },
+   "ship": "1.0",
+   "text": "I made you something. Open it after I leave. {cp}!"
+  },
+  {
+   "id": "momo.chat.01",
+   "resident": "momo",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "luna"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Luna knows every star. I only know the pink ones."
+  },
+  {
+   "id": "momo.chat.02",
+   "resident": "momo",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "pip"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Pip cheered for me today. I hid in a flower."
+  },
+  {
+   "id": "momo.tap.again.01",
+   "resident": "momo",
+   "trigger": "tap.again",
+   "ship": "1.0",
+   "text": "{cp}! Oh—it's you. Hi again."
+  },
+  {
+   "id": "sage.move_in.01",
+   "resident": "sage",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Mm… hello. I was napping in your flowerpot. Sorry."
+  },
+  {
+   "id": "sage.move_in.02",
+   "resident": "sage",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "I'm Sage. I grow things. Slowly. Like me."
+  },
+  {
+   "id": "sage.greet.01",
+   "resident": "sage",
+   "trigger": "greet",
+   "cond": {
+    "time": "dawn"
+   },
+   "ship": "1.0",
+   "text": "Dawn watering. The plants drink. I… mm… yawn."
+  },
+  {
+   "id": "sage.greet.02",
+   "resident": "sage",
+   "trigger": "greet",
+   "cond": {
+    "time": "day"
+   },
+   "ship": "1.0",
+   "text": "Sunny. Good for leaves. Good for naps. Mostly naps."
+  },
+  {
+   "id": "sage.greet.03",
+   "resident": "sage",
+   "trigger": "greet",
+   "cond": {
+    "time": "dusk"
+   },
+   "ship": "1.0",
+   "text": "Dusk. The flowers are closing. I'll follow their lead."
+  },
+  {
+   "id": "sage.greet.04",
+   "resident": "sage",
+   "trigger": "greet",
+   "cond": {
+    "time": "night"
+   },
+   "ship": "1.0",
+   "text": "{cp}… still up? Even the moss is asleep."
+  },
+  {
+   "id": "sage.greet.05",
+   "resident": "sage",
+   "trigger": "greet",
+   "cond": {
+    "minLevel": 2
+   },
+   "ship": "1.0",
+   "text": "Oh, you. I'd wake up for you. I just did, in fact."
+  },
+  {
+   "id": "sage.puzzle.solved.01",
+   "resident": "sage",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Nicely done. Like each seed in its own spot."
+  },
+  {
+   "id": "sage.puzzle.solved.02",
+   "resident": "sage",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Mm. I'd have napped halfway. You didn't."
+  },
+  {
+   "id": "sage.puzzle.hard.01",
+   "resident": "sage",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "That took a while. Slow work grows deep roots."
+  },
+  {
+   "id": "sage.puzzle.hard.02",
+   "resident": "sage",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "Hard one. Here, sit in my pot. Very restful."
+  },
+  {
+   "id": "sage.return.01",
+   "resident": "sage",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "Back already? I only just woke up."
+  },
+  {
+   "id": "sage.return.02",
+   "resident": "sage",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "A new leaf came out while you were away. Look."
+  },
+  {
+   "id": "sage.season.01",
+   "resident": "sage",
+   "trigger": "season",
+   "cond": {
+    "season": "spring"
+   },
+   "ship": "1.0",
+   "text": "Spring. Everything wants to grow. Even me, a bit."
+  },
+  {
+   "id": "sage.season.02",
+   "resident": "sage",
+   "trigger": "season",
+   "cond": {
+    "season": "summer"
+   },
+   "ship": "1.0",
+   "text": "Too sunny. I'm napping in the shade of a fern."
+  },
+  {
+   "id": "sage.season.03",
+   "resident": "sage",
+   "trigger": "season",
+   "cond": {
+    "season": "autumn"
+   },
+   "ship": "1.0",
+   "text": "Seeds everywhere. Next year is already planning."
+  },
+  {
+   "id": "sage.season.04",
+   "resident": "sage",
+   "trigger": "season",
+   "cond": {
+    "season": "winter"
+   },
+   "ship": "1.0",
+   "text": "The garden is resting. So am I. It's only fair."
+  },
+  {
+   "id": "sage.request.ask.01",
+   "resident": "sage",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "plant"
+   },
+   "ship": "1.0",
+   "text": "A little plant for your windowsill? The light's good."
+  },
+  {
+   "id": "sage.request.ask.02",
+   "resident": "sage",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "rug"
+   },
+   "ship": "1.0",
+   "text": "Something soft underfoot? For… napping. Obviously."
+  },
+  {
+   "id": "sage.request.again.01",
+   "resident": "sage",
+   "trigger": "request.again",
+   "ship": "1.0",
+   "text": "Still thinking about that plant. Plants are patient."
+  },
+  {
+   "id": "sage.request.visit.01",
+   "resident": "sage",
+   "trigger": "request.visit",
+   "ship": "1.0",
+   "text": "Your plant and I are getting along. Mm. Nap time."
+  },
+  {
+   "id": "sage.letter.move_in.01",
+   "resident": "sage",
+   "trigger": "letter.move_in",
+   "ship": "1.0",
+   "text": "Mm, hello,\nAn empty pot. What grows in it is up to you.\n{cp}. — Sage"
+  },
+  {
+   "id": "sage.letter.gift.01",
+   "resident": "sage",
+   "trigger": "letter.gift",
+   "ship": "1.0",
+   "text": "Mm, hello,\nFound this while weeding. Well, while napping.\nFor your room. — Sage"
+  },
+  {
+   "id": "sage.letter.thanks.01",
+   "resident": "sage",
+   "trigger": "letter.thanks",
+   "ship": "1.0",
+   "text": "Mm, hello,\nI napped in your room. Best nap this season.\nThank you. {cp}. — Sage"
+  },
+  {
+   "id": "sage.gift.tag.01",
+   "resident": "sage",
+   "trigger": "gift.tag",
+   "ship": "1.0",
+   "text": "Mm. Another one. {cp}."
+  },
+  {
+   "id": "sage.friend.level.01",
+   "resident": "sage",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 3
+   },
+   "ship": "1.0",
+   "text": "You come back like spring does. Quietly. Good."
+  },
+  {
+   "id": "sage.friend.level.02",
+   "resident": "sage",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 5
+   },
+   "ship": "1.0",
+   "text": "I planted something for you. It'll take a while. Worth it."
+  },
+  {
+   "id": "sage.chat.01",
+   "resident": "sage",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "kuri"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Kuri brought tea. I woke up for it. Mostly."
+  },
+  {
+   "id": "sage.chat.02",
+   "resident": "sage",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "momo"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Momo hid behind my tulips again. They didn't mind."
+  },
+  {
+   "id": "sage.tap.again.01",
+   "resident": "sage",
+   "trigger": "tap.again",
+   "ship": "1.0",
+   "text": "Mm? Oh. I was resting my eyes. Both of them."
+  },
+  {
+   "id": "luna.move_in.01",
+   "resident": "luna",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Hello! Is it night yet? I'm Luna. I watch the sky."
+  },
+  {
+   "id": "luna.move_in.02",
+   "resident": "luna",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Your village has very good sky. I checked."
+  },
+  {
+   "id": "luna.greet.01",
+   "resident": "luna",
+   "trigger": "greet",
+   "cond": {
+    "time": "dawn"
+   },
+   "ship": "1.0",
+   "text": "Morning already? I was counting stars. Lost count."
+  },
+  {
+   "id": "luna.greet.02",
+   "resident": "luna",
+   "trigger": "greet",
+   "cond": {
+    "time": "day"
+   },
+   "ship": "1.0",
+   "text": "Daytime. The stars are still up there. Just shy."
+  },
+  {
+   "id": "luna.greet.03",
+   "resident": "luna",
+   "trigger": "greet",
+   "cond": {
+    "time": "dusk"
+   },
+   "ship": "1.0",
+   "text": "Dusk! The first star is always the bravest."
+  },
+  {
+   "id": "luna.greet.04",
+   "resident": "luna",
+   "trigger": "greet",
+   "cond": {
+    "time": "night"
+   },
+   "ship": "1.0",
+   "text": "{cp}! Look up. No, more up. There."
+  },
+  {
+   "id": "luna.greet.05",
+   "resident": "luna",
+   "trigger": "greet",
+   "cond": {
+    "time": "night",
+    "minLevel": 2
+   },
+   "ship": "1.0",
+   "text": "A night owl too? Let's name a star."
+  },
+  {
+   "id": "luna.puzzle.solved.01",
+   "resident": "luna",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Every lantern in place. Like a constellation!"
+  },
+  {
+   "id": "luna.puzzle.solved.02",
+   "resident": "luna",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Did you know lanterns are stars that decided to stay?"
+  },
+  {
+   "id": "luna.puzzle.hard.01",
+   "resident": "luna",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "That one had more thinking than the sky has stars."
+  },
+  {
+   "id": "luna.puzzle.hard.02",
+   "resident": "luna",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "You looked at it a long time. Like stargazing. Good."
+  },
+  {
+   "id": "luna.return.01",
+   "resident": "luna",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "The stars moved a little. You're right on time."
+  },
+  {
+   "id": "luna.return.02",
+   "resident": "luna",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "You're back! I saved you the best patch of sky."
+  },
+  {
+   "id": "luna.season.01",
+   "resident": "luna",
+   "trigger": "season",
+   "cond": {
+    "season": "spring"
+   },
+   "ship": "1.0",
+   "text": "Spring nights are soft. The stars look well rested."
+  },
+  {
+   "id": "luna.season.02",
+   "resident": "luna",
+   "trigger": "season",
+   "cond": {
+    "season": "summer"
+   },
+   "ship": "1.0",
+   "text": "Short nights. I have to stargaze very fast."
+  },
+  {
+   "id": "luna.season.03",
+   "resident": "luna",
+   "trigger": "season",
+   "cond": {
+    "season": "autumn"
+   },
+   "ship": "1.0",
+   "text": "The moon's so round tonight. We're related, I think."
+  },
+  {
+   "id": "luna.season.04",
+   "resident": "luna",
+   "trigger": "season",
+   "cond": {
+    "season": "winter"
+   },
+   "ship": "1.0",
+   "text": "Cold air makes the stars sharper. Worth the shivers."
+  },
+  {
+   "id": "luna.request.ask.01",
+   "resident": "luna",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "wall"
+   },
+   "ship": "1.0",
+   "text": "Something for your wall? A clock, so I know it's late."
+  },
+  {
+   "id": "luna.request.ask.02",
+   "resident": "luna",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "lighting"
+   },
+   "ship": "1.0",
+   "text": "A little light by your window? For the night shift."
+  },
+  {
+   "id": "luna.request.again.01",
+   "resident": "luna",
+   "trigger": "request.again",
+   "ship": "1.0",
+   "text": "Still dreaming of that wall thing. Dreams can wait."
+  },
+  {
+   "id": "luna.request.visit.01",
+   "resident": "luna",
+   "trigger": "request.visit",
+   "ship": "1.0",
+   "text": "From your window I can see three new stars. Hi, stars."
+  },
+  {
+   "id": "luna.letter.move_in.01",
+   "resident": "luna",
+   "trigger": "letter.move_in",
+   "ship": "1.0",
+   "text": "To you, under the same sky,\nThis is for counting the hours till night.\n{cp}. — Luna"
+  },
+  {
+   "id": "luna.letter.gift.01",
+   "resident": "luna",
+   "trigger": "letter.gift",
+   "ship": "1.0",
+   "text": "To you, under the same sky,\nThis fell out of the night. I think it's yours.\n— Luna"
+  },
+  {
+   "id": "luna.letter.thanks.01",
+   "resident": "luna",
+   "trigger": "letter.thanks",
+   "ship": "1.0",
+   "text": "To you, under the same sky,\nYour room is the best observatory in town.\nThank you! {cp}. — Luna"
+  },
+  {
+   "id": "luna.gift.tag.01",
+   "resident": "luna",
+   "trigger": "gift.tag",
+   "ship": "1.0",
+   "text": "Another little star. {cp}."
+  },
+  {
+   "id": "luna.friend.level.01",
+   "resident": "luna",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 3
+   },
+   "ship": "1.0",
+   "text": "I named a star after you. The small one. It tries hard."
+  },
+  {
+   "id": "luna.friend.level.02",
+   "resident": "luna",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 5
+   },
+   "ship": "1.0",
+   "text": "If you ever feel lost, find the moon. I'll be under it."
+  },
+  {
+   "id": "luna.chat.01",
+   "resident": "luna",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "yuki"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Yuki listens to snow. I listen to stars. Same thing."
+  },
+  {
+   "id": "luna.chat.02",
+   "resident": "luna",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "sage"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Sage fell asleep stargazing. That still counts."
+  },
+  {
+   "id": "luna.tap.again.01",
+   "resident": "luna",
+   "trigger": "tap.again",
+   "ship": "1.0",
+   "text": "Hm? Sorry, I was up on a cloud. Hello!"
+  },
+  {
+   "id": "pip.move_in.01",
+   "resident": "pip",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Hi hi! I'm Pip! I'm small but I cheer big! {cp}!"
+  },
+  {
+   "id": "pip.move_in.02",
+   "resident": "pip",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Is this my house? It's huge! Or I'm tiny. Both!"
+  },
+  {
+   "id": "pip.greet.01",
+   "resident": "pip",
+   "trigger": "greet",
+   "cond": {
+    "time": "dawn"
+   },
+   "ship": "1.0",
+   "text": "Morning! I'm up! I've been up for ages! {cp}!"
+  },
+  {
+   "id": "pip.greet.02",
+   "resident": "pip",
+   "trigger": "greet",
+   "cond": {
+    "time": "day"
+   },
+   "ship": "1.0",
+   "text": "Hi! I cheered for a cloud. It moved. Success!"
+  },
+  {
+   "id": "pip.greet.03",
+   "resident": "pip",
+   "trigger": "greet",
+   "cond": {
+    "time": "dusk"
+   },
+   "ship": "1.0",
+   "text": "Sunset! Good job today, sun! You did great!"
+  },
+  {
+   "id": "pip.greet.04",
+   "resident": "pip",
+   "trigger": "greet",
+   "cond": {
+    "time": "night"
+   },
+   "ship": "1.0",
+   "text": "{cp}… I'm cheering very quietly. Yay. Yay."
+  },
+  {
+   "id": "pip.greet.05",
+   "resident": "pip",
+   "trigger": "greet",
+   "cond": {
+    "minLevel": 2
+   },
+   "ship": "1.0",
+   "text": "Guess what! Nothing! But I'm happy anyway!"
+  },
+  {
+   "id": "pip.puzzle.solved.01",
+   "resident": "pip",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "You did it! {cp}! {cp}! I knew it!"
+  },
+  {
+   "id": "pip.puzzle.solved.02",
+   "resident": "pip",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Yay! Can I tell everyone? I'm telling everyone."
+  },
+  {
+   "id": "pip.puzzle.hard.01",
+   "resident": "pip",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "That was SO hard and you did it anyway!"
+  },
+  {
+   "id": "pip.puzzle.hard.02",
+   "resident": "pip",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "I cheered so hard I need a little sit."
+  },
+  {
+   "id": "pip.return.01",
+   "resident": "pip",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "You're here! {cp}! Okay. Hi. {cp}!"
+  },
+  {
+   "id": "pip.return.02",
+   "resident": "pip",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "I made up a brand-new cheer while you were out!"
+  },
+  {
+   "id": "pip.season.01",
+   "resident": "pip",
+   "trigger": "season",
+   "cond": {
+    "season": "spring"
+   },
+   "ship": "1.0",
+   "text": "Flowers! I cheered and they opened. Probably me."
+  },
+  {
+   "id": "pip.season.02",
+   "resident": "pip",
+   "trigger": "season",
+   "cond": {
+    "season": "summer"
+   },
+   "ship": "1.0",
+   "text": "Summer! Big sun! I'm a tiny sun! {cp}!"
+  },
+  {
+   "id": "pip.season.03",
+   "resident": "pip",
+   "trigger": "season",
+   "cond": {
+    "season": "autumn"
+   },
+   "ship": "1.0",
+   "text": "Leaf pile! I jumped in. Someone please find me."
+  },
+  {
+   "id": "pip.season.04",
+   "resident": "pip",
+   "trigger": "season",
+   "cond": {
+    "season": "winter"
+   },
+   "ship": "1.0",
+   "text": "Snow is cold! I'm warm! We'll work it out!"
+  },
+  {
+   "id": "pip.request.ask.01",
+   "resident": "pip",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "rug"
+   },
+   "ship": "1.0",
+   "text": "A rug for your room? Something to hop on? Please?"
+  },
+  {
+   "id": "pip.request.ask.02",
+   "resident": "pip",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "small"
+   },
+   "ship": "1.0",
+   "text": "Something little, like me? For a shelf?"
+  },
+  {
+   "id": "pip.request.again.01",
+   "resident": "pip",
+   "trigger": "request.again",
+   "ship": "1.0",
+   "text": "Rug! Rug! …That's the whole cheer. No rush!"
+  },
+  {
+   "id": "pip.request.visit.01",
+   "resident": "pip",
+   "trigger": "request.visit",
+   "ship": "1.0",
+   "text": "Your rug is perfect for hopping. {cp}! {cp}!"
+  },
+  {
+   "id": "pip.letter.move_in.01",
+   "resident": "pip",
+   "trigger": "letter.move_in",
+   "ship": "1.0",
+   "text": "HI!\nThis rug is for hopping. I tested it. A lot.\nYay! — Pip"
+  },
+  {
+   "id": "pip.letter.gift.01",
+   "resident": "pip",
+   "trigger": "letter.gift",
+   "ship": "1.0",
+   "text": "HI!\nI found a thing! It's for you! That's the letter!\n{cp}! — Pip"
+  },
+  {
+   "id": "pip.letter.thanks.01",
+   "resident": "pip",
+   "trigger": "letter.thanks",
+   "ship": "1.0",
+   "text": "HI!\nI hopped on your rug 100 times. Maybe 101.\nYou're the best! — Pip"
+  },
+  {
+   "id": "pip.gift.tag.01",
+   "resident": "pip",
+   "trigger": "gift.tag",
+   "ship": "1.0",
+   "text": "Another one! {cp}!"
+  },
+  {
+   "id": "pip.friend.level.01",
+   "resident": "pip",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 3
+   },
+   "ship": "1.0",
+   "text": "You're my favorite to cheer for. Don't tell!"
+  },
+  {
+   "id": "pip.friend.level.02",
+   "resident": "pip",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 5
+   },
+   "ship": "1.0",
+   "text": "I made a cheer just for you. It's very loud. Ready?"
+  },
+  {
+   "id": "pip.chat.01",
+   "resident": "pip",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "sage"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Sage was asleep in a pot again. I cheered quietly!"
+  },
+  {
+   "id": "pip.chat.02",
+   "resident": "pip",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "kuri"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Kuri is knitting me a hat. I keep hopping out of it."
+  },
+  {
+   "id": "pip.tap.again.01",
+   "resident": "pip",
+   "trigger": "tap.again",
+   "ship": "1.0",
+   "text": "{cp}! Oh, hi! {cp}!"
+  },
+  {
+   "id": "kuri.move_in.01",
+   "resident": "kuri",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Hello, hello. I'm Kuri. I brought tea. And yarn."
+  },
+  {
+   "id": "kuri.move_in.02",
+   "resident": "kuri",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "A fireplace! Oh, I'll be very happy here."
+  },
+  {
+   "id": "kuri.greet.01",
+   "resident": "kuri",
+   "trigger": "greet",
+   "cond": {
+    "time": "dawn"
+   },
+   "ship": "1.0",
+   "text": "Early bird? Kettle's on. {cp}"
+  },
+  {
+   "id": "kuri.greet.02",
+   "resident": "kuri",
+   "trigger": "greet",
+   "cond": {
+    "time": "day"
+   },
+   "ship": "1.0",
+   "text": "Afternoon. I'm on row forty. Or fourteen. Hm."
+  },
+  {
+   "id": "kuri.greet.03",
+   "resident": "kuri",
+   "trigger": "greet",
+   "cond": {
+    "time": "dusk"
+   },
+   "ship": "1.0",
+   "text": "Dusk. Time to light the fire and get comfy."
+  },
+  {
+   "id": "kuri.greet.04",
+   "resident": "kuri",
+   "trigger": "greet",
+   "cond": {
+    "time": "night"
+   },
+   "ship": "1.0",
+   "text": "Can't sleep? Sit by the fire. I'll keep knitting."
+  },
+  {
+   "id": "kuri.greet.05",
+   "resident": "kuri",
+   "trigger": "greet",
+   "cond": {
+    "minLevel": 2
+   },
+   "ship": "1.0",
+   "text": "I made too much soup again. Help me out?"
+  },
+  {
+   "id": "kuri.puzzle.solved.01",
+   "resident": "kuri",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Well done. That deserves a biscuit. Here."
+  },
+  {
+   "id": "kuri.puzzle.solved.02",
+   "resident": "kuri",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Neat as a good stitch. Every one in its place."
+  },
+  {
+   "id": "kuri.puzzle.hard.01",
+   "resident": "kuri",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "Hard ones deserve a warm drink. Here, take this."
+  },
+  {
+   "id": "kuri.puzzle.hard.02",
+   "resident": "kuri",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "Tangled, then sorted. Just like yarn. Lovely."
+  },
+  {
+   "id": "kuri.return.01",
+   "resident": "kuri",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "Tea's still warm. Funny how that works."
+  },
+  {
+   "id": "kuri.return.02",
+   "resident": "kuri",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "There you are. I kept your seat by the fire."
+  },
+  {
+   "id": "kuri.season.01",
+   "resident": "kuri",
+   "trigger": "season",
+   "cond": {
+    "season": "spring"
+   },
+   "ship": "1.0",
+   "text": "Spring cleaning! I found three scarves I forgot."
+  },
+  {
+   "id": "kuri.season.02",
+   "resident": "kuri",
+   "trigger": "season",
+   "cond": {
+    "season": "summer"
+   },
+   "ship": "1.0",
+   "text": "Too warm for scarves. I'm knitting one anyway."
+  },
+  {
+   "id": "kuri.season.03",
+   "resident": "kuri",
+   "trigger": "season",
+   "cond": {
+    "season": "autumn"
+   },
+   "ship": "1.0",
+   "text": "Chestnut season. My favorite. Can you tell?"
+  },
+  {
+   "id": "kuri.season.04",
+   "resident": "kuri",
+   "trigger": "season",
+   "cond": {
+    "season": "winter"
+   },
+   "ship": "1.0",
+   "text": "Cold out. Come in. I knitted the door a cozy."
+  },
+  {
+   "id": "kuri.request.ask.01",
+   "resident": "kuri",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "small"
+   },
+   "ship": "1.0",
+   "text": "A spot for my yarn in your room? A basket, a pot…"
+  },
+  {
+   "id": "kuri.request.ask.02",
+   "resident": "kuri",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "seating"
+   },
+   "ship": "1.0",
+   "text": "A chair by your window? I knit better sitting down."
+  },
+  {
+   "id": "kuri.request.again.01",
+   "resident": "kuri",
+   "trigger": "request.again",
+   "ship": "1.0",
+   "text": "About that yarn spot. No rush at all. Truly."
+  },
+  {
+   "id": "kuri.request.visit.01",
+   "resident": "kuri",
+   "trigger": "request.visit",
+   "ship": "1.0",
+   "text": "Lovely spot. I'll just knit a row or two here."
+  },
+  {
+   "id": "kuri.letter.move_in.01",
+   "resident": "kuri",
+   "trigger": "letter.move_in",
+   "ship": "1.0",
+   "text": "For you, with tea,\nA basket for odds and ends. Everyone needs one.\n{cp} — Kuri"
+  },
+  {
+   "id": "kuri.letter.gift.01",
+   "resident": "kuri",
+   "trigger": "letter.gift",
+   "ship": "1.0",
+   "text": "For you, with tea,\nI meant to knit a scarf. This happened instead.\nEnjoy! — Kuri"
+  },
+  {
+   "id": "kuri.letter.thanks.01",
+   "resident": "kuri",
+   "trigger": "letter.thanks",
+   "ship": "1.0",
+   "text": "For you, with tea,\nYour room is my favorite place to knit now.\nCome warm up anytime. — Kuri"
+  },
+  {
+   "id": "kuri.gift.tag.01",
+   "resident": "kuri",
+   "trigger": "gift.tag",
+   "ship": "1.0",
+   "text": "And one more. {cp}"
+  },
+  {
+   "id": "kuri.friend.level.01",
+   "resident": "kuri",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 3
+   },
+   "ship": "1.0",
+   "text": "I've started something in your size. {cp}"
+  },
+  {
+   "id": "kuri.friend.level.02",
+   "resident": "kuri",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 5
+   },
+   "ship": "1.0",
+   "text": "I finished it. It's a scarf. Mostly. Try it on?"
+  },
+  {
+   "id": "kuri.chat.01",
+   "resident": "kuri",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "pip"
+    ]
+   },
+   "ship": "1.1",
+   "text": "I'm knitting Pip a hat. Pip won't hold still."
+  },
+  {
+   "id": "kuri.chat.02",
+   "resident": "kuri",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "yuki"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Yuki says my fire crackles too loud. I've turned it down."
+  },
+  {
+   "id": "kuri.tap.again.01",
+   "resident": "kuri",
+   "trigger": "tap.again",
+   "ship": "1.0",
+   "text": "{cp} Oh! Dropped a stitch. Never mind. Hello!"
+  },
+  {
+   "id": "yuki.move_in.01",
+   "resident": "yuki",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "…Hi. I'm Yuki. It's quiet here. Good."
+  },
+  {
+   "id": "yuki.move_in.02",
+   "resident": "yuki",
+   "trigger": "move_in",
+   "ship": "1.0",
+   "text": "Does it snow here? …I'll wait."
+  },
+  {
+   "id": "yuki.greet.01",
+   "resident": "yuki",
+   "trigger": "greet",
+   "cond": {
+    "time": "dawn"
+   },
+   "ship": "1.0",
+   "text": "Dawn is the quietest. {cp}. Listen."
+  },
+  {
+   "id": "yuki.greet.02",
+   "resident": "yuki",
+   "trigger": "greet",
+   "cond": {
+    "time": "day"
+   },
+   "ship": "1.0",
+   "text": "Hi. …That's all. It's a nice hi, though."
+  },
+  {
+   "id": "yuki.greet.03",
+   "resident": "yuki",
+   "trigger": "greet",
+   "cond": {
+    "time": "dusk"
+   },
+   "ship": "1.0",
+   "text": "The light goes blue after sunset. My color."
+  },
+  {
+   "id": "yuki.greet.04",
+   "resident": "yuki",
+   "trigger": "greet",
+   "cond": {
+    "time": "night"
+   },
+   "ship": "1.0",
+   "text": "Night. Cold air. Stars. Enough."
+  },
+  {
+   "id": "yuki.greet.05",
+   "resident": "yuki",
+   "trigger": "greet",
+   "cond": {
+    "minLevel": 2
+   },
+   "ship": "1.0",
+   "text": "Oh. You. …I don't mind talking to you."
+  },
+  {
+   "id": "yuki.puzzle.solved.01",
+   "resident": "yuki",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Nice. Quiet and neat. Like fresh snow."
+  },
+  {
+   "id": "yuki.puzzle.solved.02",
+   "resident": "yuki",
+   "trigger": "puzzle.solved",
+   "ship": "1.0",
+   "text": "Oh. Pretty."
+  },
+  {
+   "id": "yuki.puzzle.hard.01",
+   "resident": "yuki",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "That was a hard one. You stayed calm. I saw."
+  },
+  {
+   "id": "yuki.puzzle.hard.02",
+   "resident": "yuki",
+   "trigger": "puzzle.hard",
+   "ship": "1.1",
+   "text": "Hard things go quiet at the end. Like snow."
+  },
+  {
+   "id": "yuki.return.01",
+   "resident": "yuki",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "…Oh. Hi. I'm glad."
+  },
+  {
+   "id": "yuki.return.02",
+   "resident": "yuki",
+   "trigger": "return",
+   "ship": "1.0",
+   "text": "I didn't count the days. I just looked up. You."
+  },
+  {
+   "id": "yuki.season.01",
+   "resident": "yuki",
+   "trigger": "season",
+   "cond": {
+    "season": "spring"
+   },
+   "ship": "1.0",
+   "text": "The snow's gone. I kept some in my memory. {cp}."
+  },
+  {
+   "id": "yuki.season.02",
+   "resident": "yuki",
+   "trigger": "season",
+   "cond": {
+    "season": "summer"
+   },
+   "ship": "1.0",
+   "text": "Too bright. I'll sit in the shade and think cold."
+  },
+  {
+   "id": "yuki.season.03",
+   "resident": "yuki",
+   "trigger": "season",
+   "cond": {
+    "season": "autumn"
+   },
+   "ship": "1.0",
+   "text": "The air is getting sharper. Soon, maybe."
+  },
+  {
+   "id": "yuki.season.04",
+   "resident": "yuki",
+   "trigger": "season",
+   "cond": {
+    "season": "winter"
+   },
+   "ship": "1.0",
+   "text": "Snow on every roof. The village looks asleep."
+  },
+  {
+   "id": "yuki.event.first_snow.01",
+   "resident": "yuki",
+   "trigger": "event.first_snow",
+   "ship": "1.0",
+   "text": "It's snowing. …{cp}. Don't say anything. Just look."
+  },
+  {
+   "id": "yuki.request.ask.01",
+   "resident": "yuki",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "bed"
+   },
+   "ship": "1.0",
+   "text": "A small bed in your room? I nap where it's quiet."
+  },
+  {
+   "id": "yuki.request.ask.02",
+   "resident": "yuki",
+   "trigger": "request.ask",
+   "cond": {
+    "category": "storage"
+   },
+   "ship": "1.0",
+   "text": "A shelf? For quiet things. Books, mostly."
+  },
+  {
+   "id": "yuki.request.again.01",
+   "resident": "yuki",
+   "trigger": "request.again",
+   "ship": "1.0",
+   "text": "The bed. …Whenever. I can wait."
+  },
+  {
+   "id": "yuki.request.visit.01",
+   "resident": "yuki",
+   "trigger": "request.visit",
+   "ship": "1.0",
+   "text": "It's quiet in here. …Thank you."
+  },
+  {
+   "id": "yuki.letter.move_in.01",
+   "resident": "yuki",
+   "trigger": "letter.move_in",
+   "ship": "1.0",
+   "text": "Hi.\nThis is for your window. It stays cold-looking.\n{cp}. — Yuki"
+  },
+  {
+   "id": "yuki.letter.gift.01",
+   "resident": "yuki",
+   "trigger": "letter.gift",
+   "ship": "1.0",
+   "text": "Hi.\nFound this in the snow. It wasn't cold.\nFor you. — Yuki"
+  },
+  {
+   "id": "yuki.letter.thanks.01",
+   "resident": "yuki",
+   "trigger": "letter.thanks",
+   "ship": "1.0",
+   "text": "Hi.\nI slept in your room. No noise at all.\nThank you. {cp}. — Yuki"
+  },
+  {
+   "id": "yuki.gift.tag.01",
+   "resident": "yuki",
+   "trigger": "gift.tag",
+   "ship": "1.0",
+   "text": "One more. {cp}."
+  },
+  {
+   "id": "yuki.friend.level.01",
+   "resident": "yuki",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 3
+   },
+   "ship": "1.0",
+   "text": "I saved a snowflake for you. …It melted. Sorry."
+  },
+  {
+   "id": "yuki.friend.level.02",
+   "resident": "yuki",
+   "trigger": "friend.level",
+   "cond": {
+    "level": 5
+   },
+   "ship": "1.0",
+   "text": "When it snows next, sit with me. No talking needed."
+  },
+  {
+   "id": "yuki.chat.01",
+   "resident": "yuki",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "kuri"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Kuri gave me a scarf. I'm not cold. I wear it."
+  },
+  {
+   "id": "yuki.chat.02",
+   "resident": "yuki",
+   "trigger": "chat",
+   "cond": {
+    "requires": [
+     "luna"
+    ]
+   },
+   "ship": "1.1",
+   "text": "Luna talks a lot. About stars. I don't mind."
+  },
+  {
+   "id": "yuki.tap.again.01",
+   "resident": "yuki",
+   "trigger": "tap.again",
+   "ship": "1.0",
+   "text": "{cp}… oh. It's you. Okay."
+  }
+ ]
+}

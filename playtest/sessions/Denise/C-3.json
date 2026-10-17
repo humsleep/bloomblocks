@@ -1,0 +1,119 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "C",
+  "index": 3,
+  "date": null,
+  "seedKey": null,
+  "levelId": 3,
+  "tag": "hard",
+  "level": {
+    "w": 5,
+    "h": 5,
+    "budget": 7,
+    "rows": [
+      "..#..",
+      "#..#.",
+      ".....",
+      ".#..#",
+      "..#.."
+    ]
+  },
+  "lanterns": [
+    "A1",
+    "E1",
+    "B2",
+    "C3",
+    "A5",
+    "D5"
+  ],
+  "history": [
+    "C3",
+    "A1",
+    "E1",
+    "B2",
+    "A5",
+    "D5"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:36:29.767Z",
+  "completedAt": "2026-10-12T16:36:46.845Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:36:29.772Z",
+      "ms": 5,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:36:39.985Z",
+      "ms": 10218,
+      "cmd": "move",
+      "cell": "C3",
+      "result": "placed",
+      "used": 1,
+      "lit": 7,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:36:40.994Z",
+      "ms": 11227,
+      "cmd": "move",
+      "cell": "A1",
+      "result": "placed",
+      "used": 2,
+      "lit": 9,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:36:41.844Z",
+      "ms": 12077,
+      "cmd": "move",
+      "cell": "E1",
+      "result": "placed",
+      "used": 3,
+      "lit": 12,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:36:46.215Z",
+      "ms": 16448,
+      "cmd": "move",
+      "cell": "B2",
+      "result": "placed",
+      "used": 4,
+      "lit": 13,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:36:46.529Z",
+      "ms": 16762,
+      "cmd": "move",
+      "cell": "A5",
+      "result": "placed",
+      "used": 5,
+      "lit": 16,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:36:46.847Z",
+      "ms": 17080,
+      "cmd": "move",
+      "cell": "D5",
+      "result": "placed",
+      "used": 6,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

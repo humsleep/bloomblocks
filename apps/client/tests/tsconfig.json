@@ -1,0 +1,8 @@
+{
+  "//": "Type-checks the client tests, fakes, e2e specs and the test configs with the app's strictness.",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"]
+  },
+  "include": ["./**/*.ts", "../e2e/**/*.ts", "../vitest.config.ts", "../playwright.config.ts", "../src/**/*.ts", "../vite.config.ts"]
+}

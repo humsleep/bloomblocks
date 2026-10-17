@@ -1,0 +1,9 @@
+2026-10-16 16:12:09.339 App[51863:4309294] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///private/var/mobile/Containers/Data/Application/C1EF60EB-27C3-4592-A352-45E209FD3770/Library/Cookies/Cookies.binarycookies
+2026-10-16 16:12:09.369 App[51863:4309294] [safe] insets top=59 bottom=34
+2026-10-16 16:12:21.866 App[51863:4309294] <UMP SDK> To enable debug mode for this device, set: UMPDebugSettings.testDeviceIdentifiers = @[ @"D5BB175F-8ABD-4F4E-B2DA-01BAC84AA0F0" ];
+16:12:09  Acquired tunnel connection to device.
+16:12:09  Enabling developer disk image services.
+16:12:09  Acquired usage assertion.
+Launched application with com.humsleep.duskwick bundle identifier.
+Waiting for the application to terminate...
+App terminated due to signal 15.

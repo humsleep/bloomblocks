@@ -1,0 +1,12 @@
+node_modules/
+sim/out/
+coverage/
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# 재생성 가능한 대용량 산출물(GitHub 용량 한도)
+playtest/shots/
+*.trace/
+graphify-out/

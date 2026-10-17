@@ -1,0 +1,94 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "garden6-abandoned",
+  "levelId": 4026531843,
+  "level": {
+    "rows": [
+      "..#...",
+      "......",
+      ".#..#.",
+      "......",
+      "...#..",
+      "#....."
+    ],
+    "budget": 6
+  },
+  "mode": 2,
+  "flags": 0,
+  "seedKey": "lanterns:bud:garden6",
+  "moves": "1529152b1b",
+  "seed": "aa0e05a55a98dc2bc8f181ee4b5fbf39",
+  "initialStateBytes": "0606060004001200080100000000000000000000",
+  "initialStateHash": "afe06fc2",
+  "perMoveHashes": [
+    "3a9f6ee2",
+    "bcd2084c",
+    "3213092c",
+    "2948a384",
+    "7017acec"
+  ],
+  "perMoveStateBytes": [
+    "0606060004001200080100000000200000000000",
+    "0606060004001200080100000000200000020000",
+    "0606060004001200080100000000000000020000",
+    "06060600040012000801000000000000000a0000",
+    "06060600040012000801000000000008000a0000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "20202020",
+        "hi": "00002020"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "22202020",
+        "hi": "00003e22"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "02000000",
+        "hi": "00003e02"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "02000000",
+        "hi": "00003e02"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "3f080808",
+        "hi": "00003e02"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 3,
+      "complete": false
+    }
+  ],
+  "final": {
+    "stateHash": "7017acec",
+    "complete": false,
+    "lanternsUsed": 3,
+    "conflicts": 2,
+    "lit": 15
+  },
+  "runBin": "504c01010200aa0e05a55a98dc2bc8f181ee4b5fbf39030000f00500ecac17701529152b1b7c12aec8"
+}

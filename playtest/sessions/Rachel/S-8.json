@@ -1,0 +1,130 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "S",
+  "index": 8,
+  "date": null,
+  "seedKey": null,
+  "levelId": 8,
+  "tag": "hard",
+  "level": {
+    "w": 6,
+    "h": 6,
+    "budget": 6,
+    "rows": [
+      "..#...",
+      "....#.",
+      ".##...",
+      "...##.",
+      ".#....",
+      "...#.."
+    ]
+  },
+  "lanterns": [
+    "F1",
+    "B2",
+    "D3",
+    "A4",
+    "E5",
+    "B6"
+  ],
+  "history": [
+    "E5",
+    "B2",
+    "F1",
+    "D3",
+    "A4",
+    "B6"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:40:33.671Z",
+  "completedAt": "2026-10-12T16:40:57.411Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:40:33.678Z",
+      "ms": 7,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:55.774Z",
+      "ms": 22103,
+      "cmd": "move",
+      "cell": "E5",
+      "result": "placed",
+      "used": 1,
+      "lit": 5,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:56.101Z",
+      "ms": 22430,
+      "cmd": "move",
+      "cell": "B2",
+      "result": "placed",
+      "used": 2,
+      "lit": 10,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:56.435Z",
+      "ms": 22764,
+      "cmd": "move",
+      "cell": "F1",
+      "result": "placed",
+      "used": 3,
+      "lit": 17,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:56.763Z",
+      "ms": 23092,
+      "cmd": "move",
+      "cell": "D3",
+      "result": "placed",
+      "used": 4,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:57.088Z",
+      "ms": 23417,
+      "cmd": "move",
+      "cell": "A4",
+      "result": "placed",
+      "used": 5,
+      "lit": 26,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:40:57.412Z",
+      "ms": 23741,
+      "cmd": "move",
+      "cell": "B6",
+      "result": "placed",
+      "used": 6,
+      "lit": 28,
+      "conflicts": 0,
+      "complete": true
+    },
+    {
+      "t": "2026-10-12T16:40:57.738Z",
+      "ms": 24067,
+      "cmd": "show",
+      "result": "shown",
+      "used": 6,
+      "lit": 28,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

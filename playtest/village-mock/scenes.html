@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face { font-family: Fredoka; font-weight: 400; src: url(../../apps/client/node_modules/@fontsource/fredoka/files/fredoka-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: Fredoka; font-weight: 500; src: url(../../apps/client/node_modules/@fontsource/fredoka/files/fredoka-latin-500-normal.woff2) format("woff2"); }
+  @font-face { font-family: Fredoka; font-weight: 600; src: url(../../apps/client/public/fonts/fredoka-latin-600-normal.woff2) format("woff2"); }
+  html, body { margin: 0; background: #14112A; }
+  #root { line-height: 0; display: inline-block; }
+</style>
+<script src="kit.js"></script>
+<script src="../cute-mock/wick2.js"></script>
+<script src="furniture.js"></script>
+<script src="pilot6.js"></script>
+<script src="scenes.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const view = q.get("view") || "pilot";
+const DPR = +(q.get("dpr") || 3);
+(async () => {
+  try {
+    await Promise.all(["400", "500", "600"].map((w) => document.fonts.load(w + " 20px Fredoka")));
+    await document.fonts.load("20px Noteworthy").catch(() => undefined);
+    await document.fonts.ready;
+    window.Kit.DPR = DPR;
+    const sc = window.Scenes[view];
+    const c = document.createElement("canvas");
+    c.width = Math.round(sc.w * DPR);
+    c.height = Math.round(sc.h * DPR);
+    c.style.width = sc.w + "px";
+    c.style.height = sc.h + "px";
+    document.getElementById("root").appendChild(c);
+    const ctx = c.getContext("2d");
+    ctx.scale(DPR, DPR);
+    await sc.draw(ctx, sc.w, sc.h);
+  } catch (e) {
+    console.error(e);
+    document.body.dataset.err = String(e && e.stack || e);
+  }
+  document.body.dataset.ready = "1";
+})();
+</script>
+</body>
+</html>

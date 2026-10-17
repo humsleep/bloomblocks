@@ -1,0 +1,116 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "C",
+  "index": 3,
+  "date": null,
+  "seedKey": null,
+  "levelId": 3,
+  "tag": "hard",
+  "level": {
+    "w": 5,
+    "h": 5,
+    "budget": 7,
+    "rows": [
+      "..#..",
+      "#..#.",
+      ".....",
+      ".#..#",
+      "..#.."
+    ]
+  },
+  "lanterns": [
+    "B1",
+    "E1",
+    "C3",
+    "A5",
+    "D5"
+  ],
+  "history": [
+    "C3",
+    "B1",
+    "E1",
+    "A5",
+    "D5"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:38:31.114Z",
+  "completedAt": "2026-10-12T16:38:46.505Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:38:31.117Z",
+      "ms": 3,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:42.223Z",
+      "ms": 11109,
+      "cmd": "move",
+      "cell": "C3",
+      "result": "placed",
+      "used": 1,
+      "lit": 7,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:43.476Z",
+      "ms": 12362,
+      "cmd": "move",
+      "cell": "B1",
+      "result": "placed",
+      "used": 2,
+      "lit": 10,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:44.663Z",
+      "ms": 13549,
+      "cmd": "move",
+      "cell": "E1",
+      "result": "placed",
+      "used": 3,
+      "lit": 13,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:45.774Z",
+      "ms": 14660,
+      "cmd": "move",
+      "cell": "A5",
+      "result": "placed",
+      "used": 4,
+      "lit": 16,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:38:46.514Z",
+      "ms": 15400,
+      "cmd": "move",
+      "cell": "D5",
+      "result": "placed",
+      "used": 5,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": true
+    },
+    {
+      "t": "2026-10-12T16:38:47.366Z",
+      "ms": 16252,
+      "cmd": "show",
+      "result": "shown",
+      "used": 5,
+      "lit": 19,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

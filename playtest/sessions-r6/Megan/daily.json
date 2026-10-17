@@ -1,0 +1,218 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "daily",
+  "variant": "J",
+  "index": null,
+  "date": "2026-11-12",
+  "seedKey": null,
+  "levelId": 20261112,
+  "tag": "daily",
+  "level": {
+    "w": 6,
+    "h": 6,
+    "budget": null,
+    "rows": [
+      ".2.0.#",
+      "...2..",
+      "....3.",
+      ".#....",
+      "..#...",
+      "#.1.#."
+    ]
+  },
+  "lanterns": [
+    "A1",
+    "B2",
+    "E2",
+    "D3",
+    "F3",
+    "C4",
+    "E5",
+    "B6"
+  ],
+  "history": [
+    "A1",
+    "B2",
+    "E2",
+    "D3",
+    "B6",
+    "C4",
+    "F3",
+    "E5"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-15T09:36:29.493Z",
+  "completedAt": "2026-10-15T09:36:50.157Z",
+  "actions": [
+    {
+      "t": "2026-10-15T09:36:29.496Z",
+      "ms": 3,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:47.859Z",
+      "ms": 18366,
+      "cmd": "move",
+      "cell": "A1",
+      "result": "placed",
+      "used": 1,
+      "lit": 5,
+      "conflicts": 0,
+      "stones": {
+        "ok": 1,
+        "under": 4,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:48.151Z",
+      "ms": 18658,
+      "cmd": "move",
+      "cell": "B2",
+      "result": "placed",
+      "used": 2,
+      "lit": 8,
+      "conflicts": 0,
+      "stones": {
+        "ok": 2,
+        "under": 3,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:48.451Z",
+      "ms": 18958,
+      "cmd": "move",
+      "cell": "E2",
+      "result": "placed",
+      "used": 3,
+      "lit": 11,
+      "conflicts": 0,
+      "stones": {
+        "ok": 2,
+        "under": 3,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:48.746Z",
+      "ms": 19253,
+      "cmd": "move",
+      "cell": "D3",
+      "result": "placed",
+      "used": 4,
+      "lit": 16,
+      "conflicts": 0,
+      "stones": {
+        "ok": 3,
+        "under": 2,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:49.100Z",
+      "ms": 19607,
+      "cmd": "move",
+      "cell": "B6",
+      "result": "placed",
+      "used": 5,
+      "lit": 18,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 1,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:49.507Z",
+      "ms": 20014,
+      "cmd": "move",
+      "cell": "C4",
+      "result": "placed",
+      "used": 6,
+      "lit": 22,
+      "conflicts": 0,
+      "stones": {
+        "ok": 4,
+        "under": 1,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:49.863Z",
+      "ms": 20370,
+      "cmd": "move",
+      "cell": "F3",
+      "result": "placed",
+      "used": 7,
+      "lit": 25,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-15T09:36:50.160Z",
+      "ms": 20667,
+      "cmd": "move",
+      "cell": "E5",
+      "result": "placed",
+      "used": 8,
+      "lit": 26,
+      "conflicts": 0,
+      "stones": {
+        "ok": 5,
+        "under": 0,
+        "over": 0,
+        "blocked": 0
+      },
+      "dead": 0,
+      "stuckNumbers": 0,
+      "complete": true
+    }
+  ]
+}

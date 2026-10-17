@@ -1,0 +1,6 @@
+{
+  "//": "THE one place for app identity. capacitor.config.ts reads it; `npm run ios:sync` regenerates ios/identity.xcconfig from it (Xcode reads APP_BUNDLE_ID / APP_TEAM_ID / APP_DISPLAY_NAME from there); the scripts read bundleId from it. Internal save/storage names (Library/lanternly/, lanternly.perf) intentionally stay as they were. The App Store record for this bundle id is not created yet (developer's own account action).",
+  "bundleId": "com.humsleep.duskwick",
+  "appName": "Duskwick",
+  "teamId": "68BP5NY48R"
+}

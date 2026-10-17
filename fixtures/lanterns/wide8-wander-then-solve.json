@@ -1,0 +1,371 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "wide8-wander-then-solve",
+  "levelId": 4026531845,
+  "level": {
+    "rows": [
+      "..#.....",
+      "......#.",
+      ".#......",
+      "........",
+      "...#..#.",
+      "........",
+      ".#...#.#",
+      "........"
+    ],
+    "budget": 8
+  },
+  "mode": 1,
+  "flags": 0,
+  "seedKey": "lanterns:daily:2026-10-12",
+  "moves": "1a07030a0912121517140f1f0307090a0f1415171a1f2034093f03151f2e",
+  "seed": "3b043059a9fdd435a0472a3974a08bde",
+  "initialStateBytes": "08080800044002004800a2000000000000000000",
+  "initialStateHash": "0720a361",
+  "perMoveHashes": [
+    "21bdc26d",
+    "d26d52ed",
+    "bd784bf5",
+    "599381c9",
+    "f0e8c7d3",
+    "34cb2607",
+    "f0e8c7d3",
+    "7ba7c6f3",
+    "50abca73",
+    "8b4c4ae3",
+    "0bf2c163",
+    "b84edfe3",
+    "acadf1fb",
+    "4e9b187b",
+    "1708d511",
+    "5e64db5d",
+    "850627dd",
+    "bfa6a84d",
+    "a31de46d",
+    "7561a3ed",
+    "5ac484e1",
+    "0720a361",
+    "b6f46450",
+    "56ccbdc0",
+    "ae7150ea",
+    "2e70876a",
+    "592dc652",
+    "e3eb3272",
+    "9048e3f2",
+    "d69a7e32"
+  ],
+  "perMoveStateBytes": [
+    "08080800044002004800a2000000000400000000",
+    "08080800044002004800a2008000000400000000",
+    "08080800044002004800a2008800000400000000",
+    "08080800044002004800a2008804000400000000",
+    "08080800044002004800a2008806000400000000",
+    "08080800044002004800a2008806040400000000",
+    "08080800044002004800a2008806000400000000",
+    "08080800044002004800a2008806200400000000",
+    "08080800044002004800a2008806a00400000000",
+    "08080800044002004800a2008806b00400000000",
+    "08080800044002004800a2008886b00400000000",
+    "08080800044002004800a2008886b08400000000",
+    "08080800044002004800a2008086b08400000000",
+    "08080800044002004800a2000086b08400000000",
+    "08080800044002004800a2000084b08400000000",
+    "08080800044002004800a2000080b08400000000",
+    "08080800044002004800a2000000b08400000000",
+    "08080800044002004800a2000000a08400000000",
+    "08080800044002004800a2000000808400000000",
+    "08080800044002004800a2000000008400000000",
+    "08080800044002004800a2000000008000000000",
+    "08080800044002004800a2000000000000000000",
+    "08080800044002004800a2000000000001000000",
+    "08080800044002004800a2000000000001001000",
+    "08080800044002004800a2000002000001001000",
+    "08080800044002004800a2000002000001001080",
+    "08080800044002004800a2000802000001001080",
+    "08080800044002004800a2000802200001001080",
+    "08080800044002004800a2000802208001001080",
+    "08080800044002004800a2000802208001401080"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "ff040400",
+        "hi": "04040404"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8484f8",
+        "hi": "04048484"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8c8cf8",
+        "hi": "04048484"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8cbff8",
+        "hi": "04048484"
+      },
+      "conflicts": 4,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8cbffa",
+        "hi": "04048484"
+      },
+      "conflicts": 5,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "04048484"
+      },
+      "conflicts": 6,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8cbffa",
+        "hi": "04048484"
+      },
+      "conflicts": 5,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "0404a4a4"
+      },
+      "conflicts": 5,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "0404a4a4"
+      },
+      "conflicts": 7,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 8,
+      "lanternsUsed": 8,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 9,
+      "lanternsUsed": 9,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 10,
+      "lanternsUsed": 10,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 9,
+      "lanternsUsed": 9,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbfb2",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 8,
+      "lanternsUsed": 8,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbfb0",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 7,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcb4b0",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 6,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcb4b0",
+        "hi": "1414b4b4"
+      },
+      "conflicts": 5,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffca4a0",
+        "hi": "0404a4a4"
+      },
+      "conflicts": 4,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffc8480",
+        "hi": "04048484"
+      },
+      "conflicts": 3,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff848480",
+        "hi": "04048484"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff808080",
+        "hi": "00008080"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "00000000",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 0,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "01010101",
+        "hi": "01010107"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "11111111",
+        "hi": "111d1117"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "11113f13",
+        "hi": "111d1117"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "11113f13",
+        "hi": "ff1d1117"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "19193ffb",
+        "hi": "ff1d1117"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "39fd3ffb",
+        "hi": "ff1d3137"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffdbffb",
+        "hi": "ff1db1b7"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffdbffb",
+        "hi": "ff5dffb7"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 8,
+      "complete": true
+    }
+  ],
+  "final": {
+    "stateHash": "d69a7e32",
+    "complete": true,
+    "lanternsUsed": 8,
+    "conflicts": 0,
+    "lit": 56
+  },
+  "runBin": "504c010101003b043059a9fdd435a0472a3974a08bde050000f01e00327e9ad61a07030a0912121517140f1f0307090a0f1415171a1f2034093f03151f2e05f20fbb"
+}

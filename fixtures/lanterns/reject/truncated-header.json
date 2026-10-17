@@ -1,0 +1,19 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "truncated-header",
+  "description": "only the first 20 bytes",
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 4
+  },
+  "runBin": "504c010100003e8be1ad2bc56a7dc857aeda683b",
+  "expectedCode": "length"
+}

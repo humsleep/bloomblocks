@@ -1,0 +1,3 @@
+/* Duskwick — localized Info.plist strings (de). Keep in sync with Info.plist (en is the source). */
+"CFBundleDisplayName" = "Duskwick";
+"NSUserTrackingUsageDescription" = "Diese Kennung wird nur verwendet, um dir passendere Werbung zu zeigen. Duskwick funktioniert genauso, wenn du es nicht erlaubst, und du kannst es jederzeit in den Einstellungen ändern.";

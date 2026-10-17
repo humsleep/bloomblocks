@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  App-level manifest = the app's OWN code only (Capacitor shell + web bundle, no network calls).
+  Ad-related collection, including DeviceID used for tracking, is declared by Google Mobile Ads
+  13.11.0's own bundled manifest (and UMP's); Xcode merges every bundle's manifest into the
+  privacy report, so the entries are not duplicated here.
+  NSPrivacyTracking=false + no NSPrivacyTrackingDomains key: the app's code contacts no tracking
+  domain, and Apple TN3181 calls true + an empty domain list an invalid manifest (ITMS-91064).
+  The App Store Connect "App Privacy" answers (tracking = Yes for Device ID) are in README.md.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

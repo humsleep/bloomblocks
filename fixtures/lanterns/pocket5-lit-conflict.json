@@ -1,0 +1,93 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "pocket5-lit-conflict",
+  "levelId": 4026531841,
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 5
+  },
+  "mode": 0,
+  "flags": 0,
+  "seedKey": "lanterns:free:pocket5-lit-conflict",
+  "moves": "1404111a20",
+  "seed": "312f6d232769a4c1b1bb43a79cb95dbf",
+  "initialStateBytes": "0505050002080002080000000000000000000000",
+  "initialStateHash": "df3f611e",
+  "perMoveHashes": [
+    "a49ee0ae",
+    "43c9ef7e",
+    "4b1dff8c",
+    "3080e080",
+    "80ad1f91"
+  ],
+  "perMoveStateBytes": [
+    "0505050002080002080000000000100000000000",
+    "0505050002080002080000001000100000000000",
+    "0505050002080002080000001000120000000000",
+    "0505050002080002080000001000120400000000",
+    "0505050002080002080000001000120401000000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "101f1010",
+        "hi": "00000010"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "101f101c",
+        "hi": "00000010"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "101f121c",
+        "hi": "00000010"
+      },
+      "conflicts": 3,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1c1f161c",
+        "hi": "00000014"
+      },
+      "conflicts": 3,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f171d",
+        "hi": "00000017"
+      },
+      "conflicts": 3,
+      "lanternsUsed": 5,
+      "complete": false
+    }
+  ],
+  "final": {
+    "stateHash": "80ad1f91",
+    "complete": false,
+    "lanternsUsed": 5,
+    "conflicts": 3,
+    "lit": 21
+  },
+  "runBin": "504c01010000312f6d232769a4c1b1bb43a79cb95dbf010000f00500911fad801404111a20869f708e"
+}

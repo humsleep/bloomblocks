@@ -1,0 +1,69 @@
+<!doctype html>
+<!-- Duskwick daily landing (docs/web/README.md). Served at /duskwick/ AND, copied as the site's
+     root 404.html, for /duskwick/<n> (GitHub Pages has no per-day pages until the web daily ships).
+     No cookies, no analytics, no external requests. Set APP_STORE_URL once the App Store record exists. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Duskwick — today's lantern puzzle</title>
+<meta name="description" content="Duskwick: a calm lantern logic puzzle. A new puzzle every day.">
+<meta property="og:title" content="Duskwick — today's lantern puzzle">
+<meta property="og:description" content="A calm lantern logic puzzle. A new one every day.">
+<meta name="theme-color" content="#141A33">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
+    background: linear-gradient(#141A33, #2B2350 55%, #5B4470 85%, #C97B84); color: #F4EBD0;
+    display: flex; align-items: center; justify-content: center; padding: 24px 16px; text-align: center; }
+  main { max-width: 420px; width: 100%; }
+  .card { background: #FFF3DE; color: #3B2C45; border-radius: 22px; padding: 28px 22px 24px; box-shadow: 0 18px 50px rgba(10,8,30,.45); }
+  h1 { font-size: 28px; margin: 12px 0 4px; }
+  p { font-size: 17px; line-height: 1.45; margin: 8px 0; }
+  .num { color: #6A5A76; font-size: 15px; letter-spacing: .04em; }
+  a.btn { display: block; margin: 18px 0 0; padding: 15px 18px; border-radius: 999px; font-weight: 700; font-size: 18px; text-decoration: none;
+    background: #FFC864; color: #3B2C45; box-shadow: 0 4px 0 #D9983F; }
+  a.alt { display: inline-block; margin-top: 14px; color: #6A5A76; font-size: 15px; }
+  .soon { margin-top: 18px; padding: 14px; border-radius: 16px; background: #F3E3C8; font-weight: 600; }
+  footer { margin-top: 18px; font-size: 13px; opacity: .75; }
+</style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <svg width="84" height="104" viewBox="0 0 84 104" aria-hidden="true">
+      <path d="M26 22 C26 6 58 6 58 22" fill="none" stroke="#4A3328" stroke-width="6" stroke-linecap="round"/>
+      <rect x="14" y="20" width="56" height="10" rx="4" fill="#6E4C38"/>
+      <rect x="18" y="30" width="48" height="56" rx="18" fill="#FFE6B8" stroke="#F4B96E" stroke-width="2"/>
+      <circle cx="35" cy="60" r="3.2" fill="#3B2C45"/><circle cx="49" cy="60" r="3.2" fill="#3B2C45"/>
+      <ellipse cx="29" cy="67" rx="4.5" ry="2.5" fill="#F28C8C" opacity=".75"/><ellipse cx="55" cy="67" rx="4.5" ry="2.5" fill="#F28C8C" opacity=".75"/>
+      <path d="M40 66 Q42 68.5 44 66" fill="none" stroke="#3B2C45" stroke-width="2" stroke-linecap="round"/>
+      <rect x="14" y="86" width="56" height="10" rx="4" fill="#6E4C38"/>
+    </svg>
+    <h1>Duskwick</h1>
+    <div class="num" id="num">Today's lantern puzzle</div>
+    <p>A calm lantern logic puzzle. Light every tile — a new puzzle every day.</p>
+    <a class="btn" id="store" href="#" hidden>Get Duskwick on the App Store</a>
+    <div class="soon" id="soon">Coming soon to the App Store.</div>
+    <a class="alt" id="open" href="duskwick://daily">Already have Duskwick? Open today's puzzle</a>
+  </div>
+  <footer>No account, no tracking on this page.</footer>
+</main>
+<script>
+  // Fill in after the App Store record exists, e.g. "https://apps.apple.com/app/id0000000000?pt=…&ct=web_daily".
+  var APP_STORE_URL = "";
+  var m = location.pathname.match(/\/duskwick\/(\d{1,5})\/?$/);
+  if (m) {
+    document.getElementById("num").textContent = "Daily #" + Number(m[1]);
+    document.getElementById("open").href = "duskwick://daily/" + Number(m[1]);
+  }
+  if (APP_STORE_URL) {
+    var s = document.getElementById("store");
+    s.href = APP_STORE_URL;
+    s.hidden = false;
+    document.getElementById("soon").hidden = true;
+  }
+</script>
+</body>
+</html>

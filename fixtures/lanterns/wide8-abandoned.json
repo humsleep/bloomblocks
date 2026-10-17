@@ -1,0 +1,96 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "wide8-abandoned",
+  "levelId": 4026531845,
+  "level": {
+    "rows": [
+      "..#.....",
+      "......#.",
+      ".#......",
+      "........",
+      "...#..#.",
+      "........",
+      ".#...#.#",
+      "........"
+    ],
+    "budget": 8
+  },
+  "mode": 2,
+  "flags": 0,
+  "seedKey": "lanterns:bud:wide8",
+  "moves": "1a07030a09",
+  "seed": "51f35f491fc7bafeb48d3f1417bb95ee",
+  "initialStateBytes": "08080800044002004800a2000000000000000000",
+  "initialStateHash": "0720a361",
+  "perMoveHashes": [
+    "21bdc26d",
+    "d26d52ed",
+    "bd784bf5",
+    "599381c9",
+    "f0e8c7d3"
+  ],
+  "perMoveStateBytes": [
+    "08080800044002004800a2000000000400000000",
+    "08080800044002004800a2008000000400000000",
+    "08080800044002004800a2008800000400000000",
+    "08080800044002004800a2008804000400000000",
+    "08080800044002004800a2008806000400000000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "ff040400",
+        "hi": "04040404"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8484f8",
+        "hi": "04048484"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8c8cf8",
+        "hi": "04048484"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8cbff8",
+        "hi": "04048484"
+      },
+      "conflicts": 4,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "ff8cbffa",
+        "hi": "04048484"
+      },
+      "conflicts": 5,
+      "lanternsUsed": 5,
+      "complete": false
+    }
+  ],
+  "final": {
+    "stateHash": "f0e8c7d3",
+    "complete": false,
+    "lanternsUsed": 5,
+    "conflicts": 5,
+    "lit": 30
+  },
+  "runBin": "504c0101020051f35f491fc7bafeb48d3f1417bb95ee050000f00500d3c7e8f01a07030a09c54a83e1"
+}

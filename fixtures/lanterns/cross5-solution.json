@@ -1,0 +1,93 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "cross5-solution",
+  "levelId": 4026531842,
+  "level": {
+    "rows": [
+      "..#..",
+      ".....",
+      "#...#",
+      ".....",
+      "..#.."
+    ],
+    "budget": 5
+  },
+  "mode": 0,
+  "flags": 0,
+  "seedKey": "lanterns:free:cross5",
+  "moves": "04081a2123",
+  "seed": "390e693a0f30969ea6ee36cfcd5bcfa0",
+  "initialStateBytes": "0505050004001100040000000000000000000000",
+  "initialStateHash": "c6cc7973",
+  "perMoveHashes": [
+    "f0b68763",
+    "bc612a68",
+    "d6fe4974",
+    "7756c796",
+    "f8b8c01e"
+  ],
+  "perMoveStateBytes": [
+    "0505050004001100040000001000000000000000",
+    "0505050004001100040000001001000000000000",
+    "0505050004001100040000001001000400000000",
+    "0505050004001100040000001001000402000000",
+    "050505000400110004000000100100040a000000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "00001018",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "00001f19",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1f041f19",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1f061f1b",
+        "hi": "00000003"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1f0e1f1b",
+        "hi": "0000001b"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 5,
+      "complete": true
+    }
+  ],
+  "final": {
+    "stateHash": "f8b8c01e",
+    "complete": true,
+    "lanternsUsed": 5,
+    "conflicts": 0,
+    "lit": 21
+  },
+  "runBin": "504c01010000390e693a0f30969ea6ee36cfcd5bcfa0020000f005001ec0b8f804081a2123f6442fbe"
+}

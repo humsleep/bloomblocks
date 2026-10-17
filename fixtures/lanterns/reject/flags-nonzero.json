@@ -1,0 +1,19 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "flags-nonzero",
+  "description": "flags = 1 in formatVersion 1 (CRC recomputed)",
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 4
+  },
+  "runBin": "504c010100013e8be1ad2bc56a7dc857aeda683bfc54010000f00400044bb7d404111a208172195f",
+  "expectedCode": "flags"
+}

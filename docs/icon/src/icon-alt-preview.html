@@ -1,0 +1,82 @@
+<!doctype html><html><head><meta charset=utf-8>
+<!-- Alt icon preview: current (C3) vs B "Wick in the lantern".
+     render: node docs/icon/src/render.mjs --html $PWD/docs/icon/src/icon-alt-preview.html playtest/shots/v13-share/icon-alt-wick-preview.png 1600 1180 -->
+<style>
+body{margin:0;width:1600px;background:#16182C;color:#F4EBD0;font:15px -apple-system,Helvetica,sans-serif}
+h1{font-size:26px;font-weight:700;margin:34px 48px 4px}
+.sub{margin:0 48px 22px;opacity:.6;font-size:14px}
+.big{display:flex;gap:56px;padding:0 48px}
+.col{display:flex;flex-direction:column;gap:12px}
+.lab{font-size:17px;font-weight:600}
+.lab small{font-weight:400;opacity:.6;margin-left:6px}
+.ic{border-radius:22.37%;overflow:hidden;flex:none;position:relative}
+.ic img{display:block;width:100%;height:100%}
+.vars{display:flex;gap:20px;align-items:flex-end;margin-top:2px}
+.v{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;opacity:.85}
+.dk{background:linear-gradient(#2C2C30,#0E0E10)}
+.tn{background:#0B0B0C;isolation:isolate}
+.tn img{filter:grayscale(1)}
+.tn::after{content:"";position:absolute;inset:0;background:#F5B04A;mix-blend-mode:multiply}
+.walls{display:flex;gap:28px;padding:30px 48px 40px}
+.wall{border-radius:30px;padding:26px 30px;flex:1;min-width:0;display:flex;flex-direction:column;gap:20px}
+.wd{background:linear-gradient(160deg,#1B1F3E,#2B2350 45%,#5B4470 100%)}
+.wl{background:linear-gradient(135deg,#F6D9E4,#CFE3F7 55%,#E8F0D8);color:#222}
+.wt{font-size:12px;font-weight:600;opacity:.7;letter-spacing:.04em;text-transform:uppercase}
+.hs{display:flex;gap:18px;align-items:flex-start}
+.app{display:flex;flex-direction:column;align-items:center;width:74px}
+.app span{font-size:12px;margin-top:6px;white-space:nowrap}
+.wd .app span{color:#F4F2EE}
+.sp{width:12px}
+</style></head><body>
+<h1>Duskwick app icon — Product Page Optimization alternate</h1>
+<div class=sub>A = shipped icon (C3, courtyard). B = AppIconWick: the same framed lantern in close-up, carrying Wick's idle face and tip flame. Rounded masks are previews only.</div>
+<div class=big>
+  <div class=col>
+    <div class=lab>A · current <small>AppIcon</small></div>
+    <div class=ic style="width:400px;height:400px"><img src="../duskwick-icon-1024.png"></div>
+    <div class=vars>
+      <div class=v><div class="ic dk" style="width:72px;height:72px"><img src="../duskwick-icon-dark-1024.png"></div>dark</div>
+      <div class=v><div class="ic tn" style="width:72px;height:72px"><img src="../duskwick-icon-tinted-1024.png"></div>tinted</div>
+    </div>
+  </div>
+  <div class=col>
+    <div class=lab>B · Wick in the lantern <small>AppIconWick</small></div>
+    <div class=ic style="width:400px;height:400px"><img src="../duskwick-icon-wick-1024.png"></div>
+    <div class=vars>
+      <div class=v><div class="ic dk" style="width:72px;height:72px"><img src="../duskwick-icon-wick-dark-1024.png"></div>dark</div>
+      <div class=v><div class="ic tn" style="width:72px;height:72px"><img src="../duskwick-icon-wick-tinted-1024.png"></div>tinted</div>
+    </div>
+  </div>
+  <div class=col style="justify-content:flex-start;gap:16px">
+    <div class=lab>B · dark / tinted, large</div>
+    <div style="display:flex;gap:20px">
+      <div class="ic dk" style="width:260px;height:260px"><img src="../duskwick-icon-wick-dark-1024.png"></div>
+      <div class="ic tn" style="width:260px;height:260px"><img src="../duskwick-icon-wick-tinted-1024.png"></div>
+    </div>
+  </div>
+</div>
+<div class=walls>
+  <div class="wall wd"><div class=wt>dusk wallpaper · 60 px (home screen) and 40 px (Spotlight / Settings)</div>
+    <div class=hs>
+      <div class=app><div class=ic style="width:60px;height:60px"><img src="../duskwick-icon-1024.png"></div><span>A · 60</span></div>
+      <div class=app><div class=ic style="width:60px;height:60px"><img src="../duskwick-icon-wick-1024.png"></div><span>B · 60</span></div>
+      <div class=sp></div>
+      <div class=app><div class=ic style="width:40px;height:40px"><img src="../duskwick-icon-1024.png"></div><span>A · 40</span></div>
+      <div class=app><div class=ic style="width:40px;height:40px"><img src="../duskwick-icon-wick-1024.png"></div><span>B · 40</span></div>
+      <div class=app><div class="ic dk" style="width:60px;height:60px"><img src="../duskwick-icon-wick-dark-1024.png"></div><span>B dark · 60</span></div>
+      <div class=app><div class="ic dk" style="width:40px;height:40px"><img src="../duskwick-icon-wick-dark-1024.png"></div><span>B dark · 40</span></div>
+    </div>
+  </div>
+  <div class="wall wl"><div class=wt>light wallpaper · 60 px and 40 px</div>
+    <div class=hs>
+      <div class=app><div class=ic style="width:60px;height:60px"><img src="../duskwick-icon-1024.png"></div><span>A · 60</span></div>
+      <div class=app><div class=ic style="width:60px;height:60px"><img src="../duskwick-icon-wick-1024.png"></div><span>B · 60</span></div>
+      <div class=sp></div>
+      <div class=app><div class=ic style="width:40px;height:40px"><img src="../duskwick-icon-1024.png"></div><span>A · 40</span></div>
+      <div class=app><div class=ic style="width:40px;height:40px"><img src="../duskwick-icon-wick-1024.png"></div><span>B · 40</span></div>
+      <div class=app><div class="ic tn" style="width:60px;height:60px"><img src="../duskwick-icon-wick-tinted-1024.png"></div><span>B tinted · 60</span></div>
+      <div class=app><div class="ic tn" style="width:40px;height:40px"><img src="../duskwick-icon-wick-tinted-1024.png"></div><span>B tinted · 40</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

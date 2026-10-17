@@ -1,0 +1,131 @@
+{
+  "format": "lanternly-play-session/1",
+  "mode": "free",
+  "variant": "C",
+  "index": 15,
+  "date": null,
+  "seedKey": null,
+  "levelId": 15,
+  "tag": "mid",
+  "level": {
+    "w": 7,
+    "h": 7,
+    "budget": 8,
+    "rows": [
+      "..#..#.",
+      ".......",
+      "..###..",
+      ".......",
+      "..###..",
+      ".......",
+      ".#..#.."
+    ]
+  },
+  "lanterns": [
+    "B1",
+    "D1",
+    "G2",
+    "A4",
+    "F6",
+    "C7"
+  ],
+  "history": [
+    "G2",
+    "A4",
+    "F6",
+    "B1",
+    "D1",
+    "C7"
+  ],
+  "complete": true,
+  "createdAt": "2026-10-12T16:39:19.760Z",
+  "completedAt": "2026-10-12T16:39:47.263Z",
+  "actions": [
+    {
+      "t": "2026-10-12T16:39:19.792Z",
+      "ms": 32,
+      "cmd": "new",
+      "result": "created",
+      "used": 0,
+      "lit": 0,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:39:40.171Z",
+      "ms": 20411,
+      "cmd": "move",
+      "cell": "G2",
+      "result": "placed",
+      "used": 1,
+      "lit": 13,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:39:41.758Z",
+      "ms": 21998,
+      "cmd": "move",
+      "cell": "A4",
+      "result": "placed",
+      "used": 2,
+      "lit": 24,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:39:43.524Z",
+      "ms": 23764,
+      "cmd": "move",
+      "cell": "F6",
+      "result": "placed",
+      "used": 3,
+      "lit": 32,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:39:44.944Z",
+      "ms": 25184,
+      "cmd": "move",
+      "cell": "B1",
+      "result": "placed",
+      "used": 4,
+      "lit": 35,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:39:46.219Z",
+      "ms": 26459,
+      "cmd": "move",
+      "cell": "D1",
+      "result": "placed",
+      "used": 5,
+      "lit": 37,
+      "conflicts": 0,
+      "complete": false
+    },
+    {
+      "t": "2026-10-12T16:39:47.266Z",
+      "ms": 27506,
+      "cmd": "move",
+      "cell": "C7",
+      "result": "placed",
+      "used": 6,
+      "lit": 39,
+      "conflicts": 0,
+      "complete": true
+    },
+    {
+      "t": "2026-10-12T16:39:48.354Z",
+      "ms": 28594,
+      "cmd": "show",
+      "result": "shown",
+      "used": 6,
+      "lit": 39,
+      "conflicts": 0,
+      "complete": true
+    }
+  ]
+}

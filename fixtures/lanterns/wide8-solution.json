@@ -1,0 +1,129 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "wide8-solution",
+  "levelId": 4026531845,
+  "level": {
+    "rows": [
+      "..#.....",
+      "......#.",
+      ".#......",
+      "........",
+      "...#..#.",
+      "........",
+      ".#...#.#",
+      "........"
+    ],
+    "budget": 8
+  },
+  "mode": 0,
+  "flags": 0,
+  "seedKey": "lanterns:free:wide8",
+  "moves": "0309151f202e343f",
+  "seed": "6805f30bec2b2f1d46166dd46567ba0a",
+  "initialStateBytes": "08080800044002004800a2000000000000000000",
+  "initialStateHash": "0720a361",
+  "perMoveHashes": [
+    "f22b9c69",
+    "8980e273",
+    "143fe193",
+    "c09c0013",
+    "706fc102",
+    "b6c2ee42",
+    "569b47b2",
+    "d69a7e32"
+  ],
+  "perMoveStateBytes": [
+    "08080800044002004800a2000800000000000000",
+    "08080800044002004800a2000802000000000000",
+    "08080800044002004800a2000802200000000000",
+    "08080800044002004800a2000802208000000000",
+    "08080800044002004800a2000802208001000000",
+    "08080800044002004800a2000802208001400000",
+    "08080800044002004800a2000802208001401000",
+    "08080800044002004800a2000802208001401080"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "080808f8",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "08083ffa",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "28fc3ffa",
+        "hi": "00002020"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffcbffa",
+        "hi": "0000a0a0"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffdbffb",
+        "hi": "0101a1a7"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffdbffb",
+        "hi": "4141ffa7"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffdbffb",
+        "hi": "515dffb7"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "fffdbffb",
+        "hi": "ff5dffb7"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 8,
+      "complete": true
+    }
+  ],
+  "final": {
+    "stateHash": "d69a7e32",
+    "complete": true,
+    "lanternsUsed": 8,
+    "conflicts": 0,
+    "lit": 56
+  },
+  "runBin": "504c010100006805f30bec2b2f1d46166dd46567ba0a050000f00800327e9ad60309151f202e343f9d1bf83b"
+}

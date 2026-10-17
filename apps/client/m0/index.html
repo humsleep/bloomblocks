@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>M0</title>
+    <style>html,body{margin:0;height:100%;background:#0f1222}</style>
+  </head>
+  <body>
+    <!-- M0: WebView floor. No bundle, no font, no Phaser. mark() on DOMContentLoaded
+         through the native bridge Capacitor injects at document start. -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var cap = window.Capacitor;
+        if (cap && cap.nativePromise) cap.nativePromise("ColdStartProbe", "mark", { variant: "m0", webMs: performance.now() });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "pocket5-abandoned",
+  "levelId": 4026531841,
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 4
+  },
+  "mode": 2,
+  "flags": 0,
+  "seedKey": "lanterns:bud:pocket5",
+  "moves": "041b100409",
+  "seed": "edcc2b8c63a564beee549e76139481fd",
+  "initialStateBytes": "0505040002080002080000000000000000000000",
+  "initialStateHash": "2cdc68eb",
+  "perMoveHashes": [
+    "02f25afb",
+    "cdb81ce3",
+    "3bd6a11a",
+    "65c0af0a",
+    "63f6ecd0"
+  ],
+  "perMoveStateBytes": [
+    "0505040002080002080000001000000000000000",
+    "0505040002080002080000001000000800000000",
+    "0505040002080002080000001000010800000000",
+    "0505040002080002080000000000010800000000",
+    "0505040002080002080000000002010800000000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "1010101c",
+        "hi": "00000010"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1c18101c",
+        "hi": "00000010"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f111d",
+        "hi": "00000011"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0101",
+        "hi": "00000001"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0701",
+        "hi": "00000001"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    }
+  ],
+  "final": {
+    "stateHash": "63f6ecd0",
+    "complete": false,
+    "lanternsUsed": 3,
+    "conflicts": 0,
+    "lit": 14
+  },
+  "runBin": "504c01010200edcc2b8c63a564beee549e76139481fd010000f00500d0ecf663041b100409ebe617b6"
+}

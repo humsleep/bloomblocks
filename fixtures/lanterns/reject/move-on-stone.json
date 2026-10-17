@@ -1,0 +1,19 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "move-on-stone",
+  "description": "3 solution moves then (1,0), a stone; hash as if a lantern were placed there",
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 4
+  },
+  "runBin": "504c010100003e8be1ad2bc56a7dc857aeda683bfc54010000f00400b7ab785b04111a017f764695",
+  "expectedCode": "illegal"
+}

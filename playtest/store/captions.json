@@ -1,0 +1,444 @@
+{
+  "//": "Store screenshot captions. Every line only claims what the 1.0 build shows (App Review 2.3.3 / 2.3.7): lantern faces are on by default; the rules are the in-app rules; the postcard, streak, shields, village (5 residents), letters, gifts, cottage decorating, Today's puzzle and the settings (dot numbers, sound, vibration) are in the build. No timer claim (the postcard shows the time); 'no rush' instead. Terms follow docs/i18n-glossary.md. Non-en/ko lines are AI drafts: native review before upload.",
+  "//changes": "Full-village build (2026-10-18): en-US 04 (7 residents, autumn night, market stall), 05 (furnished cottage, drawer without the dialogue card) and 06 (Pip's letter) re-captured. Other locales: re-capture all 8 with make-store.sh (their 04 sub still says nothing about the count; update it to 7 when translating).",
+  "shots": [
+    "board-mid",
+    "rules",
+    "daily-done",
+    "village",
+    "room",
+    "letter",
+    "daily-mid",
+    "settings"
+  ],
+  "en": {
+    "dir": "en-US",
+    "font": "latin",
+    "c": [
+      [
+        "A tiny friend in every lantern",
+        "Calm lantern logic puzzles"
+      ],
+      [
+        "Place lanterns. Light every tile.",
+        "",
+        [
+          "Light runs along rows and columns",
+          "Lanterns must not see each other",
+          "Numbers count the lanterns beside them"
+        ]
+      ],
+      [
+        "Collect a postcard every day",
+        "Keep your streak glowing"
+      ],
+      [
+        "Friends move into your village",
+        "Seven lantern friends move in as you play"
+      ],
+      [
+        "Decorate your cottage",
+        "Every gift finds a spot"
+      ],
+      [
+        "Letters and little gifts",
+        "from your lantern friends"
+      ],
+      [
+        "A new puzzle every day",
+        "Today's puzzle is the same for everyone"
+      ],
+      [
+        "Calm, offline, your way",
+        "No rush · No lives · Dot numbers"
+      ]
+    ]
+  },
+  "ko": {
+    "dir": "ko",
+    "font": "ko",
+    "c": [
+      [
+        "등불마다 작은 친구가 살아요",
+        "차분한 등불 로직 퍼즐"
+      ],
+      [
+        "등불을 놓아 모든 칸을 밝혀요",
+        "",
+        [
+          "빛은 가로세로로 뻗어요",
+          "등불끼리 마주 보면 안 돼요",
+          "숫자는 바로 옆 등불의 수예요"
+        ]
+      ],
+      [
+        "매일 엽서 한 장을 모아요",
+        "연속 기록을 환하게 이어 가요"
+      ],
+      [
+        "마을에 친구들이 이사 와요",
+        "플레이할수록 이웃이 늘어요"
+      ],
+      [
+        "나만의 오두막을 꾸며요",
+        "선물마다 꼭 맞는 자리가 있어요"
+      ],
+      [
+        "친구들의 편지와 작은 선물",
+        "등불 친구들이 보내요"
+      ],
+      [
+        "매일 새로운 오늘의 퍼즐",
+        "모두가 같은 퍼즐을 풀어요"
+      ],
+      [
+        "차분하게, 오프라인으로, 내 방식대로",
+        "서두를 필요 없음 · 목숨 없음 · 점 숫자"
+      ]
+    ]
+  },
+  "ja": {
+    "dir": "ja",
+    "font": "ja",
+    "c": [
+      [
+        "ランタンごとに小さな友だち",
+        "おだやかなランタン・ロジックパズル"
+      ],
+      [
+        "ランタンを置いて全マスを照らそう",
+        "",
+        [
+          "光はたて・よこにのびます",
+          "ランタン同士が見えてはだめ",
+          "数字はとなりのランタンの数"
+        ]
+      ],
+      [
+        "毎日1枚、はがきを集めよう",
+        "連続記録をあかるくつなごう"
+      ],
+      [
+        "村に友だちが引っ越してくる",
+        "遊ぶほどご近所さんが増えます"
+      ],
+      [
+        "自分の小屋をかざろう",
+        "贈り物はぜんぶお部屋に"
+      ],
+      [
+        "お手紙と小さな贈り物",
+        "ランタンの友だちから届きます"
+      ],
+      [
+        "毎日あたらしい今日のパズル",
+        "みんなが同じ1問を解きます"
+      ],
+      [
+        "のんびり、オフラインで、自分のペースで",
+        "急がなくていい・ライフなし・ドット数字"
+      ]
+    ]
+  },
+  "de": {
+    "dir": "de",
+    "font": "latin",
+    "c": [
+      [
+        "In jeder Laterne ein kleiner Freund",
+        "Ruhige Laternen-Logikrätsel"
+      ],
+      [
+        "Laternen setzen. Jedes Feld erhellen.",
+        "",
+        [
+          "Licht fällt entlang Reihen und Spalten",
+          "Laternen dürfen sich nicht sehen",
+          "Zahlen zählen die Laternen daneben"
+        ]
+      ],
+      [
+        "Jeden Tag eine Postkarte",
+        "Halte deine Serie am Leuchten"
+      ],
+      [
+        "Freunde ziehen in dein Dorf",
+        "Neue Nachbarn, während du spielst"
+      ],
+      [
+        "Richte deine Hütte ein",
+        "Jedes Geschenk findet seinen Platz"
+      ],
+      [
+        "Briefe und kleine Geschenke",
+        "von deinen Laternenfreunden"
+      ],
+      [
+        "Jeden Tag ein neues Rätsel",
+        "Das Rätsel des Tages ist für alle gleich"
+      ],
+      [
+        "Ruhig, offline, wie du magst",
+        "Keine Eile · Keine Leben · Punkte statt Zahlen"
+      ]
+    ]
+  },
+  "fr": {
+    "dir": "fr",
+    "font": "latin",
+    "c": [
+      [
+        "Un petit ami dans chaque lanterne",
+        "Des énigmes de logique tout en douceur"
+      ],
+      [
+        "Posez des lanternes. Éclairez chaque case.",
+        "",
+        [
+          "La lumière suit lignes et colonnes",
+          "Deux lanternes ne doivent pas se voir",
+          "Les chiffres comptent les lanternes voisines"
+        ]
+      ],
+      [
+        "Une carte postale chaque jour",
+        "Gardez votre série allumée"
+      ],
+      [
+        "Des amis s’installent au village",
+        "De nouveaux voisins au fil du jeu"
+      ],
+      [
+        "Décorez votre cabane",
+        "Chaque cadeau trouve sa place"
+      ],
+      [
+        "Lettres et petits cadeaux",
+        "de vos amis lanternes"
+      ],
+      [
+        "Une nouvelle énigme chaque jour",
+        "L’Énigme du jour est la même pour tous"
+      ],
+      [
+        "Calme, hors ligne, à votre façon",
+        "Sans hâte · Sans vies · Points au lieu de chiffres"
+      ]
+    ]
+  },
+  "es": {
+    "dir": "es",
+    "font": "latin",
+    "c": [
+      [
+        "Un amiguito en cada farol",
+        "Acertijos de lógica tranquilos"
+      ],
+      [
+        "Coloca faroles. Ilumina cada casilla.",
+        "",
+        [
+          "La luz recorre filas y columnas",
+          "Los faroles no deben verse entre sí",
+          "Los números cuentan los faroles de al lado"
+        ]
+      ],
+      [
+        "Una postal cada día",
+        "Mantén encendida tu racha"
+      ],
+      [
+        "Tus amigos se mudan al pueblo",
+        "Nuevos vecinos mientras juegas"
+      ],
+      [
+        "Decora tu cabaña",
+        "Cada regalo encuentra su lugar"
+      ],
+      [
+        "Cartas y pequeños regalos",
+        "de tus amigos farol"
+      ],
+      [
+        "Un acertijo nuevo cada día",
+        "El Acertijo del día es igual para todos"
+      ],
+      [
+        "Tranquilo, sin conexión, a tu manera",
+        "Sin prisas · Sin vidas · Puntos en vez de números"
+      ]
+    ]
+  },
+  "pt-BR": {
+    "dir": "pt-BR",
+    "font": "latin",
+    "c": [
+      [
+        "Um amiguinho em cada lanterna",
+        "Quebra-cabeças de lógica tranquilos"
+      ],
+      [
+        "Coloque lanternas. Ilumine cada quadrado.",
+        "",
+        [
+          "A luz segue linhas e colunas",
+          "Lanternas não podem se ver",
+          "Os números contam as lanternas ao lado"
+        ]
+      ],
+      [
+        "Um cartão-postal por dia",
+        "Mantenha sua sequência acesa"
+      ],
+      [
+        "Amigos se mudam para a sua vila",
+        "Novos vizinhos enquanto você joga"
+      ],
+      [
+        "Decore a sua cabana",
+        "Cada presente encontra seu lugar"
+      ],
+      [
+        "Cartas e presentinhos",
+        "dos seus amigos lanterna"
+      ],
+      [
+        "Um quebra-cabeça novo por dia",
+        "O Quebra-cabeça do dia é igual para todos"
+      ],
+      [
+        "Calmo, offline, do seu jeito",
+        "Sem pressa · Sem vidas · Pontos no lugar de números"
+      ]
+    ]
+  },
+  "it": {
+    "dir": "it",
+    "font": "latin",
+    "c": [
+      [
+        "Un piccolo amico in ogni lanterna",
+        "Enigmi di logica rilassanti"
+      ],
+      [
+        "Posa le lanterne. Illumina ogni casella.",
+        "",
+        [
+          "La luce segue righe e colonne",
+          "Le lanterne non devono vedersi",
+          "I numeri contano le lanterne accanto"
+        ]
+      ],
+      [
+        "Una cartolina ogni giorno",
+        "Tieni accesa la tua serie"
+      ],
+      [
+        "Gli amici si trasferiscono nel borgo",
+        "Nuovi vicini mentre giochi"
+      ],
+      [
+        "Arreda la tua casetta",
+        "Ogni regalo trova il suo posto"
+      ],
+      [
+        "Lettere e piccoli regali",
+        "dai tuoi amici lanterna"
+      ],
+      [
+        "Un nuovo enigma ogni giorno",
+        "L’Enigma del giorno è uguale per tutti"
+      ],
+      [
+        "Calmo, offline, a modo tuo",
+        "Senza fretta · Senza vite · Puntini al posto dei numeri"
+      ]
+    ]
+  },
+  "zh-Hans": {
+    "dir": "zh-Hans",
+    "font": "zh-Hans",
+    "c": [
+      [
+        "每盏灯笼里都住着小伙伴",
+        "治愈的灯笼逻辑谜题"
+      ],
+      [
+        "放下灯笼，照亮每一格",
+        "",
+        [
+          "光沿着横竖方向照亮",
+          "灯笼之间不能互相看见",
+          "数字是旁边灯笼的数量"
+        ]
+      ],
+      [
+        "每天收集一张明信片",
+        "让连续记录一直亮着"
+      ],
+      [
+        "朋友们搬进你的小镇",
+        "越玩邻居越多"
+      ],
+      [
+        "布置你的小屋",
+        "每份礼物都有它的位置"
+      ],
+      [
+        "朋友寄来的信和小礼物",
+        "来自灯笼小伙伴"
+      ],
+      [
+        "每天一道新谜题",
+        "今日谜题，所有人都是同一题"
+      ],
+      [
+        "安静、离线、随你喜欢",
+        "不赶时间 · 没有体力 · 圆点数字"
+      ]
+    ]
+  },
+  "zh-Hant": {
+    "dir": "zh-Hant",
+    "font": "zh-Hant",
+    "c": [
+      [
+        "每盞燈籠裡都住著小夥伴",
+        "療癒的燈籠邏輯謎題"
+      ],
+      [
+        "放下燈籠，照亮每一格",
+        "",
+        [
+          "光沿著橫豎方向照亮",
+          "燈籠之間不能互相看見",
+          "數字是旁邊燈籠的數量"
+        ]
+      ],
+      [
+        "每天收集一張明信片",
+        "讓連續紀錄一直亮著"
+      ],
+      [
+        "朋友們搬進你的小鎮",
+        "越玩鄰居越多"
+      ],
+      [
+        "布置你的小屋",
+        "每份禮物都有它的位置"
+      ],
+      [
+        "朋友寄來的信和小禮物",
+        "來自燈籠小夥伴"
+      ],
+      [
+        "每天一題新謎題",
+        "今日謎題，所有人都是同一題"
+      ],
+      [
+        "安靜、離線、隨你喜歡",
+        "不趕時間 · 沒有體力 · 圓點數字"
+      ]
+    ]
+  }
+}

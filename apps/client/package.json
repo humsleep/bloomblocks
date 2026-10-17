@@ -1,0 +1,53 @@
+{
+  "name": "@puzzle-lab/client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "iOS-first Capacitor + Phaser client shell (W1). Imports the canonical rules from ../../core and ../../games.",
+  "scripts": {
+    "dev": "vite --host --port 5174",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build:m1": "tsc --noEmit -p tsconfig.json && vite build --mode m1",
+    "build:m0": "vite build --mode m0",
+    "ios:sync": "node scripts/apply-identity.mjs && cap sync ios",
+    "ios:device:m0": "scripts/device-install.sh m0",
+    "ios:device:m1": "scripts/device-install.sh m1",
+    "measure:ios": "scripts/measure-ios.sh",
+    "ios:sim": "scripts/sim-run.sh",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:webkit": "playwright test --project=webkit",
+    "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json",
+    "typecheck:all": "npm run typecheck && npm run typecheck:tests",
+    "verify": "npm --prefix ../.. run verify",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "ios:archive": "scripts/archive-ios.sh",
+    "ios:release-check": "scripts/archive-ios.sh --check-only",
+    "ios:bump": "node scripts/bump-build.mjs",
+    "ios:skan": "node scripts/skan-update.mjs",
+    "art": "node scripts/make-art.mjs",
+    "test:ads": "vitest run src/ads"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "8.2.1",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.4",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/local-notifications": "8.3.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "@fontsource/fredoka": "^5.3.0",
+    "@playwright/test": "^1.64.0",
+    "jsdom": "26.1.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.4"
+  }
+}

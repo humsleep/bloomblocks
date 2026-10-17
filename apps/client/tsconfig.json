@@ -1,0 +1,26 @@
+{
+  "//": "Client shell. Core/games are compiled from source via the @core/@games aliases (vite.config.ts) with the same strictness as the root tsconfig so they type-check here too.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["vite/client"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "allowJs": false,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@core/*": ["../../core/*"],
+      "@games/*": ["../../games/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts", "capacitor.config.ts"]
+}

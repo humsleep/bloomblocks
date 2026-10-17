@@ -1,0 +1,302 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "pocket5-wander-then-solve",
+  "levelId": 4026531841,
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 4
+  },
+  "mode": 1,
+  "flags": 0,
+  "seedKey": "lanterns:daily:2026-10-12",
+  "moves": "041b1004091a0a0c201109220a0c10111a1b202204201a11",
+  "seed": "3b043059a9fdd435a0472a3974a08bde",
+  "initialStateBytes": "0505040002080002080000000000000000000000",
+  "initialStateHash": "2cdc68eb",
+  "perMoveHashes": [
+    "02f25afb",
+    "cdb81ce3",
+    "3bd6a11a",
+    "65c0af0a",
+    "63f6ecd0",
+    "7e940bdc",
+    "1aaf41b0",
+    "d5597200",
+    "2585b111",
+    "bde05b4b",
+    "2ea38359",
+    "6f547f9d",
+    "51d75141",
+    "972d20f1",
+    "f32a9ac8",
+    "81620e8a",
+    "e826e806",
+    "1d61261e",
+    "6d8d652f",
+    "2cdc68eb",
+    "02f25afb",
+    "b2c61bea",
+    "cd633af6",
+    "d4b74b04"
+  ],
+  "perMoveStateBytes": [
+    "0505040002080002080000001000000000000000",
+    "0505040002080002080000001000000800000000",
+    "0505040002080002080000001000010800000000",
+    "0505040002080002080000000000010800000000",
+    "0505040002080002080000000002010800000000",
+    "0505040002080002080000000002010c00000000",
+    "0505040002080002080000000006010c00000000",
+    "0505040002080002080000000016010c00000000",
+    "0505040002080002080000000016010c01000000",
+    "0505040002080002080000000016030c01000000",
+    "0505040002080002080000000014030c01000000",
+    "0505040002080002080000000014030c05000000",
+    "0505040002080002080000000010030c05000000",
+    "0505040002080002080000000000030c05000000",
+    "0505040002080002080000000000020c05000000",
+    "0505040002080002080000000000000c05000000",
+    "0505040002080002080000000000000805000000",
+    "0505040002080002080000000000000005000000",
+    "0505040002080002080000000000000004000000",
+    "0505040002080002080000000000000000000000",
+    "0505040002080002080000001000000000000000",
+    "0505040002080002080000001000000001000000",
+    "0505040002080002080000001000000401000000",
+    "0505040002080002080000001000020401000000"
+  ],
+  "perMove": [
+    {
+      "lit": {
+        "lo": "1010101c",
+        "hi": "00000010"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1c18101c",
+        "hi": "00000010"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f111d",
+        "hi": "00000011"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0101",
+        "hi": "00000001"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0701",
+        "hi": "00000001"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0705",
+        "hi": "00000005"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0705",
+        "hi": "00000005"
+      },
+      "conflicts": 4,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f1715",
+        "hi": "00000015"
+      },
+      "conflicts": 4,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f1715",
+        "hi": "00000017"
+      },
+      "conflicts": 6,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f1715",
+        "hi": "00000017"
+      },
+      "conflicts": 7,
+      "lanternsUsed": 8,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f1715",
+        "hi": "00000017"
+      },
+      "conflicts": 6,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f1715",
+        "hi": "00000017"
+      },
+      "conflicts": 7,
+      "lanternsUsed": 8,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f1715",
+        "hi": "00000017"
+      },
+      "conflicts": 6,
+      "lanternsUsed": 7,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0705",
+        "hi": "00000007"
+      },
+      "conflicts": 6,
+      "lanternsUsed": 6,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f0705",
+        "hi": "00000007"
+      },
+      "conflicts": 4,
+      "lanternsUsed": 5,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d0d0505",
+        "hi": "00000007"
+      },
+      "conflicts": 4,
+      "lanternsUsed": 4,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d0d0505",
+        "hi": "00000007"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "05050505",
+        "hi": "00000007"
+      },
+      "conflicts": 2,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "04040404",
+        "hi": "00000007"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "00000000",
+        "hi": "00000000"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 0,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1010101c",
+        "hi": "00000010"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 1,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1111111d",
+        "hi": "00000017"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 2,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d15151d",
+        "hi": "00000017"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 3,
+      "complete": false
+    },
+    {
+      "lit": {
+        "lo": "1d1f171d",
+        "hi": "00000017"
+      },
+      "conflicts": 0,
+      "lanternsUsed": 4,
+      "complete": true
+    }
+  ],
+  "final": {
+    "stateHash": "d4b74b04",
+    "complete": true,
+    "lanternsUsed": 4,
+    "conflicts": 0,
+    "lit": 21
+  },
+  "runBin": "504c010101003b043059a9fdd435a0472a3974a08bde010000f01800044bb7d4041b1004091a0a0c201109220a0c10111a1b202204201a11a7d7dcb7"
+}

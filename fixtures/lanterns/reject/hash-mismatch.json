@@ -1,0 +1,19 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "hash-mismatch",
+  "description": "stateHash low byte flipped (CRC recomputed)",
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 4
+  },
+  "runBin": "504c010100003e8be1ad2bc56a7dc857aeda683bfc54010000f00400054bb7d404111a20ce9a549d",
+  "expectedCode": "hash"
+}

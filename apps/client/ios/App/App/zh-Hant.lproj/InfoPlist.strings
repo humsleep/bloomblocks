@@ -1,0 +1,3 @@
+/* Duskwick — localized Info.plist strings (zh-Hant: Taiwan, Hong Kong, Macau; Taiwan wording). Keep in sync with Info.plist (en is the source). */
+"CFBundleDisplayName" = "Duskwick";
+"NSUserTrackingUsageDescription" = "此識別碼只會用來為你顯示更相關的廣告。選擇不允許也不影響 Duskwick 的任何玩法，你隨時可以在「設定」中更改。";

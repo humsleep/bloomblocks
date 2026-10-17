@@ -1,0 +1,19 @@
+{
+  "fixtureVersion": 2,
+  "game": "lanterns",
+  "gameId": 1,
+  "name": "unknown-version",
+  "description": "formatVersion 2 (CRC recomputed)",
+  "level": {
+    "rows": [
+      ".#...",
+      "...#.",
+      ".....",
+      ".#...",
+      "...#."
+    ],
+    "budget": 4
+  },
+  "runBin": "504c020100003e8be1ad2bc56a7dc857aeda683bfc54010000f00400044bb7d404111a200a69783c",
+  "expectedCode": "version"
+}
