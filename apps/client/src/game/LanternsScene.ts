@@ -65,7 +65,7 @@ import { DIGIT_FONT, drawBreakChip as drawBreakChipArt, drawCalendarTile } from 
 import { Preferences } from "@capacitor/preferences";
 import { alleyOf, giftEarned, milestoneOf, monthStrip, streakMilestone, towerOpen } from "./progress.ts";
 import type { SheetExtras } from "./ResultSheet.ts";
-import { ambient, governor } from "./frameGovernor.ts";
+import { ambient, GRACE_MS, governor } from "./frameGovernor.ts";
 import { BigWord, LineBand } from "./LineBand.ts";
 import { dailyMoment, type HappyMoment, houseMoment, rating } from "./rating.ts";
 import { makeText, primaryButton, styleText, uiFont } from "./uiText.ts";
@@ -1285,6 +1285,7 @@ export class LanternsScene extends Phaser.Scene {
     this.refreshToday();
     // reminders are re-planned on every launch / foreground (after the first frame; lazy chunk)
     void this.syncNotify();
+    void this.loadAskWait();
   }
 
   /** The "today" button: today's day number; glowing while today's daily is unplayed, a check once done. */
@@ -1525,8 +1526,14 @@ export class LanternsScene extends Phaser.Scene {
     }
   }
 
-  /** the reminder soft ask waiting for the result sheet to go (it never stacks on the sheet) */
-  private pendingAsk: (() => void) | null = null;
+  /**
+   * The reminder soft ask is due (its reminder minute), persisted in the notify prefs: shown once at
+   * a quiet moment on the track (stepNotifyAsk), never on a timer, so a slow result or a quick
+   * return can no longer lose it, and it never lands under a finger (a tap there answered "not now").
+   */
+  private askWait: number | null = null;
+  /** shown in this run already (a re-read of the prefs before the answer lands must not bring it back) */
+  private askShown = false;
 
   /** A counted daily: drop today's reminder; on the 2nd counted day, the soft ask (once). */
   private async afterCountedDaily(dm: DailyMod): Promise<void> {
@@ -1537,15 +1544,44 @@ export class LanternsScene extends Phaser.Scene {
       void m.notify.reschedule(ctx);
       if (!(await m.notify.shouldAsk(ctx.played.length))) return;
       const minute = reminderMinute(ctx.finishMinutes);
-      // round 2: asked once the sheet is gone and the night beat has brought the track back
-      this.pendingAsk = () =>
-        this.showAsk(this.notifyAsk(minute), {
-          yes: () => void m.notify.enable().then(() => this.syncNotify()),
-          no: () => void m.notify.later(),
-        });
+      await m.notify.markAsk(minute);
+      if (!this.askShown) this.askWait = minute;
     } catch (e) {
       console.warn("[notify] ask", e);
     }
+  }
+
+  /** Launch / foreground: a soft ask that was due but never shown (the app quit first). */
+  private async loadAskWait(): Promise<void> {
+    try {
+      const m = await this.loadNotify();
+      const due = await m.notify.pendingAsk();
+      if (!this.askShown) this.askWait ??= due;
+    } catch (e) {
+      console.warn("[notify] pending", e);
+    }
+  }
+
+  /**
+   * The waiting soft ask, at a safe moment: the track board (not the daily), nothing up (sheet,
+   * card, ask, tutorial, guide, town, night), no finger down, no input for GRACE_MS and the
+   * governor resting. shortcut: a board that keeps the governor awake still gets it after 8 s of no input.
+   */
+  private stepNotifyAsk(now: number): void {
+    const m = this.notifyMod;
+    if (this.askWait === null || !m || this.deps.session.daily || this.down !== "none") return;
+    if (!this.isIdle() || this.tutOn || this.guide.active || this.card?.isOpen || this.breakChip.visible || this.night) return;
+    const quietFor = now - Math.max(this.lastInput, this.decoratedAt);
+    if (quietFor < GRACE_MS) return;
+    const g = governor.state();
+    if (g.installed && g.mode === "full" && quietFor < 8000) return;
+    const minute = this.askWait;
+    this.askWait = null;
+    this.askShown = true;
+    this.showAsk(this.notifyAsk(minute), {
+      yes: () => void m.notify.enable().then(() => this.syncNotify()),
+      no: () => void m.notify.later(),
+    });
   }
 
   private notifyAsk(minute: number): AskSpec {
@@ -1672,16 +1708,11 @@ export class LanternsScene extends Phaser.Scene {
     this.startSwitch(() => this.deps.session.leaveDaily(), () => {
       this.clock = null;
       void this.refreshMoon();
-      const ask = this.pendingAsk;
-      this.pendingAsk = null;
-      // the track board has slid in: a calm beat, then the question (once)
-      if (ask) setTimeout(() => {
-        if (!this.ask.isOpen && !this.deps.session.daily) ask();
-      }, motion.reduced ? 300 : 700);
+      // the reminder soft ask (if due) comes at the next quiet moment: stepNotifyAsk
       // R2 (A2): a happy daily (✨ / the 7th day) — the rating ask, only when no question comes now
       const moment = this.pendingRating;
       this.pendingRating = null;
-      if (moment && !ask) this.ratingSoon(moment);
+      if (moment && this.askWait === null) this.ratingSoon(moment);
     });
   }
 
@@ -1704,7 +1735,7 @@ export class LanternsScene extends Phaser.Scene {
   private ratingSoon(moment: HappyMoment | null): void {
     if (!moment) return;
     setTimeout(() => {
-      if (!this.isIdle() || this.ask.isOpen || this.tutOn || this.card?.isOpen || this.townOpen) return;
+      if (!this.isIdle() || this.ask.isOpen || this.askWait !== null || this.tutOn || this.card?.isOpen || this.townOpen) return;
       void rating.moment(moment);
     }, motion.reduced ? 400 : 900);
   }
@@ -3207,6 +3238,7 @@ export class LanternsScene extends Phaser.Scene {
     this.stepErr(now);
     this.stepGuide(now);
     this.stepOffer(now);
+    this.stepNotifyAsk(now);
     this.board.update(now);
     this.guide.update(now);
     this.scenery.update(now);

@@ -40,6 +40,8 @@ export interface NotifyPrefs {
   planned: Planned[];
   /** dates whose reminder was tapped */
   tapped: string[];
+  /** the soft ask is due (its reminder minute): set by a counted daily, cleared by the answer; survives a quit */
+  pend?: number | undefined;
 }
 
 const KEY = "notify";
@@ -232,10 +234,21 @@ export const notify = {
     return true;
   },
 
+  /** A counted daily said "ask": the soft card waits for a quiet moment on the track (this run or the next). */
+  async markAsk(minute: number): Promise<void> {
+    save({ ...(await load()), pend: minute });
+  },
+
+  /** The waiting soft ask's reminder minute, or null (none waiting / no longer askable). */
+  async pendingAsk(): Promise<number | null> {
+    const p = await load();
+    return p.pend !== undefined && (await this.shouldAsk(2)) ? p.pend : null;
+  },
+
   /** "Not now" on the soft card: never asked again from the result sheet. */
   async later(): Promise<void> {
     const p = await load();
-    save({ ...p, asked: p.asked === "never" ? "later" : p.asked });
+    save({ ...p, asked: p.asked === "never" ? "later" : p.asked, pend: undefined });
   },
 
   /** Turn reminders on: the system prompt (only if not answered yet). true = allowed. */
@@ -250,7 +263,7 @@ export const notify = {
     } catch (e) {
       console.warn("[notify] permission", e);
     }
-    save({ ...p, on: ok, asked: ok ? "yes" : "denied", ignored: ok ? 0 : p.ignored });
+    save({ ...p, on: ok, asked: ok ? "yes" : "denied", ignored: ok ? 0 : p.ignored, pend: undefined });
     listen();
     console.info(`[notify] ${ok ? "on" : "not allowed"}`);
     return ok;

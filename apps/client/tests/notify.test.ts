@@ -105,6 +105,22 @@ describe("runtime (web fake)", () => {
     expect(new Set(getFake().pending.map((x) => x.id)).size).toBe(6);
   });
 
+  it("a due ask survives a relaunch until answered (either way), then is gone", async () => {
+    expect(await notify.pendingAsk()).toBeNull();
+    await notify.markAsk(19 * 60);
+    resetNotifyCache(); // the app quit
+    expect(await notify.pendingAsk()).toBe(19 * 60);
+    await notify.later();
+    resetNotifyCache();
+    expect(await notify.pendingAsk()).toBeNull();
+    resetDevice();
+    resetNotifyCache();
+    await notify.markAsk(600);
+    expect(await notify.enable()).toBe(true);
+    resetNotifyCache();
+    expect(await notify.pendingAsk()).toBeNull();
+  });
+
   it("denied at the system prompt → off, never asked again", async () => {
     getFake().answer = "denied";
     expect(await notify.enable()).toBe(false);
