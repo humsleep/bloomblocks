@@ -270,6 +270,7 @@ export function drawPostcardFrame(ctx: Ctx, w = 1080, h = 1350): { room: Box; ca
   }
   ctx.restore();
   texture(ctx, cp, card, "paper", 0.12);
-  const caption = { x: card.x + 60 * k, y: room.y + room.h + 60 * k, w: stamp.x - card.x - 100 * k, h: 120 * k };
+  // the caption ends 14 units before the postmark ring's left edge (ring r = 46 at stamp.x − 10 → left = stamp.x − 56)
+  const caption = { x: card.x + 60 * k, y: room.y + room.h + 60 * k, w: stamp.x - 70 * k - (card.x + 60 * k), h: 120 * k };
   return { room, caption, stamp };
 }

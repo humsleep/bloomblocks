@@ -28,9 +28,14 @@ import {
   RewardAdPluginEvents,
   type AdmobConsentInfo,
 } from "@capacitor-community/admob";
-import { configureAdAudio } from "../native/adAudio.ts";
+import { configureAdAudio, isReleaseBuild } from "../native/adAudio.ts";
 import type { AdsProvider } from "./AdsProvider.ts";
 import { ADMOB_IOS, REWARDED_UNIT, type RewardPlacement } from "./config.ts";
+
+/** Real ads ONLY for a native Release build (App Store / TestFlight) with config.testing === false.
+ *  Unknown (null), web, Debug / Measure / simulator, or a failed native call → test ads. The web
+ *  bundle is the same in every configuration (vite --mode m1), so MODE cannot tell them apart. */
+export const adsAreTest = (testing: boolean, release: boolean | null): boolean => testing || release !== true;
 
 type Slot = "idle" | "loading" | "ready";
 
@@ -97,6 +102,8 @@ export class AdMobAds implements AdsProvider {
   /** the placement the loaded / loading rewarded ad belongs to (the plugin holds one rewarded ad) */
   private rewardFor: RewardPlacement = "break";
   private muted = false;
+  /** native build kind; null until resolved in start() — no ad request is made while null */
+  private release: boolean | null = null;
   private banner: "none" | "shown" | "hidden" = "none";
   private bannerPx = 0;
   private bannerCb: ((px: number) => void) | null = null;
@@ -182,7 +189,7 @@ export class AdMobAds implements AdsProvider {
   }
 
   async showInterstitial(): Promise<boolean> {
-    if (!this.sdkStarted || !this.canRequestAds()) return false;
+    if (!this.live() || !this.canRequestAds()) return false;
     if (this.inter !== "ready") {
       this.loadInterstitial();
       return false; // no waiting on the result moment: a no-fill simply means no ad this time
@@ -205,12 +212,12 @@ export class AdMobAds implements AdsProvider {
   }
 
   prepareRewarded(placement: RewardPlacement = "break"): void {
-    if (!this.sdkStarted || !this.canRequestAds()) return;
+    if (!this.live() || !this.canRequestAds()) return;
     // one rewarded ad at a time in the plugin: a different placement replaces an idle / ready one
     if (this.reward === "loading" || (this.reward === "ready" && this.rewardFor === placement)) return;
     this.reward = "loading";
     this.rewardFor = placement;
-    AdMob.prepareRewardVideoAd({ adId: REWARDED_UNIT[placement], isTesting: ADMOB_IOS.testing, npa: this.npa }).then(
+    AdMob.prepareRewardVideoAd({ adId: REWARDED_UNIT[placement], isTesting: this.testMode(), npa: this.npa }).then(
       () => {
         if (this.rewardFor === placement) this.reward = "ready";
       },
@@ -239,7 +246,7 @@ export class AdMobAds implements AdsProvider {
 
   /** Create once, then resume / hide (index.ts only calls on a real visibility change). */
   async showBanner(): Promise<void> {
-    if (!this.sdkStarted || !this.canRequestAds() || this.banner === "shown") return;
+    if (!this.live() || !this.canRequestAds() || this.banner === "shown") return;
     if (this.banner === "hidden") {
       this.banner = "shown";
       await AdMob.resumeBanner().catch((e: unknown) => console.warn("[ads] banner resume failed", e));
@@ -256,7 +263,7 @@ export class AdMobAds implements AdsProvider {
       adSize: BannerAdSize.ADAPTIVE_BANNER,
       position: BannerAdPosition.BOTTOM_CENTER,
       margin: BANNER_MARGIN_PT,
-      isTesting: ADMOB_IOS.testing,
+      isTesting: this.testMode(),
       npa: this.npa,
     }).catch((e: unknown) => {
       console.warn("[ads] banner failed", e);
@@ -284,6 +291,13 @@ export class AdMobAds implements AdsProvider {
 
   // ---------------------------------------------------------------------------
 
+  private testMode = (): boolean => adsAreTest(ADMOB_IOS.testing, this.release);
+
+  /** SDK started AND the build kind is known (sdkStarted is set while it is still resolving) */
+  private live(): boolean {
+    return !!this.sdkStarted && this.release !== null;
+  }
+
   private canRequestAds(): boolean {
     // No consent info (offline / misconfigured) → still allow, but non-personalized only.
     return this.consent ? this.consent.canRequestAds : true;
@@ -293,10 +307,11 @@ export class AdMobAds implements AdsProvider {
     // Personalisation is governed by UMP (TCF string) and ATT on Google's side; we only force
     // non-personalized requests when we have no consent information at all.
     this.npa = !this.consent;
-    this.sdkStarted ??= this.applyAudio()
+    this.sdkStarted ??= (this.release === null ? isReleaseBuild().then((r) => void (this.release = r)) : Promise.resolve())
+      .then(() => this.applyAudio())
       .then(() =>
         AdMob.initialize({
-          initializeForTesting: ADMOB_IOS.testing,
+          initializeForTesting: this.testMode(),
           maxAdContentRating: MaxAdContentRating.ParentalGuidance,
         }),
       )
@@ -320,9 +335,9 @@ export class AdMobAds implements AdsProvider {
   }
 
   private loadInterstitial(): void {
-    if (!this.sdkStarted || this.inter !== "idle" || !this.canRequestAds()) return;
+    if (!this.live() || this.inter !== "idle" || !this.canRequestAds()) return;
     this.inter = "loading";
-    AdMob.prepareInterstitial({ adId: ADMOB_IOS.interstitial, isTesting: ADMOB_IOS.testing, npa: this.npa }).then(
+    AdMob.prepareInterstitial({ adId: ADMOB_IOS.interstitial, isTesting: this.testMode(), npa: this.npa }).then(
       () => (this.inter = "ready"),
       (e: unknown) => {
         console.warn("[ads] interstitial load failed", e);

@@ -165,7 +165,7 @@ function villageSave(): string {
   const moved = residents({ ...inp, v }).filter((r) => r.movedIn).length;
   if (moved !== 7) throw new Error(`world: ${moved} residents moved in, want 7`); // the 04 shot shows all of them
   v.r[COTTAGE] = { s: encodeRoom(room), n: 1, at: Date.now() - 3_600_000, dev: "store000" };
-  const loc = { mail: {}, ld: null, seen: {}, once: ["host:firstVillageVisit", ...["sage", "luna", "pip", "kuri", "yuki"].map((r) => `host:movedIn:${r}`), ...["mail", "eve", "market"].map((k) => `host:${k}:${dayOf(today)}`)], season: seasonOf(new Date().getMonth() + 1, hemisphereOf(regionOf(LOCALES[a.lang!]?.[0]))), lastVisit: dayOf(shift(-1)), visits: 6, talk: { day: 0, n: {} }, fresh: [], ret: null };
+  const loc = { mail: {}, ld: null, seen: {}, once: ["host:firstVillageVisit", "host:wick.host.07", ...["sage", "luna", "pip", "kuri", "yuki"].map((r) => `host:movedIn:${r}`), ...["mail", "eve", "market"].map((k) => `host:${k}:${dayOf(today)}`)], season: seasonOf(new Date().getMonth() + 1, hemisphereOf(regionOf(LOCALES[a.lang!]?.[0]))), lastVisit: dayOf(shift(-1)), visits: 6, talk: { day: 0, n: {} }, fresh: [], ret: null };
   return JSON.stringify({ sv: v, loc });
 }
 

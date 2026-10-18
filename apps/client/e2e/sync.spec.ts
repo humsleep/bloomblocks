@@ -184,4 +184,79 @@ test.describe("iCloud sync", () => {
     expect(b.errors).toEqual([]);
     await c2.close();
   });
+
+  test("final G1: the village (market pick, request answered, cottage edit) travels between two devices and merges; the record stays ≤ 2 KB", async ({ browser }) => {
+    test.setTimeout(240_000);
+    const cloud = new Cloud();
+    const DAY = Math.floor(Date.UTC(2026, 9, 14) / 86_400_000);
+    const progress = JSON.stringify({ v: 3, game: "pips", track: "gentle", gentle: { level: 9, cleared: 8, hints: 0 }, deduce: { level: 1, cleared: 0, hints: 0 } });
+    const village = (sv: Record<string, unknown>): string => JSON.stringify({ sv: { pd: [DAY], ch: [], lr: [], u: [], mk: [], q: [], w: [], r: {}, ...sv }, loc: { visits: 3, lastVisit: DAY - 1, season: "autumn" } });
+    type Vw = { screen: string; owned: string[]; room: (string | null)[] };
+    const vw = (app: App): Promise<Vw | null> => app.eval(() => (window.__e2e.village?.["view"] as Vw | undefined) ?? null);
+    const labels = (app: App): Promise<string[]> => app.page.evaluate(() => [...document.querySelectorAll(".a11y-root button")].map((x) => x.getAttribute("aria-label") ?? ""));
+    const tap = async (app: App, id: string): Promise<void> => {
+      const pt = (): Promise<{ x: number; y: number } | null> => app.page.evaluate((i) => window.__e2e.villagePoint(i), id);
+      await expect.poll(async () => !!(await pt()), { timeout: 10_000 }).toBe(true);
+      await app.tapPoint((await pt())!);
+    };
+    const openVillage = async (app: App): Promise<void> => {
+      await app.waitIdle();
+      await app.tapButton("leftBtn");
+      await expect.poll(() => vw(app).then((v) => v?.screen ?? null), { timeout: 15_000 }).toBe("village");
+      await app.page.waitForTimeout(400);
+    };
+    const saved = async (app: App): Promise<{ sv: { mk: number[]; u: number[]; q: number[]; lr: number[]; r: Record<string, { s: string }> } }> => JSON.parse((await app.pref("village")) ?? "{}");
+
+    // A: Momo asked for a seat, the cushion is owned; A picks a market piece and puts the cushion in the cottage
+    const { ctx: ca, app: a } = await device(browser, cloud, "2026-10-14T19:00:00", { files: { "pips-progress.json": progress }, prefs: { village: village({ q: [4], lr: [1] }) } });
+    await a.open();
+    await synced(a);
+    await openVillage(a);
+    await tap(a, "stall");
+    await expect.poll(() => vw(a).then((v) => v?.screen)).toBe("market");
+    await expect.poll(async () => (await labels(a)).filter((l) => l.startsWith("고르기: ")).length).toBe(3);
+    await tap(a, "offer-0");
+    await expect.poll(() => vw(a).then((v) => v?.screen)).toBe("gift");
+    await tap(a, "gift-later");
+    await expect.poll(async () => (await labels(a)).includes("장터, 내일 또 와요")).toBe(true);
+    await tap(a, "cottage");
+    await expect.poll(() => vw(a).then((v) => v?.screen)).toBe("room");
+    await tap(a, "slot-12");
+    await tap(a, "card-cushion");
+    await expect.poll(() => vw(a).then((v) => v?.room[12] ?? null)).toBe("cushion:rose");
+    await expect.poll(async () => (await saved(a)).sv.q).toEqual([4, 5]);
+    const sa = await saved(a);
+    expect(sa.sv.mk).toEqual([DAY]);
+    expect(sa.sv.u.length).toBe(1);
+    await pause(a);
+    await expect.poll(() => cloud.snapshots().length).toBe(1);
+
+    // B: another phone, offline until now, knows Sage's ask (bit 8) and has not touched the market or the cottage
+    const { ctx: cb, app: b } = await device(browser, cloud, "2026-10-14T20:00:00", { files: { "pips-progress.json": progress }, prefs: { village: village({ q: [8], lr: [1, 2] }) } });
+    await b.open();
+    await synced(b);
+    await expect.poll(async () => (await saved(b)).sv.q, { timeout: 15_000 }).toEqual([4, 5, 8]); // A's answered request + B's own ask
+    const sb = await saved(b);
+    expect(sb.sv.mk).toEqual([DAY]);
+    expect(sb.sv.u).toEqual(sa.sv.u);
+    expect(sb.sv.lr).toEqual([1, 2]);
+    await openVillage(b);
+    await expect.poll(async () => (await labels(b)).includes("장터, 내일 또 와요")).toBe(true); // A's pick closes B's stall for the day too
+    await tap(b, "cottage");
+    await expect.poll(() => vw(b).then((v) => v?.screen)).toBe("room");
+    expect((await vw(b))!.room[12]).toBe("cushion:rose"); // A's cottage edit arrived
+    expect((await vw(b))!.owned).toContain("cushion:rose");
+    await pause(b);
+
+    // back to A: B's ask arrived, nothing of A's was lost; every device record stays within 2 KB
+    await a.reload();
+    await synced(a);
+    // (Sage's ask may already be answered by the cottage's own pieces: bit 9 — an ask never goes away, an answer is kept)
+    await expect.poll(async () => (await saved(a)).sv.q, { timeout: 15_000 }).toEqual(expect.arrayContaining([4, 5, 8]));
+    expect((await saved(a)).sv.u).toEqual(sa.sv.u);
+    for (const rec of cloud.values.values()) expect(new TextEncoder().encode(rec).length).toBeLessThanOrEqual(2048);
+    for (const app of [a, b]) expect(app.errors).toEqual([]);
+    await ca.close();
+    await cb.close();
+  });
 });

@@ -24,10 +24,10 @@ const loadMod = (): Promise<typeof import("./VillageScene.ts")> => import("./Vil
  * while it is open (or loading) does nothing. Warm (prewarmVillage ran, the daily log is in memory):
  * the scene is added in the same task as the tap — no async hop on a busy main thread.
  */
-export function openVillage(host: PhaserTypes.Scene, o: { progress: VillageProgress | (() => Promise<VillageProgress>); lang: Lang; onClose: () => void }): void {
+export function openVillage(host: PhaserTypes.Scene, o: { progress: VillageProgress | (() => Promise<VillageProgress>); lang: Lang; onClose: () => void; onShown?: () => void; t0?: number }): void {
   if (busy) return;
   busy = true;
-  const t0 = performance.now();
+  const t0 = o.t0 ?? performance.now();
   const done = (): void => {
     busy = false;
     o.onClose();
@@ -39,7 +39,7 @@ export function openVillage(host: PhaserTypes.Scene, o: { progress: VillageProgr
   try {
     const warm = mod && typeof o.progress !== "function" ? mod.prepareNow(o.progress, o.lang) : null;
     if (mod && warm) {
-      mod.launchVillage({ host, onClose: done, data: warm, t0, tData: performance.now() - t0 });
+      mod.launchVillage({ host, onClose: done, data: warm, t0, tData: performance.now() - t0, ...(o.onShown ? { onShown: o.onShown } : {}) });
       return;
     }
   } catch (e) {
@@ -47,17 +47,29 @@ export function openVillage(host: PhaserTypes.Scene, o: { progress: VillageProgr
     return;
   }
   const progress = typeof o.progress === "function" ? o.progress() : Promise.resolve(o.progress);
-  void Promise.all([loadMod(), progress])
+  void Promise.all([loadMod().then((m) => (m.dataMs["mod"] = Math.round(performance.now() - t0), m)), progress])
     .then(async ([m, p]) => {
       const data = await m.prepareVillage(p, o.lang);
-      m.launchVillage({ host, onClose: done, data, t0, tData: performance.now() - t0 });
+      m.launchVillage({ host, onClose: done, data, t0, tData: performance.now() - t0, ...(o.onShown ? { onShown: o.onShown } : {}) });
     })
     .catch(fail);
 }
 
-/** Load the village's code and data ahead of a tap (idle, after launch): scene, art kit, lines, save. */
-export function prewarmVillage(lang: Lang, progress?: () => Promise<VillageProgress>, idle: () => boolean = () => true): Promise<void> {
-  return Promise.all([loadMod(), progress?.().catch(() => undefined)])
-    .then(([m, p]) => m.prewarm(lang, p, idle))
-    .catch(() => undefined);
+/** Everything an open needs is in memory and the backdrop is baked: the open is a blit (no opening veil needed). */
+export function villageWarm(lang: Lang): boolean {
+  return !!mod?.isWarm(lang);
+}
+
+/**
+ * Load the village's code and data ahead of a tap (idle, after launch: scene, art kit, lines, save) and bake its
+ * backdrop in small idle steps. Resolves true when all of it is done, false when input stopped it (call again later).
+ */
+export function prewarmVillage(lang: Lang, progress?: () => Promise<VillageProgress>, idle: () => boolean = () => true): Promise<boolean> {
+  if (!idle()) return Promise.resolve(false);
+  return loadMod()
+    .then(async (m) => {
+      if (!idle()) return false;
+      return m.prewarm(lang, await progress?.().catch(() => undefined), idle);
+    })
+    .catch(() => true);
 }

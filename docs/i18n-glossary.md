@@ -23,7 +23,7 @@ Locales: `en`, `ko`, `ja`, `de`, `fr`, `es` (neutral: Spain + Latin America), `p
 | shield | shield | 보호막 | シールド | Schutz | protection | escudo | escudo | scudo | 护盾（个） | 護盾（個） |
 | hint | Hint | 힌트 | ヒント | Tipp | Indice | Pista | Dica | Indizio | 提示 | 提示 |
 | undo | Undo | 되돌리기 | 元に戻す | Rückgängig | Annuler | Deshacer | Desfazer | Annulla | 撤销 | 還原 |
-| town | Town | 마을 | 町 | Dorf | village | pueblo | vila | borgo | 小镇 | 小鎮 |
+| town | Town | 마을 | 村 | Dorf | village | pueblo | vila | borgo | 小镇 | 小鎮 |
 | house | house | 집 | 家 | Haus | maison | casa | casa | casa | 小屋（间） | 小屋（間） |
 
 ## Supporting terms
@@ -32,19 +32,19 @@ Locales: `en`, `ko`, `ja`, `de`, `fr`, `es` (neutral: Spain + Latin America), `p
 |---|---|---|---|---|---|---|---|---|---|---|
 | tap | Tap | 누르다 | タップ | tippen | toucher | tocar | tocar | toccare | 点一下 | 點一下 |
 | remove (a lantern) | remove | 빼다 | 外す | wegnehmen | retirer | quitar | tirar | togliere | 拿掉 | 拿掉 |
-| diagonal (not counted) | corners | 대각선 | ななめ | Ecken | coins | diagonales | cantos | diagonali | 斜对角 | 斜對角 |
+| diagonal (not counted) | corners | 대각선 | ななめ | Ecken | diagonales | diagonales | diagonais | diagonali | 斜对角 | 斜對角 |
 | Rules (the rules sheet: its title, the HUD caption, the settings row — ONE name, R2 A1) | Rules | 규칙 | ルール | Regeln | Règles | Reglas | Regras | Regole | 规则 | 規則 |
 | the rewarded ad | ad | 광고 | 広告 | Werbung | pub | anuncio / video | anúncio / vídeo | annuncio | 广告（一则），never 视频 | 廣告（一則），never 影片 / 短片 |
 | tutorial | tutorial | 튜토리얼 | チュートリアル | Einführung | tutoriel | tutorial | tutorial | tutorial | 教程 | 教學 |
 | skip | Skip | 건너뛰기 | スキップ | Überspringen | Passer | Saltar | Pular | Salta | 跳过 | 略過 |
 | settings (in game) | Settings | 설정 | 設定 | Einstellungen | Réglages | Ajustes | Ajustes | Impostazioni | 设置 | 設定 |
 | Today's puzzle (card title) | Today's puzzle | 오늘의 퍼즐 | 今日のパズル | Rätsel des Tages | Énigme du jour | Acertijo del día | Quebra-cabeça do dia | Enigma del giorno | 今日谜题 | 今日謎題 |
-| play (the first-daily offer's button) | Play | 풀어 보기 | あそぶ | Spielen | Jouer | Jugar | Jogar | Gioca | 去玩 | 去玩 |
+| play (the first-daily offer's button) | Play | 풀어 보기 | あそぶ | Spielen | Jouer | Jugar | Jogar | Gioca | 开始玩 | 開始玩 |
 | postcard (result, R2) | Postcard | 엽서 | はがき | Postkarte | carte postale | postal | cartão-postal | cartolina | 明信片 | 明信片 |
 | stamp (postcard) | stamp | 우표 | 切手 | Briefmarke / Marke | timbre | sello | selo | francobollo | 邮票 | 郵票 |
 | market stall (village, pick one a day, R2) | stall / market | 장터 | 屋台 | Stand | étal | puesto | barraca | bancarella | 集市 | 市集 |
 | streak (a row label, no number) | Streak | 연속 기록 | 連続記録 | Serie | Série | Racha | Sequência | Serie | 连续记录 | 連續紀錄 |
-| no hints (✨) | No hints | 힌트 없이 | ヒントなし | Ohne Tipps | Sans indice | Sin pistas | Sem dicas | Senza indizi | 没用提示 | 沒用提示 |
+| no hints (✨) | No hints | 힌트 없이 | ヒントなし | Ohne Tipps | Sans indice | Sin pistas | Sem dicas | Senza indizi | 未使用提示 | 未使用提示 |
 | iOS Settings app (ATT text) | Settings | 설정 | 設定 | Einstellungen | Réglages | Ajustes (es) · Configuración (es-419) | Ajustes | Impostazioni | “设置” | 「設定」 |
 
 ## Village (R2, 2026-10-17)
@@ -85,3 +85,16 @@ UI / item / tab / resident names: `apps/client/src/village/strings.ts`. The 8 no
 - **Fonts:** CJK text names its face before `system-ui` (`uiFont()` in `src/game/uiText.ts`): zh-Hant PingFang TC,
   zh-Hans PingFang SC, ja Hiragino Sans. Lines wrap between Han characters, never before closing punctuation
   (`wrapText`).
+
+## QA 2026-10-18 (역번역 검수, `playtest/i18n-qa.md`, `docs/i18n-qa-report.md`)
+
+- **Ad = "ad"**: the reward is always called an ad (en "Watch an ad for 30 minutes without ads"), never "video" (was en/ko/ja/de/fr/es/pt-BR in the VoiceOver label).
+- **Counts never agree with a number in a sentence**: where `{n}` could be 0 or 1 ("1 días", "faltam 1"), put the number last ("Este mes, días iluminados: {done}") or use a number-free form.
+- **fr:** UI AND village UI labels = vous (Votre cabane, Choisissez-en un); residents' speech = tu. A no-break space (U+00A0, `\u00a0` in TS) before `? ! : ;`. "diagonales", not "coins". Rules sheet stays "Règles" (short; "Règles du jeu" does not fit the caption).
+- **ja:** 村 everywhere for the village (町 only in older notes); full-width `？ ：`; "最初から" (not "やり直す", which reads as redo, the opposite of 元に戻す).
+- **de:** "Vibration" (not Haptik); greetings "Guten Morgen" (a bare "Morgen" reads as tomorrow).
+- **es:** neutral shop words: Marco de fotos, Cesta, Globo de nieve; diagonals "diagonales".
+- **pt-BR:** tile is masculine (quadrado escuro / iluminado); "diagonais", never "cantos"; "Lanternas demais!" (a bare "Demais!" is praise in pt-BR).
+- **zh:** Wick is 小烛 / 小燭 everywhere (also in the postcard label and tutorial line); avoid 臭美 and 小夥伴 (mainland flavour); "未使用提示".
+- **ko:** never 당신; seat request "앉을 자리".
+

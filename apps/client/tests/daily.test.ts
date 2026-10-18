@@ -265,13 +265,13 @@ describe("share (system sheet)", () => {
     await shareResult(level, { dateISO: "2026-11-05", seconds: 161, hints: 2, undos: 1, streak: 5 }, false);
     const moon = MOON_PHASES[moonPhase8("2026-11-05")];
     expect(fakeBackend.shares.map((s) => s.text)).toEqual([
-      `${APP_NAME} #5 ${moon}\n✨ ⏱ 2:41 🔥5\nhttps://humsleep.github.io/duskwick/5?ct=share`,
-      `${APP_NAME} #5 ${moon}\n💡2 🔥5\nhttps://humsleep.github.io/duskwick/5?ct=share`,
+      `${APP_NAME} #5 ${moon}\n✨ ⏱ 2:41 🔥5\nhttps://humsleep.github.io/apps/duskwick/5?ct=share`,
+      `${APP_NAME} #5 ${moon}\n💡2 🔥5\nhttps://humsleep.github.io/apps/duskwick/5?ct=share`,
     ]);
   });
   it("before the epoch the #n is dropped", async () => {
     await shareResult(level, { dateISO: "2026-10-14", seconds: 59, hints: 0, undos: 3, streak: 1 });
-    expect(fakeBackend.shares[0]!.text).toMatch(new RegExp(`^${APP_NAME} \\S+\\n✨ ⏱ 0:59 🔥1\\nhttps://humsleep\\.github\\.io/duskwick/\\?ct=share$`, "u"));
+    expect(fakeBackend.shares[0]!.text).toMatch(new RegExp(`^${APP_NAME} \\S+\\n✨ ⏱ 0:59 🔥1\\nhttps://humsleep\\.github\\.io/apps/duskwick/\\?ct=share$`, "u"));
   });
 });
 

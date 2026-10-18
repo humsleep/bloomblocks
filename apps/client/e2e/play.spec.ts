@@ -228,7 +228,7 @@ test.describe("feedback", () => {
     expect(await app.eval(() => window.__e2e.session!["analysis"]().conflicts)).toEqual([]);
     // v11 (C6): no coral rim on the lanterns and no "−lantern" tag — the coral number + the line (ko-KR)
     expect(await app.eval(() => (window.__e2e.scene!["board"]["rigs"] as Array<Record<string, any>>).filter((r) => r["mode"] !== 0 && r["cool"].visible).length)).toBe(0); // eslint-disable-line @typescript-eslint/no-explicit-any
-    await expect.poll(() => app.eval(() => window.__e2e.scene!["bandText"] as string), { timeout: 10_000 }).toBe("이 1 옆에 등불이 너무 많아요.");
+    await expect.poll(() => app.eval(() => window.__e2e.scene!["bandText"] as string), { timeout: 10_000 }).toBe("1 숫자 옆에 등불이 너무 많아요.");
     expect(await app.eval(() => (window.__e2e.scene!["board"]["overMk"] as Array<{ visible: boolean }>).some((m) => m.visible))).toBe(false);
   });
 

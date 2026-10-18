@@ -21,7 +21,8 @@
 //                              (tracking=true needs domains) with CA92.1 + C617.1; opaque 1024 icon in EVERY
 //                              app icon set (the primary AppIcon and the PPO alternates, e.g. AppIconWick), each
 //                              alternate named in ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES of every config;
-//                              sane version / build number; https privacy-policy + support URLs (src/legal.ts).
+//                              sane version / build number; https privacy-policy + support URLs (src/legal.ts) on the owner's site scheme
+//                              (/apps/duskwick/…), the share-link base (share.ts) and the AASA copy in docs/web.
 //   locales (hard)             every UI language in src/a11y/strings.ts LANGS ships as an iOS localization:
 //                              in Info.plist CFBundleLocalizations, in the Xcode project's knownRegions, and as
 //                              an <lang>.lproj/InfoPlist.strings child of the InfoPlist.strings variant group
@@ -65,6 +66,16 @@ if (block) {
   if (sample.length) testAd.push(`src/ads/config.ts uses Google's sample IDs for: ${sample.join(", ")}`);
   if (cfg.testing !== "false") testAd.push(`src/ads/config.ts testing is ${cfg.testing ?? "missing"} (must be false for the App Store)`);
 }
+
+// ---- ads: test vs real is decided by the NATIVE build kind, never by the web MODE (the archive
+// is built with --mode m1 too, so a MODE check would serve test ads forever) ----
+const stripC = (t) => t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'])\/\/.*$/gm, "$1");
+const adsSrc = stripC(read("src/ads/AdMobAds.ts"));
+if (/import\.meta\.env/.test(adsSrc)) hard.push("src/ads/AdMobAds.ts reads import.meta.env (web MODE must not decide test vs real ads)");
+if (!/isReleaseBuild\(\)/.test(adsSrc)) hard.push("src/ads/AdMobAds.ts does not resolve the native build kind (isReleaseBuild)");
+const audioSwift = stripC(read("ios/App/App/AdAudio.swift"));
+if (!/func buildKind/.test(audioSwift) || !/#if[^\n]*PERF_PROBE[\s\S]*?\["release": false\][\s\S]*?#else[\s\S]*?\["release": true\]/.test(audioSwift))
+  hard.push("ios/App/App/AdAudio.swift buildKind must report release=false under PERF_PROBE and release=true otherwise");
 
 // ---- ads: Info.plist GADApplicationIdentifier ----
 let plistAppId = "";
@@ -236,6 +247,19 @@ try {
     const url = (legal.match(new RegExp(`${k}\\s*=\\s*"([^"]*)"`)) ?? [])[1] ?? "";
     if (!/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}\/\S*$/i.test(url) || /example\.|placeholder|todo/i.test(url)) hard.push(`src/legal.ts ${k} "${url}" is not a real https URL`);
   }
+  // the owner's site scheme (humsleep/apps repo: /apps/<app-id>/ and /apps/<app-id>/privacy/; docs/web/README.md)
+  const SITE = "https://humsleep.github.io/apps/duskwick/";
+  const urlOf = (k) => (legal.match(new RegExp(`${k}\\s*=\\s*"([^"]*)"`)) ?? [])[1];
+  if (urlOf("PRIVACY_POLICY_URL") !== `${SITE}privacy/`) hard.push(`src/legal.ts PRIVACY_POLICY_URL must be ${SITE}privacy/`);
+  if (urlOf("SUPPORT_URL") !== SITE) hard.push(`src/legal.ts SUPPORT_URL must be ${SITE}`);
+  const share = readFileSync(new URL("../../games/lanterns-pips/share.ts", root), "utf8");
+  if ((share.match(/DAILY_URL_BASE\s*=\s*"([^"]*)"/) ?? [])[1] !== SITE) hard.push(`games/lanterns-pips/share.ts DAILY_URL_BASE must be ${SITE} (share link, Universal Links)`);
+  // Universal Links: the AASA copy (published at /.well-known/ of the user site) must name this app and the three paths
+  const aasa = JSON.parse(readFileSync(new URL("../../docs/web/apple-app-site-association", root), "utf8"));
+  const det = aasa?.applinks?.details?.[0];
+  const paths = (det?.components ?? []).filter((c) => !c.exclude).map((c) => c["/"]);
+  if (JSON.stringify(det?.appIDs) !== JSON.stringify([`${identity.teamId}.${identity.bundleId}`])) hard.push(`docs/web/apple-app-site-association appIDs != ["${identity.teamId}.${identity.bundleId}"]`);
+  if (JSON.stringify(paths) !== JSON.stringify(["/apps/duskwick", "/apps/duskwick/", "/apps/duskwick/*"])) hard.push(`docs/web/apple-app-site-association paths are ${JSON.stringify(paths)}`);
   storeChecks++;
 }
 

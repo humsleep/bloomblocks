@@ -188,3 +188,22 @@ Shots: `playtest/shots/village-v2/` — `{se,pm}-{ko,en}-{1..6}-*.png` (real e2e
   zh-Hant 161 KB = 432 KB (each player downloads one).
 - Shots: `playtest/shots/village-v4/kit-r3_*.png` (residents, furniture, times × seasons, room windows, market + requests,
   postcard, night + winter at full size). Tests: village-art 17/17.
+
+## Step 10 — final G1 (full village), art items (done)
+- #1 sky seam: it was the cool wash — a horizontal-gradient RECT whose top edge (0.55 × horizon) cut the sky in every
+  time of day. Now a radial wash fading to nothing on all sides; `drawTimeWash` fades in over its first 14 % (no hard
+  top edge). Checked on the 16-sheet: no seam in dawn / day / dusk / night.
+- #2 visitors: `drawResident(…, { pose: "sit" })` (lower, wider, leaning mochi); the scene seats each on an EMPTY
+  floor slot next to the piece of its category (right, else left, else the nearest free front slot) — never on furniture.
+  Real PNG: Momo sits beside the cushion.
+- #3 locked cards: the item's OWN drawing drained to plum-grey (a clock keeps its dial, a dresser its drawers, the snow
+  globe its house, the rug its stripes) instead of one flat fill.
+- #4 daytime depth (one light): sun upper-left + soft light shafts, horizon haze, a ground that darkens towards the
+  viewer and away from the sun, a weaker day wash, a softer sun bloom.
+- #5 postcard: the REAL app-baked 1080 × 1350 PNG (`bakeRoomPostcard`, en + ko, via `postcard-real.mjs`): real copy
+  ("… 내 작은 오두막" / date · link), the caption now ends 14 units before the postmark ring (no collision), no
+  board / answer / level on it. `playtest/shots/village-v5/postcard-real-{en,ko}.png`.
+- Request bubble at the screen edge: `VillageScene` already clamps its x (`Math.min(W − bw − 2, …)`) — the pm-en-1 clip
+  predates that; not an art-code issue.
+- Not changed: what the store claims; the moon vs "Back" caption on store 04 (scene layout, Frontend).
+- Tests: village-art 17/17; village.spec chromium 8/8 on its own port; servers stopped by PID.

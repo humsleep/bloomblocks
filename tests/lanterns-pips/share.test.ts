@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import * as P from "../../games/lanterns-pips/index.ts";
 import { MOON_PHASES, clockText } from "../../games/lanterns-pips/share.ts";
 
-const L = (n: number): string => `https://humsleep.github.io/duskwick/${n}?ct=share`;
+const L = (n: number): string => `https://humsleep.github.io/apps/duskwick/${n}?ct=share`;
 
 const START = Date.UTC(2026, 10, 1); // 2026-11-01 (test-side date math only)
 const dateAt = (k: number): string => new Date(START + k * 86_400_000).toISOString().slice(0, 10);
@@ -44,7 +44,7 @@ describe("shareText", () => {
     const t = P.shareText(level6, base);
     expect(P.shareText(level6, { ...base })).toBe(t);
     expect(t).toBe(`${P.APP_NAME} #14 🌒\n💡2 ⏱ 4:07 🔥14\n${L(14)}`);
-    expect(t).toBe("Duskwick #14 🌒\n💡2 ⏱ 4:07 🔥14\nhttps://humsleep.github.io/duskwick/14?ct=share");
+    expect(t).toBe("Duskwick #14 🌒\n💡2 ⏱ 4:07 🔥14\nhttps://humsleep.github.io/apps/duskwick/14?ct=share");
     // ✨ = no hint (undos don't matter).
     expect(P.shareText(level6, { ...base, hints: 0, undos: 0, seconds: 161, streak: 1, dateISO: "2026-11-01" })).toBe(`${P.APP_NAME} #1 🌗\n✨ ⏱ 2:41 🔥1\n${L(1)}`);
     expect(P.shareText(level6, { ...base, hints: 0, undos: 0 })).toBe(`Duskwick #14 🌒\n✨ ⏱ 4:07 🔥14\n${L(14)}`);
@@ -56,13 +56,13 @@ describe("shareText", () => {
   });
 
   it("dailyLink: the daily's page with the campaign token; before the epoch the dailies' home", () => {
-    expect(P.DAILY_URL_BASE).toBe("https://humsleep.github.io/duskwick/");
+    expect(P.DAILY_URL_BASE).toBe("https://humsleep.github.io/apps/duskwick/");
     expect(P.SHARE_CT).toBe("share");
     expect(P.dailyLink(14)).toBe(L(14));
-    expect(P.dailyLink(400, "web_daily")).toBe("https://humsleep.github.io/duskwick/400?ct=web_daily");
-    expect(P.dailyLink(0)).toBe("https://humsleep.github.io/duskwick/?ct=share");
-    expect(P.dailyLink(-17)).toBe("https://humsleep.github.io/duskwick/?ct=share");
-    expect(P.shareText(level6, { ...base, dateISO: "2026-10-14" }).split("\n")[2]).toBe("https://humsleep.github.io/duskwick/?ct=share");
+    expect(P.dailyLink(400, "web_daily")).toBe("https://humsleep.github.io/apps/duskwick/400?ct=web_daily");
+    expect(P.dailyLink(0)).toBe("https://humsleep.github.io/apps/duskwick/?ct=share");
+    expect(P.dailyLink(-17)).toBe("https://humsleep.github.io/apps/duskwick/?ct=share");
+    expect(P.shareText(level6, { ...base, dateISO: "2026-10-14" }).split("\n")[2]).toBe("https://humsleep.github.io/apps/duskwick/?ct=share");
   });
 
   it("ShareOptions.showTime: the ⏱ part only when on (default on)", () => {
@@ -92,7 +92,7 @@ describe("shareText", () => {
         expect(t.split(P.APP_NAME).length - 1).toBe(1);
         // No cell names, no board text, no lantern / number / board-row glyphs.
         expect(body).not.toMatch(/[A-H][1-8]|[#.L]{3}|🏮|🟨|[0-4]️⃣/);
-        expect(link).toMatch(/^https:\/\/humsleep\.github\.io\/duskwick\/\d*\?ct=share$/);
+        expect(link).toMatch(/^https:\/\/humsleep\.github\.io\/apps\/duskwick\/\d*\?ct=share$/);
         expect(t.includes(`⏱ ${clockText(r.seconds)}`)).toBe(showTime);
         expect(t.includes("⏱")).toBe(showTime);
         expect(t.includes("💡")).toBe(r.hints > 0);

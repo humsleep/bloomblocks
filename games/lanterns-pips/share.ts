@@ -12,7 +12,7 @@
 //   ✨ ⏱ 4:07 🔥14            ✨ = solved without a hint (undos are normal play and
 //                             don't count); 💡n = n hints (hints > 0); ⏱ m:ss
 //                             only with opts.showTime (default true); 🔥streak
-//   https://humsleep.github.io/duskwick/14?ct=share   dailyLink(n); before the epoch (n ≤ 0) no number
+//   https://humsleep.github.io/apps/duskwick/14?ct=share   dailyLink(n); before the epoch (n ≤ 0) no number
 
 import { parseDate, udiv } from "../lanterns/generator.ts";
 import type { PipsLevel } from "./rules.ts";
@@ -69,7 +69,7 @@ export function clockText(seconds: number): string {
 }
 
 /** The web home of the dailies (GitHub Pages user site; Universal Links open the app). */
-export const DAILY_URL_BASE = "https://humsleep.github.io/duskwick/";
+export const DAILY_URL_BASE = "https://humsleep.github.io/apps/duskwick/";
 /** Campaign token of the in-app share (r1-growth §2-4: one ct per channel). */
 export const SHARE_CT = "share";
 

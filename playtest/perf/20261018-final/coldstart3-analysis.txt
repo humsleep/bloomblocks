@@ -1,0 +1,24 @@
+
+## returning / interactive ms  n=20
+base: median 1144.0  p75 1151.0  MAD 7.0  min 1130.0  max 1618.0
+cur: median 1141.0  p75 1150.0  MAD 8.5  min 1118.0  max 1168.0
+nov: median 1139.5  p75 1147.0  MAD 8.0  min 1120.0  max 1648.0
+delta cur - base: median -3.0 (95% CI -12.0..6.0) | p75 -1.0 (95% CI -161.0..6.0)
+delta nov - base: median -4.5 (95% CI -13.0..6.5) | p75 -4.0 (95% CI -159.0..4.0)
+delta nov - cur: median -1.5 (95% CI -10.5..9.5) | p75 -3.0 (95% CI -11.0..7.0)
+
+## returning / first tap->render ms  n=20
+base: median 8.9  p75 9.5  MAD 0.7  min 7.2  max 19.6
+cur: median 8.7  p75 9.1  MAD 0.5  min 7.5  max 10.5
+nov: median 8.5  p75 9.3  MAD 0.6  min 7.5  max 16.1
+delta cur - base: median -0.2 (95% CI -0.8..0.4) | p75 -0.4 (95% CI -2.0..0.7)
+delta nov - base: median -0.4 (95% CI -1.0..0.5) | p75 -0.2 (95% CI -1.8..1.0)
+delta nov - cur: median -0.2 (95% CI -0.6..0.6) | p75 +0.2 (95% CI -0.9..1.5)
+
+## firstRun / interactive ms  n=20
+base: median 990.0  p75 995.0  MAD 5.0  min 971.0  max 1001.0
+cur: median 991.5  p75 999.0  MAD 6.5  min 979.0  max 1145.0
+nov: median 989.5  p75 992.0  MAD 5.5  min 972.0  max 1150.0
+delta cur - base: median +1.5 (95% CI -7.0..9.5) | p75 +4.0 (95% CI -4.0..11.0)
+delta nov - base: median -0.5 (95% CI -9.0..4.0) | p75 -3.0 (95% CI -5.0..15.0)
+delta nov - cur: median -2.0 (95% CI -12.5..5.0) | p75 -7.0 (95% CI -13.0..10.0)

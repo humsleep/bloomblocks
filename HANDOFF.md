@@ -39,7 +39,7 @@
 2. iCloud 동기화를 실기기에서 확인: 같은 Apple ID인 iPhone과 iPad에서 데일리를 풀어 보고, 삭제 후 재설치해 본다 (README 5단계).
 3. iPad 화면 확인: 설정, 마을, 회전 (App Review가 iPad에서도 실행해 본다).
 4. AdMob 계정을 만들고 실제 앱 ID·광고 단위 ID 발급, UMP 메시지 설정 → 그 뒤 우리가 config와 Info.plist에 넣고 `ios:release-check`가 녹색인지 확인.
-5. App Store Connect에 앱 레코드 생성, App Privacy 답변(추적함, README 표 참고), humsleep.github.io에 app-ads.txt 게시.
+5. App Store Connect에 앱 레코드 생성, App Privacy 답변(추적함, README 표 참고), 사이트 페이지는 docs/web/README.md(app-ads.txt는 이미 게시됨).
 6. 실제 사람 3–5명에게 데일리 3일 플레이와 아이콘 첫인상 확인.
 
 ## 다음 후보 작업 (사용자 승인 필요)

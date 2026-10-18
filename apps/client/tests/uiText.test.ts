@@ -78,13 +78,13 @@ describe("layout limits on an iPhone SE (every locale)", () => {
     }
   });
 
-  it("HUD captions fit under their icon (new locales without shrinking, the rest ≥ 80 %)", () => {
+  it("HUD captions fit under their icon (new locales without shrinking, every locale drawn at ≥ 11 pt of 13)", () => {
     for (const l of LANGS) {
       for (const k of ["cap.town", "cap.today", "cap.undo", "cap.hint", "cap.how", "cap.back", "cap.settings"]) {
         const w = width(STRINGS[l][k]!, 13);
         // R2: the top row's captions (Settings / Rules / Back) get up to 84 pt (the row's pitch follows them)
         const max = k === "cap.settings" ? 84 : 76;
-        expect(w, `${l}.${k} ${STRINGS[l][k]}`).toBeLessThanOrEqual(max / (NEW.has(l) ? 1 : 0.8));
+        expect(w, `${l}.${k} ${STRINGS[l][k]}`).toBeLessThanOrEqual(max / (NEW.has(l) ? 1 : 11 / 13));
       }
     }
   });

@@ -49,7 +49,7 @@ export interface PostcardWords {
   yourTurn: string;
   /** "Nov 14" in the UI language */
   date: string;
-  /** the link line without the scheme (humsleep.github.io/duskwick/14) */
+  /** the link line without the scheme (humsleep.github.io/apps/duskwick/14) */
   link: string;
   /** the font-family list for the words (uiFont()) */
   font: string;

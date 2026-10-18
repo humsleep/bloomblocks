@@ -32,7 +32,21 @@ public class AdAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     public let jsName = "AdAudio"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "configure", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "buildKind", returnType: CAPPluginReturnPromise),
     ]
+
+    /// Real (non-test) ads only when this is true: a Release configuration on a device. Debug,
+    /// the Measure configs (PERF_PROBE) and the simulator are never "release". The web bundle is
+    /// identical in all of them, so this is the only trustworthy signal (src/ads/AdMobAds.ts).
+    @objc func buildKind(_ call: CAPPluginCall) {
+        #if DEBUG || PERF_PROBE || targetEnvironment(simulator)
+        NSLog("[ads] buildKind release=false")
+        call.resolve(["release": false])
+        #else
+        NSLog("[ads] buildKind release=true")
+        call.resolve(["release": true])
+        #endif
+    }
 
     @objc func configure(_ call: CAPPluginCall) {
         let muted = call.getBool("muted") ?? false

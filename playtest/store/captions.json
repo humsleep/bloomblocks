@@ -93,7 +93,7 @@
       ],
       [
         "차분하게, 오프라인으로, 내 방식대로",
-        "서두를 필요 없음 · 목숨 없음 · 점 숫자"
+        "서두를 필요 없음 · 목숨 없음 · 숫자를 점으로도"
       ]
     ]
   },
@@ -179,7 +179,7 @@
       ],
       [
         "Ruhig, offline, wie du magst",
-        "Keine Eile · Keine Leben · Punkte statt Zahlen"
+        "Keine Eile · Keine Leben · Zahlen als Punkte"
       ]
     ]
   },
@@ -188,7 +188,7 @@
     "font": "latin",
     "c": [
       [
-        "Un petit ami dans chaque lanterne",
+        "Un petit compagnon dans chaque lanterne",
         "Des énigmes de logique tout en douceur"
       ],
       [
@@ -218,7 +218,7 @@
       ],
       [
         "Une nouvelle énigme chaque jour",
-        "L’Énigme du jour est la même pour tous"
+        "L’énigme du jour est la même pour tous"
       ],
       [
         "Calme, hors ligne, à votre façon",
@@ -304,7 +304,7 @@
       ],
       [
         "Um quebra-cabeça novo por dia",
-        "O Quebra-cabeça do dia é igual para todos"
+        "O quebra-cabeça do dia é igual para todos"
       ],
       [
         "Calmo, offline, do seu jeito",
@@ -347,7 +347,7 @@
       ],
       [
         "Un nuovo enigma ogni giorno",
-        "L’Enigma del giorno è uguale per tutti"
+        "L’enigma del giorno è uguale per tutti"
       ],
       [
         "Calmo, offline, a modo tuo",
@@ -394,7 +394,7 @@
       ],
       [
         "安静、离线、随你喜欢",
-        "不赶时间 · 没有体力 · 圆点数字"
+        "不赶时间 · 无体力限制 · 可用圆点数字"
       ]
     ]
   },
@@ -403,7 +403,7 @@
     "font": "zh-Hant",
     "c": [
       [
-        "每盞燈籠裡都住著小夥伴",
+        "每盞燈籠裡都住著一位好朋友",
         "療癒的燈籠邏輯謎題"
       ],
       [
@@ -429,7 +429,7 @@
       ],
       [
         "朋友寄來的信和小禮物",
-        "來自燈籠小夥伴"
+        "來自你的燈籠朋友"
       ],
       [
         "每天一題新謎題",
@@ -437,7 +437,7 @@
       ],
       [
         "安靜、離線、隨你喜歡",
-        "不趕時間 · 沒有體力 · 圓點數字"
+        "不趕時間 · 沒有體力限制 · 可用圓點數字"
       ]
     ]
   }

@@ -26,7 +26,8 @@ export interface HouseSpec {
 
 export interface VillageArt {
   drawLanternHouse(g: CanvasRenderingContext2D, spec: HouseSpec, at: PaintBox): void;
-  drawResident(g: CanvasRenderingContext2D, id: ResidentId, expr: Expression, at: PaintBox): void;
+  /** opts.pose "sit" (final G1 #2): the visitor settled on the floor by its piece (lower, wider, leaning) */
+  drawResident(g: CanvasRenderingContext2D, id: ResidentId, expr: Expression, at: PaintBox, opts?: { pose?: "stand" | "sit" }): void;
   /** fit "room" (default): the room's common scale; "card": fill a drawer card's art box */
   drawFurniture(g: CanvasRenderingContext2D, itemId: ItemId, colorway: Colorway, at: PaintBox, opts?: { locked?: boolean; fit?: "room" | "card" }): void;
   drawVillageBackdrop(g: CanvasRenderingContext2D, at: PaintBox): void;
@@ -59,6 +60,8 @@ export interface VillageArt {
   // ---- full village (round 3, contract §7)
   /** the light of the hour and the season: the scene sets it before baking; the kit reads it in its draw functions */
   setEnvironment?(env: Environment): void;
+  /** the backdrop as draw steps (≈ 10, a few ms each; run in order on the same ctx): baked in idle slices / progressively */
+  drawVillageBackdropSteps?(g: CanvasRenderingContext2D, at: PaintBox): Array<() => void>;
   /** the market stall (one stall, a striped awning); `open` = lit lanterns on it */
   drawMarketStall?(g: CanvasRenderingContext2D, at: PaintBox, open: boolean): void;
   /** the request bubble over a resident: a small paper bubble with the category's icon */

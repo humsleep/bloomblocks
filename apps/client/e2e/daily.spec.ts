@@ -58,7 +58,7 @@ test.describe("daily", () => {
     expect(name).toBe("Duskwick");
     // before DAILY_EPOCH (2026-11-01) the "#n" is dropped
     // R2 (A5): the third line is the link (no number before the epoch)
-    expect(text).toMatch(new RegExp(`^${esc(name)} \\S+\\n✨ ⏱ \\d+:\\d\\d 🔥1\\nhttps://humsleep\\.github\\.io/duskwick/\\?ct=share$`, "u"));
+    expect(text).toMatch(new RegExp(`^${esc(name)} \\S+\\n✨ ⏱ \\d+:\\d\\d 🔥1\\nhttps://humsleep\\.github\\.io/apps/duskwick/\\?ct=share$`, "u"));
     expect(text.split("\n").slice(0, -1).join("\n").replace(name, "")).not.toMatch(/[A-Za-z]/);
     await home(app);
     expect(await app.eval(() => [window.__e2e.session!["track"], window.__e2e.session!["levelNumber"]])).toEqual(["gentle", 1]);
@@ -74,7 +74,7 @@ test.describe("daily", () => {
     await expect.poll(() => app.eval(() => window.__e2e.scene!["hintState"].kind)).toBe("ghost");
     await solveDaily(app);
     expect((await dailyPref(app)).result).toMatchObject({ hints: 1, streak: 1 });
-    expect(await share(app)).toMatch(new RegExp(`^${esc(await appName(app))} #14 \\S+\\n💡1 🔥1\\nhttps://humsleep\\.github\\.io/duskwick/14\\?ct=share$`, "u"));
+    expect(await share(app)).toMatch(new RegExp(`^${esc(await appName(app))} #14 \\S+\\n💡1 🔥1\\nhttps://humsleep\\.github\\.io/apps/duskwick/14\\?ct=share$`, "u"));
   });
 
   test("replaying a completed daily is practice: no new result, streak unchanged", async ({ app }) => {

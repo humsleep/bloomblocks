@@ -63,7 +63,7 @@ test.describe("postcard + share (A5)", () => {
     await app.tapPoint(await app.eval(() => window.__e2e.cardPoint("share")));
     await expect.poll(() => app.eval(() => window.__e2e.fakes.shares.length)).toBe(n0 + 1);
     const sh = await app.eval(() => window.__e2e.fakes.shares.at(-1)!);
-    expect(sh.text).toMatch(/^Duskwick #14 \S+\n✨ ⏱ \d+:\d\d 🔥1\nhttps:\/\/humsleep\.github\.io\/duskwick\/14\?ct=share$/u);
+    expect(sh.text).toMatch(/^Duskwick #14 \S+\n✨ ⏱ \d+:\d\d 🔥1\nhttps:\/\/humsleep\.github\.io\/apps\/duskwick\/14\?ct=share$/u);
     expect(sh.files).toHaveLength(1);
     expect(sh.files![0]).toMatch(/^fake:\/\/CACHE\/share\/duskwick-14\.png$/);
     // the attached PNG is the 1080×1350 postcard
@@ -99,7 +99,7 @@ test.describe("postcard + share (A5)", () => {
       }
       const other = cells.map((c) => perm[c]!);
       const moved = cells.some((c, i) => c !== other[i]);
-      const words = { time: "Time", streak: "Streak", noHints: "No hints", order: "Lanterns, in order", yourTurn: "Your turn!", date: "Nov 14", link: "humsleep.github.io/duskwick/14", font: "system-ui" };
+      const words = { time: "Time", streak: "Streak", noHints: "No hints", order: "Lanterns, in order", yourTurn: "Your turn!", date: "Nov 14", link: "humsleep.github.io/apps/duskwick/14", font: "system-ui" };
       const bake = (spec: ReturnType<typeof pc.postcardSpec>): Uint8ClampedArray => {
         const c = document.createElement("canvas");
         c.width = pc.SHARE_W;
@@ -168,7 +168,7 @@ test.describe("deep links (A5)", () => {
     await app.open();
     await app.waitIdle();
     await linkListener(app);
-    for (const url of ["https://humsleep.github.io/duskwick/14?ct=share", "duskwick://daily/3", "duskwick://daily/99"]) {
+    for (const url of ["https://humsleep.github.io/apps/duskwick/14?ct=share", "duskwick://daily/3", "duskwick://daily/99"]) {
       await app.page.evaluate((u) => window.__e2e.fakes.fire("appUrlOpen", { url: u }), url);
       await expect.poll(() => app.eval(() => window.__e2e.session!["daily"]), { timeout: 15_000 }).toBe(TODAY);
       await app.waitIdle();
@@ -210,7 +210,7 @@ test.describe("deep links (A5)", () => {
     await app.seed({ now: `${TODAY}T10:00:00` });
     await app.open();
     await linkListener(app);
-    await app.page.evaluate(() => window.__e2e.fakes.fire("appUrlOpen", { url: "https://humsleep.github.io/duskwick/14" }));
+    await app.page.evaluate(() => window.__e2e.fakes.fire("appUrlOpen", { url: "https://humsleep.github.io/apps/duskwick/14" }));
     await app.page.waitForTimeout(3000);
     expect(await app.eval(() => window.__e2e.session!["daily"])).toBeNull();
   });

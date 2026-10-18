@@ -10,13 +10,14 @@ describe("parseDeepLink", () => {
     ["duskwick://daily", { daily: "today" }],
     ["duskwick://today", { daily: "today" }],
     ["duskwick:daily/3", { daily: 3 }],
-    ["https://humsleep.github.io/duskwick/14?ct=share", { daily: 14 }],
-    ["https://humsleep.github.io/duskwick/14/", { daily: 14 }],
-    ["https://HUMSLEEP.github.io/duskwick?ct=tiktok_bio", { daily: "today" }],
-    ["https://humsleep.github.io/duskwick/", { daily: "today" }],
+    ["https://humsleep.github.io/apps/duskwick/14?ct=share", { daily: 14 }],
+    ["https://humsleep.github.io/apps/duskwick/14/", { daily: 14 }],
+    ["https://HUMSLEEP.github.io/apps/duskwick?ct=tiktok_bio", { daily: "today" }],
+    ["https://humsleep.github.io/apps/duskwick/", { daily: "today" }],
+    ["https://humsleep.github.io/apps/duskwick/14", { daily: 14 }],
   ])("%s", (url, want) => expect(parseDeepLink(url)).toEqual(want));
 
-  it.each(["", "duskwick://town", "duskwick://daily/abc", "https://example.com/duskwick/14", "http://humsleep.github.io/duskwick/14", "https://humsleep.github.io/other/14", "https://humsleep.github.io/duskwick/14/x", "not a url"])(
+  it.each(["", "duskwick://town", "duskwick://daily/abc", "https://example.com/duskwick/14", "http://humsleep.github.io/apps/duskwick/14", "https://humsleep.github.io/other/14", "https://humsleep.github.io/duskwick/14" /* the old plan: no longer ours */, "https://humsleep.github.io/apps/duskwick/privacy/", "https://humsleep.github.io/apps/mossol/", "https://humsleep.github.io/apps/duskwick/14/x", "not a url"])(
     "ignores %s",
     (url) => expect(parseDeepLink(url)).toBeNull(),
   );

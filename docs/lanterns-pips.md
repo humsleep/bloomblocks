@@ -393,7 +393,7 @@ dailyNumber(dateISO): number                // EPOCH = 1, 다음 날 2 …; EPOC
 interface DailyResult { dateISO; seconds; hints; undos; streak }
 interface ShareOptions { showTime: boolean }  // 라운드 5, 기본 showTime = true
 shareText(level, r: DailyResult, opts?: ShareOptions): string   // R2: 3줄, 마지막 줄 = dailyLink(n)
-DAILY_URL_BASE = 'https://humsleep.github.io/duskwick/'          // R2 (A5)
+DAILY_URL_BASE = 'https://humsleep.github.io/apps/duskwick/'          // R2 (A5)
 SHARE_CT = 'share'
 dailyLink(n, ct = SHARE_CT): string         // `${DAILY_URL_BASE}${n}?ct=${ct}`, n ≤ 0 → 번호 없음
 moonPhase(dateISO): number                  // 0..7 (0 그믐·삭, 4 보름)
@@ -475,8 +475,8 @@ gentle은 contradiction 힌트 0회.
 - 달 모양: 평균 삭망월 29.5306일(1/10000일 단위 정수 `SYNODIC_E4` = 295306), 기준 삭 2000-01-06 18:14 UTC, 그날 정오 UTC의 위상을 8등분
   → 🌑🌒🌓🌔🌕🌖🌗🌘. 경계 근처에서 하루 어긋날 수 있다(테스트: 2024-01-11·2024-04-08 🌑, 2024-01-25·2026-11-24 🌕).
 - `shareText(level, r, opts?)` (라운드 5, R2): 3줄. ① `APP_NAME #번호 달` ② 힌트 0회면 `✨`, 힌트 > 0이면 `💡n`(되돌리기는 기호에 영향 없음), `opts.showTime`(기본 true)일 때만 `⏱ m:ss`, `🔥연속` — 공백으로 잇는다.
-  ③ (R2, 결정 A5 — **의도한 공유 형식 변경**) 그 데일리의 링크 `dailyLink(n)` = `https://humsleep.github.io/duskwick/<n>?ct=share`.
-  `ct=share`는 App Store Connect·웹 리퍼러에서 채널을 가르는 캠페인 토큰이다(개인정보 없음). 에포크 전(n ≤ 0)에는 번호 없이 `…/duskwick/?ct=share`.
+  ③ (R2, 결정 A5 — **의도한 공유 형식 변경**) 그 데일리의 링크 `dailyLink(n)` = `https://humsleep.github.io/apps/duskwick/<n>?ct=share`.
+  `ct=share`는 App Store Connect·웹 리퍼러에서 채널을 가르는 캠페인 토큰이다(개인정보 없음). 에포크 전(n ≤ 0)에는 번호 없이 `…/apps/duskwick/?ct=share`.
   주소는 `DAILY_URL_BASE`, 토큰은 `SHARE_CT`(다른 채널은 `dailyLink(n, "tiktok_bio")`처럼 쓴다). 유니버설 링크·AASA 게시 절차는 `docs/web/README.md`.
 - **기호의 뜻(라운드 6, 코드 그대로)**:
 
@@ -488,7 +488,7 @@ gentle은 contradiction 힌트 0회.
   | 💡n | 힌트 n회 사용 | `hints > 0` (✨와 함께 나오지 않음) |
   | ⏱ m:ss | 푼 시간 | `opts.showTime`(기본 true)일 때만 |
   | 🔥n | 연속 일수 | 항상 |
-  | `https://humsleep.github.io/duskwick/n?ct=share` | 그 데일리의 링크(앱이 있으면 유니버설 링크로 오늘의 데일리가 열린다) | 항상, 마지막 줄 (R2) |
+  | `https://humsleep.github.io/apps/duskwick/n?ct=share` | 그 데일리의 링크(앱이 있으면 유니버설 링크로 오늘의 데일리가 열린다) | 항상, 마지막 줄 (R2) |
 
   주의: ✨는 "힌트를 안 썼다"만이 아니라 "되돌리기도 안 했다"이다(라운드 5 명세·테스트 그대로). "힌트 없음"만으로 바꾸려면
   `share.ts`의 `help` 한 줄과 테스트(`tests/lanterns-pips/share.test.ts`, 클라이언트 `apps/client/tests/daily.test.ts`)를 같이 바꾼다.
@@ -500,19 +500,19 @@ gentle은 contradiction 힌트 0회.
 ```
 Duskwick #1 🌗
 ✨ ⏱ 2:41 🔥1
-https://humsleep.github.io/duskwick/1?ct=share
+https://humsleep.github.io/apps/duskwick/1?ct=share
 ```
 
 ```
 Duskwick #14 🌒
 ✨ ⏱ 4:07 🔥14
-https://humsleep.github.io/duskwick/14?ct=share
+https://humsleep.github.io/apps/duskwick/14?ct=share
 ```
 
 ```
 Duskwick #14 🌒
 💡2 ⏱ 4:07 🔥14
-https://humsleep.github.io/duskwick/14?ct=share
+https://humsleep.github.io/apps/duskwick/14?ct=share
 ```
 
 시간 끔(`{ showTime: false }`), 힌트 없음:
@@ -520,7 +520,7 @@ https://humsleep.github.io/duskwick/14?ct=share
 ```
 Duskwick #62 🌗
 ✨ 🔥62
-https://humsleep.github.io/duskwick/62?ct=share
+https://humsleep.github.io/apps/duskwick/62?ct=share
 ```
 
 - 앱은 이 문구와 함께 **스포일러 없는 엽서 이미지**(1080×1350)를 붙인다(`apps/client/src/game/postcard.ts`). 엽서는 판을 입력으로 받지 않는다: 오늘의 집(날짜 시드), Wick 우표, 소인 `#n · 날짜`, 시간·연속 기록·✨, 놓은 **순서**만 있는 띠(앰버 = 남은 등불, 산호 = 나중에 뺀 등불, 전구 = 힌트). 증명: `apps/client/tests/postcard.test.ts`(같은 이야기의 다른 판 → 같은 그리기 호출), `e2e/share.spec.ts`(실제 캔버스 픽셀 동일, 대조군은 달라짐).

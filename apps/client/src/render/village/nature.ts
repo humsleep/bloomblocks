@@ -5,7 +5,7 @@
 import type { Ctx } from "../draw.ts";
 import { drawLanternHouse, LANTERN_THEMES, type LanternTheme, type ResidentId } from "./lanternHouse.ts";
 import { contact, flower, glow, hexA, miniLantern, mix, moon, P, reseed, rnd, rrect, solid, stoneBlob, T, texture, type Box } from "./shade.ts";
-import { atmos, canopy, drawKeyLight, drawTimeWash, lawnColours, setAtmos, type Season, type TimeOfDay } from "./atmos.ts";
+import { atmos, canopy, drawDayDepth, drawKeyLight, drawTimeWash, lawnColours, setAtmos, type Season, type TimeOfDay } from "./atmos.ts";
 
 export const DESIGN = { w: 430, h: 932 } as const;
 
@@ -65,12 +65,13 @@ function sky(ctx: Ctx, w: number, top: number, horizon: number): void {
   ctx.fillStyle = g;
   ctx.fillRect(0, top, w, horizon - top + 40);
   // the afterglow sits LEFT (the key light's source); the right horizon cools to mauve
-  const cool = ctx.createLinearGradient(0, 0, w, 0);
-  cool.addColorStop(0, hexA("#77598C", 0));
-  cool.addColorStop(0.55, hexA("#77598C", 0.15));
-  cool.addColorStop(1, hexA("#5A4A86", A.coolA));
+  // (v16: a radial wash fading to nothing on every side — the old rect's hard top edge was the "sky seam")
+  const cool = ctx.createRadialGradient(w + 40, horizon, 10, w + 40, horizon, w * 1.05);
+  cool.addColorStop(0, hexA("#5A4A86", A.coolA));
+  cool.addColorStop(0.5, hexA("#77598C", A.coolA * 0.35));
+  cool.addColorStop(1, hexA("#77598C", 0));
   ctx.fillStyle = cool;
-  ctx.fillRect(0, horizon * 0.55, w, horizon * 0.45 + 40);
+  ctx.fillRect(0, top, w, horizon - top + 40);
   const ag = ctx.createRadialGradient(-30, horizon, 10, -30, horizon, w * 0.95);
   ag.addColorStop(0, hexA(A.glow, A.glowA));
   ag.addColorStop(0.5, hexA(A.glow, A.glowA * 0.3));
@@ -573,86 +574,130 @@ function seasonProps(ctx: Ctx, w: number, top: number): void {
  * o.time / o.season (round 3): dawn · day · dusk (default) · night × spring · summer (default) · autumn · winter.
  */
 export function drawVillageBackdrop(ctx: Ctx, at: Box, o: { time?: TimeOfDay; season?: Season } = {}): void {
-  setAtmos(o.time ?? "dusk", o.season ?? "summer");
-  const A = atmos();
+  for (const step of villageBackdropSteps(ctx, at, o)) step();
+}
+
+/**
+ * The same backdrop as a list of draw steps (≈ 10 layers, each a few ms): run them in order on the SAME ctx, nothing
+ * else drawn on it in between. The scene bakes them in idle slices (a step per slice) so the open is a blit and a tap
+ * never waits behind one long task. Each step sets the atmosphere (a module global other kit draws read) and puts it back.
+ */
+export function villageBackdropSteps(ctx: Ctx, at: Box, o: { time?: TimeOfDay; season?: Season } = {}): Array<() => void> {
+  const time = o.time ?? "dusk";
+  const season = o.season ?? "summer";
   const m = villageMap(at);
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(at.x, at.y, at.w, at.h);
-  ctx.clip();
-  ctx.translate(m.ox, m.oy);
-  ctx.scale(m.k, m.k);
   const w = DESIGN.w;
   const top = Math.min(0, (at.y - m.oy) / m.k);
   const horizon = 282;
-  sky(ctx, w, top, horizon);
-  drawKeyLight(ctx, w, horizon);
-  // at dusk the moon rises on the right (a disc, not the light: the afterglow on the left is)
-  if (A.time === "dusk") moon(ctx, 346, 196, 17, 0.58);
-  cloud(ctx, 160, 226, 0.75, A.time === "day" ? 0.7 : 0.45);
-  if (A.time === "day") cloud(ctx, 330, 160, 0.55, 0.6);
-  hill(ctx, w, 262, 9, 0.8, A.sky.hills[0], 140, 0.35);
-  // the far village: tiny lantern-houses on the far hill (same architecture, hazed)
-  const far: [number, number, number, string][] = [[40, 270, 0.1, "#E58C9E"], [96, 266, 0.08, "#6FAE8C"], [300, 266, 0.09, "#8E7BCF"], [352, 270, 0.1, "#E7A75A"], [404, 264, 0.08, "#6FAE8C"]];
-  for (const [x, y, sc, roof] of far) {
-    ctx.save();
-    ctx.globalAlpha = 0.7;
-    const th: LanternTheme = { paper: "#FFE9C2", paperLo: "#E2B98A", roof, door: T.wood, flower: T.pink };
-    drawLanternHouse(ctx, x, y, sc, { theme: th, windows: [{ x: 0, y: -70, r: 12 }], groundGlow: false, threshold: false, snow: A.season === "winter" });
-    ctx.restore();
-  }
-  hill(ctx, w, 300, 10, 2.1, A.sky.hills[1], 120, 0.3);
-  tree(ctx, 22, 340, 0.7, 0.2);
-  tree(ctx, 410, 332, 0.78, 0.15);
-  tree(ctx, 330, 344, 0.46, 0.3);
-  tree(ctx, 96, 350, 0.46, 0.3);
-  hill(ctx, w, 346, 7, 4.4, A.sky.hills[2], 700, 0.34);
-  lawn(ctx, w, 350, 600);
-  // warm light from the string lights onto the lawn
-  for (let i = 0; i < 6; i++) glow(ctx, 30 + i * 74, 372, 60, "#FFC98A", 0.14 * A.sky.lamp, 0.3);
-  // the lane + a branch to every door (curves, varied stones)
-  softPath(ctx, spline([[212, 940, 1.2], [204, 860, 1.1], [196, 740, 1.0], [210, 660, 0.85], [228, 560, 0.7], [216, 460, 0.55], [212, 380, 0.42]]), 40);
-  softPath(ctx, spline([[198, 706, 0.85], [150, 670, 0.62], [104, 648, 0.42]]), 30);
-  softPath(ctx, spline([[214, 664, 0.8], [276, 650, 0.6], [334, 646, 0.42]]), 30);
-  // back row: four short branches (round 3)
-  softPath(ctx, spline([[218, 488, 0.6], [140, 466, 0.45], [62, 444, 0.3]]), 26);
-  softPath(ctx, spline([[214, 456, 0.52], [188, 442, 0.4], [164, 434, 0.3]]), 24);
-  softPath(ctx, spline([[220, 454, 0.52], [246, 442, 0.4], [268, 432, 0.3]]), 24);
-  softPath(ctx, spline([[222, 482, 0.58], [300, 462, 0.44], [370, 442, 0.3]]), 26);
-  softPath(ctx, spline([[204, 878, 1.05], [150, 860, 0.8], [96, 842, 0.6]]), 32);
-  softPath(ctx, spline([[206, 888, 1.05], [272, 870, 0.8], [330, 854, 0.6]]), 32);
-  // pools of light at every door (the houses are lit or not; the pool is the street's)
-  for (const p of Object.values(PLOTS)) pool(ctx, p.x, p.y - 2, 70 * p.s + 30, 0.28);
-  // string lights over the back row — bulbs skip the back houses' handles (no tangents, Reality #5)
-  const handles = (["sage", "kuri", "luna", "yuki"] as const).map((id): [number, number] => [PLOTS[id].x - 20, PLOTS[id].x + 20]);
-  stringLights(ctx, -6, 290, 436, 284, 14, 15, handles);
-  tree(ctx, 216, 384, 0.36, 0.1);
-  mushrooms(ctx, 104, 480, 1.1);
-  rock(ctx, 322, 470, 0.8);
-  pond(ctx, 404, 492, 24, 9);
-  flowerBed(ctx, 166, 196, 556, 0.85);
-  flowerBed(ctx, 252, 282, 548, 0.85);
-  tree(ctx, 18, 566, 0.6, 0.05);
-  lampPost(ctx, 182, 612, 0.86);
-  bush(ctx, 16, 662, 0.85, T.leaf, [T.lilac, T.lemon]);
-  bush(ctx, 418, 664, 0.8, T.leaf, [T.pink, T.lemon]);
-  flowerBed(ctx, 36, 80, 694, 1);
-  flowerBed(ctx, 262, 296, 684, 1);
-  mushrooms(ctx, 158, 756, 1.2);
-  bush(ctx, 166, 906, 0.62, T.leaf, [T.coral, T.lemon]);
-  flowerBed(ctx, 232, 262, 790, 1.1);
-  flowerBed(ctx, 404, 430, 872, 1.05);
-  fence(ctx, 0, 30, 900, 0.9);
-  seasonProps(ctx, w, top);
-  // the time's colour over the ground (the sky already carries it), then a soft plum vignette
-  drawTimeWash(ctx, { x: 0, y: 250, w, h: 932 - 250 }, A.time);
-  const v = ctx.createRadialGradient(w / 2, 932 * 0.5, 932 * 0.28, w / 2, 932 * 0.5, 932 * 0.75);
-  v.addColorStop(0, hexA(T.plum, 0));
-  v.addColorStop(1, hexA(T.plum, A.time === "day" ? 0.16 : 0.34));
-  ctx.fillStyle = v;
-  ctx.fillRect(0, top, w, 932 - top);
-  ctx.restore();
-  setAtmos();
+  const step = (f: (A: ReturnType<typeof atmos>) => void) => (): void => {
+    setAtmos(time, season);
+    try {
+      f(atmos());
+    } finally {
+      setAtmos();
+    }
+  };
+  return [
+    // sky, the key light, the clouds
+    step((A) => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(at.x, at.y, at.w, at.h);
+      ctx.clip();
+      ctx.translate(m.ox, m.oy);
+      ctx.scale(m.k, m.k);
+      sky(ctx, w, top, horizon);
+      drawKeyLight(ctx, w, horizon);
+      // at dusk the moon rises on the right (a disc, not the light: the afterglow on the left is)
+      if (A.time === "dusk") moon(ctx, 346, 196, 17, 0.58);
+      cloud(ctx, 160, 226, 0.75, A.time === "day" ? 0.7 : 0.45);
+      if (A.time === "day") cloud(ctx, 330, 160, 0.55, 0.6);
+    }),
+    // the far hill and the far village on it: tiny lantern-houses (same architecture, hazed)
+    step((A) => {
+      hill(ctx, w, 262, 9, 0.8, A.sky.hills[0], 140, 0.35);
+      const far: [number, number, number, string][] = [[40, 270, 0.1, "#E58C9E"], [96, 266, 0.08, "#6FAE8C"], [300, 266, 0.09, "#8E7BCF"], [352, 270, 0.1, "#E7A75A"], [404, 264, 0.08, "#6FAE8C"]];
+      for (const [x, y, sc, roof] of far) {
+        ctx.save();
+        ctx.globalAlpha = 0.7;
+        const th: LanternTheme = { paper: "#FFE9C2", paperLo: "#E2B98A", roof, door: T.wood, flower: T.pink };
+        drawLanternHouse(ctx, x, y, sc, { theme: th, windows: [{ x: 0, y: -70, r: 12 }], groundGlow: false, threshold: false, snow: A.season === "winter" });
+        ctx.restore();
+      }
+    }),
+    step((A) => {
+      hill(ctx, w, 300, 10, 2.1, A.sky.hills[1], 120, 0.3);
+      tree(ctx, 22, 340, 0.7, 0.2);
+      tree(ctx, 410, 332, 0.78, 0.15);
+      tree(ctx, 330, 344, 0.46, 0.3);
+      tree(ctx, 96, 350, 0.46, 0.3);
+    }),
+    step((A) => hill(ctx, w, 346, 7, 4.4, A.sky.hills[2], 700, 0.34)),
+    step(() => lawn(ctx, w, 350, 600)),
+    // warm light from the string lights onto the lawn
+    step((A) => {
+      for (let i = 0; i < 6; i++) glow(ctx, 30 + i * 74, 372, 60, "#FFC98A", 0.14 * A.sky.lamp, 0.3);
+    }),
+    // the lane + a branch to every door (curves, varied stones)
+    step(() => {
+      softPath(ctx, spline([[212, 940, 1.2], [204, 860, 1.1], [196, 740, 1.0], [210, 660, 0.85], [228, 560, 0.7], [216, 460, 0.55], [212, 380, 0.42]]), 40);
+      softPath(ctx, spline([[198, 706, 0.85], [150, 670, 0.62], [104, 648, 0.42]]), 30);
+      softPath(ctx, spline([[214, 664, 0.8], [276, 650, 0.6], [334, 646, 0.42]]), 30);
+    }),
+    // back row: four short branches (round 3)
+    step(() => {
+      softPath(ctx, spline([[218, 488, 0.6], [140, 466, 0.45], [62, 444, 0.3]]), 26);
+      softPath(ctx, spline([[214, 456, 0.52], [188, 442, 0.4], [164, 434, 0.3]]), 24);
+      softPath(ctx, spline([[220, 454, 0.52], [246, 442, 0.4], [268, 432, 0.3]]), 24);
+      softPath(ctx, spline([[222, 482, 0.58], [300, 462, 0.44], [370, 442, 0.3]]), 26);
+      softPath(ctx, spline([[204, 878, 1.05], [150, 860, 0.8], [96, 842, 0.6]]), 32);
+      softPath(ctx, spline([[206, 888, 1.05], [272, 870, 0.8], [330, 854, 0.6]]), 32);
+    }),
+    // pools of light at every door (the houses are lit or not; the pool is the street's), string lights over the back row
+    step(() => {
+      for (const p of Object.values(PLOTS)) pool(ctx, p.x, p.y - 2, 70 * p.s + 30, 0.28);
+      // bulbs skip the back houses' handles (no tangents, Reality #5)
+      const handles = (["sage", "kuri", "luna", "yuki"] as const).map((id): [number, number] => [PLOTS[id].x - 20, PLOTS[id].x + 20]);
+      stringLights(ctx, -6, 290, 436, 284, 14, 15, handles);
+    }),
+    step(() => {
+      tree(ctx, 216, 384, 0.36, 0.1);
+      mushrooms(ctx, 104, 480, 1.1);
+      rock(ctx, 322, 470, 0.8);
+      pond(ctx, 404, 492, 24, 9);
+      flowerBed(ctx, 166, 196, 556, 0.85);
+      flowerBed(ctx, 252, 282, 548, 0.85);
+      tree(ctx, 18, 566, 0.6, 0.05);
+    }),
+    step(() => {
+      lampPost(ctx, 182, 612, 0.86);
+      bush(ctx, 16, 662, 0.85, T.leaf, [T.lilac, T.lemon]);
+      bush(ctx, 418, 664, 0.8, T.leaf, [T.pink, T.lemon]);
+      flowerBed(ctx, 36, 80, 694, 1);
+      flowerBed(ctx, 262, 296, 684, 1);
+      mushrooms(ctx, 158, 756, 1.2);
+    }),
+    step(() => {
+      bush(ctx, 166, 906, 0.62, T.leaf, [T.coral, T.lemon]);
+      flowerBed(ctx, 232, 262, 790, 1.1);
+      flowerBed(ctx, 404, 430, 872, 1.05);
+      fence(ctx, 0, 30, 900, 0.9);
+      seasonProps(ctx, w, top);
+    }),
+    // the time's colour over the ground (the sky already carries it), then a soft plum vignette
+    step((A) => {
+      if (A.time === "day") drawDayDepth(ctx, w, top, horizon, 932);
+    }),
+    step((A) => drawTimeWash(ctx, { x: 0, y: 230, w, h: 932 - 230 }, A.time)),
+    step((A) => {
+      const v = ctx.createRadialGradient(w / 2, 932 * 0.5, 932 * 0.28, w / 2, 932 * 0.5, 932 * 0.75);
+      v.addColorStop(0, hexA(T.plum, 0));
+      v.addColorStop(1, hexA(T.plum, A.time === "day" ? 0.16 : 0.34));
+      ctx.fillStyle = v;
+      ctx.fillRect(0, top, w, 932 - top);
+      ctx.restore();
+    }),
+  ];
 }
 
 /** The cottage's mailbox (flag up = an unread letter), bottom centre at (x, y), s pt per unit. */

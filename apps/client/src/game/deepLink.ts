@@ -1,7 +1,7 @@
 // Deep links (R2, decision A5): the share text's link and the custom scheme open the daily.
 //
 //   duskwick://daily · duskwick://daily/<n> · duskwick://today
-//   https://humsleep.github.io/duskwick[/<n>][/][?ct=…]      (Universal Links, docs/web/README.md)
+//   https://humsleep.github.io/apps/duskwick[/<n>][/][?ct=…]      (Universal Links, docs/web/README.md)
 //
 // Routing (routeDaily): #n of today → today's daily. 1.0 has no archive of past dailies, so a past
 // #n (allowPast off) and a future #n both open TODAY's daily — the link is an invitation to play,
@@ -17,7 +17,7 @@ import { dailyNumber, isoDay, isoFromDay } from "./pipsApi.ts";
 export type LinkTarget = { daily: number } | { daily: "today" };
 
 const WEB_HOST = "humsleep.github.io";
-const WEB_PATH = /^\/duskwick(?:\/(\d{1,6}))?\/?$/;
+const WEB_PATH = /^\/apps\/duskwick(?:\/(\d{1,6}))?\/?$/;
 const APP_PATH = /^\/?(?:daily(?:\/(\d{1,6}))?|today)\/?$/;
 
 /** Parse a deep link (custom scheme or the web daily's address). Query / hash are ignored (ct=…). */

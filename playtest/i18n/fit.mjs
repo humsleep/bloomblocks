@@ -3,8 +3,8 @@
 // UI face) at the layout widths of an iPhone SE (375 pt) and reports lines / overflow per slot.
 //   node playtest/i18n/fit.mjs [out=playtest/i18n/fit-report.md]
 // Slots mirror the layout code: LineBand (src/game/LineBand.ts), tutorial end card (Tutorial.ts),
-// "?" sheet cards (HowToSheet.ts), HUD captions (LanternsScene.placeCaptions, 76 pt then scaled),
-// settings captions (SettingsSheet, segment − 8 pt), primary buttons, result labels, first-daily card.
+// "?" sheet cards (HowToSheet.ts), HUD captions (LanternsScene.placeCaptions, 76 pt; top row 84 pt; then scaled),
+// settings captions (SettingsSheet, segment − 8 pt); HUD / settings captions shrink to fit, so they only fail below an 11 pt floor, primary buttons, result labels, first-daily card.
 import { createRequire } from "node:module";
 import { writeFileSync } from "node:fs";
 const require = createRequire("/Users/hyukahn/workspace/puzzle-lab/apps/client/package.json");
@@ -28,8 +28,10 @@ const SLOTS = [
   ["how card main", /^how\.c[1-4]$/, 18, "700", Math.min(W, 520) - 32 - 32, 2],
   ["how card sub", /^how\.c[1-4]s$/, 17, "500", Math.min(W, 520) - 32 - 32, 2],
   ["how title", /^how\.title$/, 22, "800", 0, 1, W - 120],
-  ["HUD caption", /^cap\.(town|today|undo|hint|how|back)$/, 13, "700", 0, 1, 76],
-  ["settings caption", /^cap\.(sound|numbers|shareTime|haptics|notify|restart|privacy|policy|replay)$/, 13, "600", 0, 1, Math.round((Math.min(W - 24, 360) - 32 - 12) / 2) - 8],
+  // captions shrink to fit (LanternsScene.placeCaptions / SettingsSheet) — "over" = would have to go below 11 pt
+  ["HUD caption", /^cap\.(town|today|undo|hint)$/, 13, "700", 0, 1, 76, 11],
+  ["HUD caption (top row)", /^cap\.(settings|how|back)$/, 13, "700", 0, 1, 84, 11],
+  ["settings caption", /^cap\.(sound|numbers|shareTime|haptics|notify|restart|privacy|policy|replay)$/, 13, "600", 0, 1, Math.round((Math.min(W - 24, 360) - 32 - 12) / 2) - 8, 11],
   ["button: next house", /^done\.next$/, 20, "800", 0, 1, Math.min(W - 64, 300) - 24],
   ["button: tutorial start", /^tut\.start$/, 21, "800", 0, 1, Math.min(W - 40, 340) - 44 - 24],
   ["button: continue", /^res\.continue$/, 19, "800", 0, 1, Math.round((W - 40) * 0.62 - 12) - 20],
@@ -51,8 +53,8 @@ async function measureAll(engine) {
   for (const l of LANGS) {
     const d = { ...STRINGS[l] };
     for (const [k, v] of Object.entries(BREAK_CARD[l])) d[`break.${k}`] = v;
-    for (const [name, re, pt, weight, wrap, maxLines, maxW] of SLOTS)
-      for (const k of Object.keys(d)) if (re.test(k)) jobs.push({ l, k, name, pt, weight, wrap, maxLines, maxW: maxW ?? 0, text: d[k].replace(/\{n\}/g, "12").replace(/\{\w+\}/g, "3"), font: font(l) });
+    for (const [name, re, pt, weight, wrap, maxLines, maxW, floor] of SLOTS)
+      for (const k of Object.keys(d)) if (re.test(k)) jobs.push({ l, k, name, pt, weight, wrap, maxLines, maxW: maxW ?? 0, floor: floor ?? 0, text: d[k].replace(/\{n\}/g, "12").replace(/\{\w+\}/g, "3"), font: font(l) });
     for (const k of ["break.title", "break.body", "break.watch", "break.notNow"]) {
       const spec = k === "break.body" ? ["card text", 18, "500", Math.min(W - 40, 320) - 40, 3, 0] : k === "break.title" ? ["card title", 18, "800", Math.min(W - 40, 320) - 40, 2, 0] : ["card button", 16, "700", 0, 1, Math.round((Math.min(W - 40, 320) - 40 - 12) / 2) - 12];
       jobs.push({ l, k, name: spec[0], pt: spec[1], weight: spec[2], wrap: spec[3], maxLines: spec[4], maxW: spec[5], text: d[k], font: font(l) });
@@ -98,7 +100,8 @@ async function measureAll(engine) {
         const widest = Math.max(...lines.map((s) => ctx.measureText(s).width));
         return { ...j, w, lines: lines.length, widest, ok: lines.length <= j.maxLines && widest <= j.wrap + 0.5, out: lines };
       }
-      return { ...j, w, lines: 1, scale: w > j.maxW ? j.maxW / w : 1, ok: w <= j.maxW };
+      const scale = w > j.maxW ? j.maxW / w : 1;
+      return { ...j, w, lines: 1, scale, ok: w <= j.maxW || (j.floor > 0 && scale * j.pt >= j.floor - 0.05) };
     });
   }, jobs);
   await b.close();

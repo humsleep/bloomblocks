@@ -159,7 +159,7 @@ test.describe("village", () => {
     await app.seed({ now: "2026-10-14T19:00:00", files: { "pips-progress.json": progress(9) }, prefs: { guide: ALL_GUIDES, village: villageSave({ q: [4], lr: [1] }) } });
     await app.open();
     await openVillage(app);
-    await expect.poll(async () => (await labels(app)).includes("모모의 부탁: 앉을 것")).toBe(true);
+    await expect.poll(async () => (await labels(app)).includes("모모의 부탁: 앉을 자리")).toBe(true);
     await tapHit(app, "cottage");
     await expect.poll(() => view(app).then((x) => x?.screen)).toBe("room");
     await tapHit(app, "slot-12");
@@ -231,6 +231,52 @@ test.describe("village", () => {
     // 12 graphemes × −2.4 px ≈ −26 px narrower, whichever way it is drawn (±2 px)
     expect(r.plain - r.fallback).toBeGreaterThan(20);
     if (r.supported) expect(Math.abs(r.native - r.fallback)).toBeLessThanOrEqual(3);
+  });
+
+  test("step 16: the backdrop's draw steps give the same picture sliced as in one go (other kit draws and RNG use in between change nothing)", async ({ app }) => {
+    await app.open();
+    const r = await app.page.evaluate(async () => {
+      const [kit, shade] = await window.__e2e.villageKit();
+      const W = 393;
+      const H = 852;
+      const paint = (time: "dawn" | "day" | "dusk" | "night", season: "spring" | "winter" | "autumn", sliced: boolean): Uint8ClampedArray => {
+        const c = document.createElement("canvas");
+        c.width = W * 2;
+        c.height = H * 2;
+        const g = c.getContext("2d")!;
+        g.setTransform(2, 0, 0, 2, 0, 0);
+        const steps = kit.villageArt.drawVillageBackdropSteps(g, { x: 0, y: 0, w: W, h: H }, { time, season });
+        for (const step of steps) {
+          step();
+          if (sliced) {
+            // what can run between two idle slices: the RNG moved, another kit drawing on another canvas
+            shade.reseed(12345);
+            shade.rnd();
+            const o = document.createElement("canvas").getContext("2d")!;
+            kit.villageArt.drawLanternHouse(o, { resident: "wick", lit: true, eve: false, seed: 3 }, { x: 0, y: 0, w: 60, h: 80 });
+          }
+        }
+        return g.getImageData(0, 0, W * 2, H * 2).data;
+      };
+      const out: Array<{ time: string; steps: number; diff: number; noise: number }> = [];
+      for (const [time, season] of [["dusk", "autumn"], ["night", "winter"], ["day", "spring"], ["dawn", "autumn"]] as const) {
+        const a = paint(time, season, false);
+        const a2 = paint(time, season, false); // the browser's own run-to-run noise (WebKit's blends are not bit-stable)
+        const b = paint(time, season, true);
+        let diff = 0;
+        let noise = 0;
+        for (let i = 0; i < a.length; i++) {
+          if (a[i] !== b[i]) diff++;
+          if (a[i] !== a2[i]) noise++;
+        }
+        out.push({ time, steps: kit.villageArt.drawVillageBackdropSteps(document.createElement("canvas").getContext("2d")!, { x: 0, y: 0, w: W, h: H }).length, diff, noise });
+      }
+      return out;
+    });
+    for (const x of r) {
+      expect(x.steps, x.time).toBeGreaterThanOrEqual(8);
+      expect(x.diff, `${x.time}: sliced ≠ one go (noise ${x.noise})`).toBeLessThanOrEqual(x.noise);
+    }
   });
 
   test("G3: every village line of all 10 locales fits the 375 pt card with this browser's fonts", async ({ app }) => {

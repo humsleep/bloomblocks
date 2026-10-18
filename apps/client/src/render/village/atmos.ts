@@ -60,7 +60,7 @@ export function drawKeyLight(ctx: Ctx, w: number, horizon: number): void {
     ctx.arc(w * 0.12, horizon - 6, 20, Math.PI, 0);
     ctx.fill();
   } else if (time === "day") {
-    glow(ctx, w * 0.16, 104, 170, "#FFF6D8", 0.55);
+    glow(ctx, w * 0.16, 104, 150, "#FFF6D8", 0.38);
     ctx.fillStyle = "#FFF9E6";
     ctx.beginPath();
     ctx.arc(w * 0.16, 104, 15, 0, Math.PI * 2);
@@ -75,13 +75,63 @@ export function drawKeyLight(ctx: Ctx, w: number, horizon: number): void {
  * blue multiply, dawn = a rose soft-light, day = a warm lift, dusk = none (the kit's base light).
  */
 export function drawTimeWash(ctx: Ctx, at: Box, t: TimeOfDay = time): void {
-  const w = { dawn: ["soft-light", "#FFB4BE", 0.28], day: ["screen", "#FFF2DC", 0.14], dusk: null, night: ["multiply", "#5E6CB4", 0.42] }[t] as [GlobalCompositeOperation, string, number] | null;
+  const w = { dawn: ["soft-light", "#FFB4BE", 0.26], day: ["screen", "#FFF2DC", 0.07], dusk: null, night: ["multiply", "#5E6CB4", 0.42] }[t] as [GlobalCompositeOperation, string, number] | null;
   if (!w) return;
   ctx.save();
   ctx.globalCompositeOperation = w[0];
-  ctx.fillStyle = hexA(w[1], w[2]);
+  // fade in over the first 14 % of the box: no hard top edge (the "sky seam")
+  const g = ctx.createLinearGradient(0, at.y, 0, at.y + at.h);
+  g.addColorStop(0, hexA(w[1], 0));
+  g.addColorStop(0.14, hexA(w[1], w[2]));
+  g.addColorStop(1, hexA(w[1], w[2]));
+  ctx.fillStyle = g;
   ctx.fillRect(at.x, at.y, at.w, at.h);
   ctx.restore();
+}
+
+/**
+ * Daytime depth inside the one-light rule (Reality final G1 #4): soft light shafts from the sun (upper left)
+ * falling to the lower right, cloud-lit haze on the horizon, and a ground that darkens towards the viewer.
+ */
+export function drawDayDepth(ctx: Ctx, w: number, top: number, horizon: number, bottom: number): void {
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const sx = w * 0.16;
+  const sy = 104;
+  for (const [a, l] of [[0.42, 0.055], [0.62, 0.075], [0.82, 0.05], [1.02, 0.04]] as const) {
+    const g = ctx.createLinearGradient(sx, sy, sx + Math.cos(a) * 760, sy + Math.sin(a) * 760);
+    g.addColorStop(0, hexA("#FFF3C8", l));
+    g.addColorStop(1, hexA("#FFF3C8", 0));
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(sx + Math.cos(a - 0.07) * 900, sy + Math.sin(a - 0.07) * 900);
+    ctx.lineTo(sx + Math.cos(a + 0.07) * 900, sy + Math.sin(a + 0.07) * 900);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+  // horizon haze: paler where the far hills meet the sky (atmospheric depth)
+  const hz = ctx.createLinearGradient(0, horizon - 70, 0, horizon + 30);
+  hz.addColorStop(0, hexA("#FFF4DC", 0));
+  hz.addColorStop(1, hexA("#FFF4DC", 0.22));
+  ctx.fillStyle = hz;
+  ctx.fillRect(0, horizon - 70, w, 100);
+  // the ground darkens towards the viewer (plum multiply), the lit side staying on the left
+  ctx.save();
+  ctx.globalCompositeOperation = "multiply";
+  const gd = ctx.createLinearGradient(0, 350, 0, bottom);
+  gd.addColorStop(0, hexA("#FFFFFF", 0));
+  gd.addColorStop(1, hexA("#6A6A9A", 0.38));
+  ctx.fillStyle = gd;
+  ctx.fillRect(0, 350, w, bottom - 350);
+  const side = ctx.createLinearGradient(0, 0, w, 0);
+  side.addColorStop(0, hexA("#FFFFFF", 0));
+  side.addColorStop(1, hexA("#7A7AA8", 0.18));
+  ctx.fillStyle = side;
+  ctx.fillRect(0, 350, w, bottom - 350);
+  ctx.restore();
+  void top;
 }
 
 /** A canopy colour for the current season (i picks among its tones). */

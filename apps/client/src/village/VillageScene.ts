@@ -120,6 +120,8 @@ export interface VillageLaunch {
   t0: number;
   /** tap → data ready (chunks, save, lines, art kit) */
   tData?: number;
+  /** the first village frame is on screen (the host's "opening" veil can go) */
+  onShown?: () => void;
 }
 
 type Screen = "village" | "letter" | "gift" | "room" | "market";
@@ -189,6 +191,10 @@ export class VillageScene extends Phaser.Scene {
   private hostInput = true;
   private closed = false;
   private firstFrame = true;
+  /** the first village frame has been presented */
+  private shown = false;
+  /** the backdrop bake still running (the sky and ground are up; the houses and neighbors follow, a step per frame) */
+  private bakeLeft: Bake | null = null;
   private unsub: (() => void) | null = null;
   // per-visit talk state
   private taps = new Map<ResidentId, { n: number; after?: string }>();
@@ -523,7 +529,9 @@ export class VillageScene extends Phaser.Scene {
         if (this.closed) return;
         const ms = Math.round(performance.now() - this.L.t0);
         this.openMs = ms;
-        console.info(`[village] open ${ms} ms (data ${Math.round(this.L.tData ?? 0)} ms, build ${Math.round(this.tBuild)} ms) ${JSON.stringify(this.prof)}`);
+        console.info(`[village] open ${ms} ms (data ${Math.round(this.L.tData ?? 0)} ms ${JSON.stringify(dataMs)}, build ${Math.round(this.tBuild)} ms) ${JSON.stringify(this.prof)}`);
+        this.shown = true;
+        this.L.onShown?.();
         // the village covers the screen: the puzzle scene below stops rendering
         const h = this.L.host;
         if (h.sys.settings.visible) h.sys.setVisible(false);
@@ -546,21 +554,63 @@ export class VillageScene extends Phaser.Scene {
     const nextIn = eve(this.input2());
     const houses = this.houseSlots();
     // the backdrop + houses layer: a rasterized copy is kept between opens (and baked ahead by
-    // prewarm), so an open only blits it — the kit's backdrop raster is the costly part (G5)
+    // prewarm in idle steps), so an open only blits it — the kit's backdrop raster is the costly part (G5).
+    // Not baked yet: the sky and ground come first (one step), the houses a frame at a time (update).
     const moved = new Set(rs.filter((r) => r.movedIn).map((r) => r.r.id));
     const sig = bgSig(W, H, this.q, moved, nextIn?.id ?? null, this.env);
-    const hit = bgCache?.sig === sig ? bgCache.canvas : null;
+    const done = bgCache?.sig === sig;
+    const job = done ? null : bakeJob(art, sig, W, H, this.q, houses, moved, nextIn?.id ?? null, this.env);
+    if (job && job.i === 0) bakeStep(job);
+    const hit = bgCache?.sig === sig ? bgCache.canvas : (job?.canvas ?? null);
+    this.bakeLeft = bgCache?.sig === sig ? null : job;
     const key = this.tex("village-bg", W, H, (g) => {
       if (hit) {
         g.save();
         g.setTransform(1, 0, 0, 1, 0, 0);
         g.drawImage(hit, 0, 0);
         g.restore();
-      } else paintVillageBg(g, art, W, H, houses, moved, nextIn?.id ?? null, this.env);
+      } else paintVillageBg(g, art, W, H, houses, moved, nextIn?.id ?? null, this.env); // no canvas to cache in
     });
-    if (!hit) keepBg(sig, (this.textures.get(key) as PhaserTypes.Textures.CanvasTexture).getCanvas());
     this.show(this.bg, key, 0, 0);
 
+    if (this.bakeLeft) this.hideFolk();
+    else this.renderFolk(houses, rs, nextIn);
+
+    // HUD: back disc + caption, the lantern jar
+    const r = 22;
+    const bx = 16 + r;
+    const by = this.top + 10 + r;
+    const jar = jarProgress(drops(this.input2()));
+    const hk = this.tex("village-hud", W, by + r + 26, (g) => {
+      this.disc(g, bx, by, r, "back");
+      this.text(g, [a11y.t("cap.back")], bx, by + r + 4, 13, { align: "center", color: UI.caption });
+      // G1 re-review 2 #6 (designer): the lantern jar = the SAME disc as the puzzle HUD's village button
+      // (hudArt drawVillageDisc, its light level = the jar), caption "2/3" under it like every disc caption
+      g.save();
+      g.translate(W - 16 - r - r, by - r);
+      drawVillageDisc(g, r * 2, jar.size > 0 ? jar.have / jar.size : 0);
+      g.restore();
+      this.text(g, [`${jar.have}/${jar.size}`], W - 16 - r, by + r + 4, 13, { align: "center", color: UI.caption });
+    });
+    this.show(this.hud, hk, 0, 0);
+    this.hud.setVisible(this.screenNow !== "room");
+    if (this.screenNow === "village") {
+      this.hits.push({ id: "back", x: bx - r - 6, y: by - r - 6, w: 2 * r + 12, h: 2 * r + 30, label: vt(this.d.lang, "back"), act: () => this.close() });
+      this.hits.push({ id: "jar", x: W - 56, y: by - 24, w: 48, h: 64, label: vt(this.d.lang, "jar", { have: jar.have, size: jar.size }), act: () => undefined });
+    }
+  }
+
+  /** the backdrop is still being baked: nothing stands on bare ground */
+  private hideFolk(): void {
+    for (const sp of this.res) sp.img.setVisible(false);
+    for (const b of this.bubbles.values()) b.setVisible(false);
+    this.mailImg.setVisible(false);
+    this.stallImg?.setVisible(false);
+  }
+
+  /** the neighbors, their request bubbles, the houses' doors, the mailbox and the stall (after the backdrop is baked) */
+  private renderFolk(houses: readonly HouseSlot[], rs: readonly ResidentState[], nextIn: ReturnType<typeof eve>): void {
+    const { W, H } = this;
     // residents (breathing: ambient)
     const want = rs.filter((r) => r.movedIn);
     for (const r of want) {
@@ -604,7 +654,7 @@ export class VillageScene extends Phaser.Scene {
       b ??= this.add.image(0, 0, bk).setOrigin(0, 0);
       this.bubbles.set(sp.id, b);
       const head = this.d.art.residentHead ? this.d.art.residentHead({ x: sp.x, y: sp.y, w: sp.w, h: sp.h }, sp.id) : { x: sp.x + sp.w * 0.6, y: sp.y + sp.h * 0.3 };
-      const bxp = Math.min(W - bw - 2, head.x - hx0);
+      const bxp = Math.max(2, Math.min(W - bw - 2, head.x - hx0)); // never off either screen edge
       const byp = head.y - hy0;
       this.show(b, bk, bxp, byp);
       const name = residentName(this.d.lang, sp.id);
@@ -647,29 +697,6 @@ export class VillageScene extends Phaser.Scene {
     this.stallImg.setVisible(this.screenNow === "village");
     if (this.screenNow === "village") {
       this.hits.push({ id: "stall", x: st.x - 4, y: st.y - 4, w: st.w + 8, h: st.h + 8, label: vt(this.d.lang, ms === "open" ? "stall" : ms === "done" ? "stallDone" : "stallClosed"), act: () => this.openMarket() });
-    }
-
-    // HUD: back disc + caption, the lantern jar
-    const r = 22;
-    const bx = 16 + r;
-    const by = this.top + 10 + r;
-    const jar = jarProgress(drops(this.input2()));
-    const hk = this.tex("village-hud", W, by + r + 26, (g) => {
-      this.disc(g, bx, by, r, "back");
-      this.text(g, [a11y.t("cap.back")], bx, by + r + 4, 13, { align: "center", color: UI.caption });
-      // G1 re-review 2 #6 (designer): the lantern jar = the SAME disc as the puzzle HUD's village button
-      // (hudArt drawVillageDisc, its light level = the jar), caption "2/3" under it like every disc caption
-      g.save();
-      g.translate(W - 16 - r - r, by - r);
-      drawVillageDisc(g, r * 2, jar.size > 0 ? jar.have / jar.size : 0);
-      g.restore();
-      this.text(g, [`${jar.have}/${jar.size}`], W - 16 - r, by + r + 4, 13, { align: "center", color: UI.caption });
-    });
-    this.show(this.hud, hk, 0, 0);
-    this.hud.setVisible(this.screenNow !== "room");
-    if (this.screenNow === "village") {
-      this.hits.push({ id: "back", x: bx - r - 6, y: by - r - 6, w: 2 * r + 12, h: 2 * r + 30, label: vt(this.d.lang, "back"), act: () => this.close() });
-      this.hits.push({ id: "jar", x: W - 56, y: by - 24, w: 48, h: 64, label: vt(this.d.lang, "jar", { have: jar.have, size: jar.size }), act: () => undefined });
     }
   }
 
@@ -1378,15 +1405,27 @@ export class VillageScene extends Phaser.Scene {
     return vt(lang, "where", { row: vt(lang, `row.${w.row}` as "row.back"), col });
   }
 
-  /** Where each visitor sits: beside the piece of its category (right of it, else left), a slot's size. */
+  /**
+   * Where each visitor sits (final G1 #2, designer): on an EMPTY floor slot next to the piece of its category
+   * (the row's free neighbour, right first, else left; else the nearest free front-row slot), a little smaller
+   * than the slot — never on top of furniture. Drawn with the "sit" pose.
+   */
   private guestBoxes(boxes: ReadonlyArray<{ x: number; y: number; w: number; h: number }>): Array<{ r: ResidentId; box: { x: number; y: number; w: number; h: number } }> {
     const out: Array<{ r: ResidentId; box: { x: number; y: number; w: number; h: number } }> = [];
+    const taken = new Set<number>();
+    const free = (i: number): boolean => i >= 0 && i < FLOOR_SLOTS && !this.room.slots[i] && coverOf(this.room, i) < 0 && !taken.has(i);
     for (const v of visitors(this.d.save.sv, this.room)) {
       const slot = this.room.slots.findIndex((p) => p && itemOfBit(p.bit)?.cat === v.cat);
-      const near = slot >= 0 && slot < FLOOR_SLOTS ? boxes[slot]! : boxes[12]!; // a wall piece / the rug: front middle
-      const side = slot >= 0 && slot % FLOOR_COLS === FLOOR_COLS - 1 ? -1 : 1;
-      const sz = Math.min(near.w * 0.9, near.h * 0.75);
-      out.push({ r: v.r, box: { x: near.x + near.w / 2 + side * near.w * 0.55 - sz / 2 + out.length * 6, y: near.y + near.h - sz, w: sz, h: sz } });
+      const row = slot >= 0 && slot < FLOOR_SLOTS ? Math.floor(slot / FLOOR_COLS) : 2;
+      const cand: number[] = [];
+      if (slot >= 0 && slot < FLOOR_SLOTS) cand.push(slot + 1, slot - 1, slot + 2, slot - 2);
+      for (let c = 0; c < FLOOR_COLS; c++) cand.push(row * FLOOR_COLS + c, 2 * FLOOR_COLS + c);
+      let pick = cand.find((i) => free(i) && (slot < 0 || Math.floor(i / FLOOR_COLS) === row || i >= 2 * FLOOR_COLS));
+      if (pick === undefined) pick = cand.find((i) => free(i)) ?? 12;
+      taken.add(pick);
+      const near = boxes[pick]!;
+      const sz = Math.min(near.w * 0.95, near.h * 0.72);
+      out.push({ r: v.r, box: { x: near.x + near.w / 2 - sz / 2, y: near.y + near.h - sz, w: sz, h: sz } });
     }
     return out;
   }
@@ -1428,7 +1467,7 @@ export class VillageScene extends Phaser.Scene {
           const w = item.span === 2 && partnerSlot(i) >= 0 ? slots[partnerSlot(i)]!.x + slots[partnerSlot(i)]!.w - bx.x : bx.w;
           art.drawFurniture(g, piece.item, piece.cw, { x: bx.x, y: bx.y, w, h: bx.h });
         });
-        for (const v of this.guestBoxesIn(slots)) art.drawResident(g, v.r, "happy", v.box);
+        for (const v of this.guestBoxesIn(slots)) art.drawResident(g, v.r, "happy", v.box, { pose: "sit" });
       }
       g.restore();
       // the caption: "Duskwick · date" (the postmark's words), no puzzle, no numbers but the date
@@ -1439,7 +1478,7 @@ export class VillageScene extends Phaser.Scene {
       g.textBaseline = "top";
       g.fillText(vt(this.d.lang, "shareText"), cap.x, cap.y + cap.h * 0.12, cap.w);
       g.font = villageFont(this.d.lang, Math.round(cap.h * 0.16), 500);
-      g.fillText(`${isoOfDay(this.today)} · humsleep.github.io/duskwick`, cap.x, cap.y + cap.h * 0.5, cap.w);
+      g.fillText(`${isoOfDay(this.today)} · humsleep.github.io/apps/duskwick`, cap.x, cap.y + cap.h * 0.5, cap.w);
       g.restore();
       const url = c.toDataURL("image/png");
       const i = url.indexOf(",");
@@ -1457,7 +1496,7 @@ export class VillageScene extends Phaser.Scene {
   private async shareRoom(): Promise<void> {
     cue("tap");
     const lang = this.d.lang;
-    const text = `${vt(lang, "shareText")}\nhttps://humsleep.github.io/duskwick/?ct=room`;
+    const text = `${vt(lang, "shareText")}\nhttps://humsleep.github.io/apps/duskwick/?ct=room`;
     const b64 = this.bakeRoomPostcard();
     let file: string | null = null;
     if (b64) {
@@ -1569,7 +1608,7 @@ export class VillageScene extends Phaser.Scene {
         }
       }
       // visitors: residents whose fulfilled request's piece is in the room, sitting beside it (design §2.4)
-      if (!this.drawer) for (const vb of guests) art.drawResident(g, vb.r, "happy", vb.box);
+      if (!this.drawer) for (const vb of guests) art.drawResident(g, vb.r, "happy", vb.box, { pose: "sit" });
       // the rug (the rug layer has no slot of its own): a header disc with a rug glyph + its caption (no lone pill)
       const rd = this.rugDisc();
       g.save();
@@ -2057,8 +2096,44 @@ export class VillageScene extends Phaser.Scene {
 
   // ------------------------------------------------------------------ ambient motion
 
+  /** One bake step a frame while the houses are still coming; the whole village when the last one lands. */
+  private stepBake(): void {
+    const job = this.bakeLeft;
+    if (!job || !this.shown) return; // the first frame (sky and ground) goes out before any more baking
+    if (bgCache?.sig !== job.sig && bake !== job) {
+      this.render(); // another look of the backdrop is wanted (a resize): start over
+      return;
+    }
+    // as many steps as fit a ~100 ms frame budget (a visit waiting for its houses, not a game frame: every frame drawn in between is a full-screen blit)
+    const t0 = performance.now();
+    let more = true;
+    while (more && performance.now() - t0 < 100) more = bakeStep(job);
+    if (more) {
+      const t = this.textures.get("village-bg") as PhaserTypes.Textures.CanvasTexture;
+      const g = t.getContext();
+      g.save();
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.drawImage(job.canvas, 0, 0);
+      g.restore();
+      t.refresh();
+      return;
+    }
+    this.render();
+    this.readyMs = Math.round(performance.now() - this.L.t0);
+    console.info(`[village] ready ${this.readyMs} ms (bake steps ms ${JSON.stringify(bakeMs)})`);
+    if (this.bakeLeft || reduced()) return;
+    // the neighbors come in softly (they were hidden while the ground was bare)
+    const folk = [...this.res.map((r) => r.img), ...this.bubbles.values(), this.mailImg, ...(this.stallImg ? [this.stallImg] : [])].filter((o) => o.visible);
+    for (const o of folk) o.setAlpha(0);
+    this.tweens.add({ targets: folk, alpha: 1, duration: OPEN_MS, ease: "Sine.easeOut" });
+  }
+  /** tap → the village is complete and live (houses, neighbors, hit boxes), for the perf notes */
+  readyMs = 0;
+
   override update(time: number): void {
-    if (this.closed || reduced() || this.screenNow !== "village") return;
+    if (this.closed) return;
+    if (this.bakeLeft) this.stepBake();
+    if (reduced() || this.screenNow !== "village") return;
     // residents breathe (ambient(): the governor keeps 20 fps for this)
     for (const s of this.res) {
       if (!s.img.visible) continue;
@@ -2191,55 +2266,121 @@ export function environmentNow(d: Date = new Date()): Environment & { hemisphere
   return { time: timeBandOf(d.getHours()), season: seasonOf(month, hemisphere), hemisphere, month };
 }
 
-function paintVillageBg(g: CanvasRenderingContext2D, art: VillageArt, W: number, H: number, houses: readonly HouseSlot[], moved: ReadonlySet<ResidentId>, eveId: ResidentId | null, env: Environment): void {
+/** the backdrop (the kit's draw steps when it has them, else its one call), then each house: one step = one forced raster */
+function bgSteps(g: CanvasRenderingContext2D, art: VillageArt, W: number, H: number, houses: readonly HouseSlot[], moved: ReadonlySet<ResidentId>, eveId: ResidentId | null, env: Environment): Array<() => void> {
   art.setEnvironment?.(env);
-  art.drawVillageBackdrop(g, { x: 0, y: 0, w: W, h: H });
-  houses.forEach((h, i) => {
-    const lit = h.who === "cottage" || moved.has(h.who);
-    const spec = { resident: h.who === "cottage" ? ("cottage" as const) : lit ? h.who : null, lit, eve: eveId === h.who, seed: i * 7 + 3 };
-    art.drawLanternHouse(g, spec, { x: h.cx - h.w / 2, y: h.by - h.h, w: h.w, h: h.h });
+  const box = { x: 0, y: 0, w: W, h: H };
+  let backdrop: Array<() => void>;
+  try {
+    backdrop = art.drawVillageBackdropSteps ? art.drawVillageBackdropSteps(g, box) : [() => art.drawVillageBackdrop(g, box)];
+  } catch (e) {
+    console.warn("[village] art backdrop steps fell back", e);
+    backdrop = [() => placeholderArt.drawVillageBackdrop(g, box)];
+  }
+  let dead = false; // a kit step threw: the rest of the kit's backdrop is skipped, the placeholder's one call closes it
+  const last = backdrop.length - 1;
+  const kit = backdrop.map((f, k) => (): void => {
+    if (!dead) {
+      try {
+        f();
+      } catch (e) {
+        console.warn("[village] art backdrop step fell back", e);
+        dead = true;
+      }
+    }
+    if (dead && k === last) placeholderArt.drawVillageBackdrop(g, box);
   });
+  return [
+    ...kit,
+    ...houses.map((h, i) => () => {
+      const lit = h.who === "cottage" || moved.has(h.who);
+      const spec = { resident: h.who === "cottage" ? ("cottage" as const) : lit ? h.who : null, lit, eve: eveId === h.who, seed: i * 7 + 3 };
+      art.drawLanternHouse(g, spec, { x: h.cx - h.w / 2, y: h.by - h.h, w: h.w, h: h.h });
+    }),
+  ];
+}
+function paintVillageBg(g: CanvasRenderingContext2D, art: VillageArt, W: number, H: number, houses: readonly HouseSlot[], moved: ReadonlySet<ResidentId>, eveId: ResidentId | null, env: Environment): void {
+  for (const step of bgSteps(g, art, W, H, houses, moved, eveId, env)) step();
 }
 
 const bgSig = (W: number, H: number, q: number, moved: ReadonlySet<ResidentId>, eveId: string | null, env: Environment): string =>
   `${W}x${H}@${q}|${[...moved].sort().join(",")}|${eveId ?? ""}|${env.time}|${env.season}`;
 /** one rasterized backdrop (≈ 5 MB at 393 × 852 @2x), replaced when the size or the houses change */
 let bgCache: { sig: string; canvas: HTMLCanvasElement } | null = null;
-function keepBg(sig: string, src: HTMLCanvasElement): void {
-  const c = document.createElement("canvas");
-  c.width = src.width;
-  c.height = src.height;
-  const g = c.getContext("2d");
-  if (!g) return;
-  g.drawImage(src, 0, 0);
-  bgCache = { sig, canvas: c };
-}
 
-/** Bake the backdrop layer ahead (idle): the open then only blits it. Forces the raster now (1 px read). */
-function prebakeBg(art: VillageArt, p: Progress, save: VillageSave): void {
-  if (typeof document === "undefined") return;
+/** A backdrop bake in progress: resumable (prewarm slices it while idle), finished by the open if the player came early. */
+interface Bake {
+  sig: string;
+  canvas: HTMLCanvasElement;
+  g: CanvasRenderingContext2D;
+  steps: Array<() => void>;
+  i: number;
+}
+let bake: Bake | null = null;
+/** ms of each bake step (the slices; perf notes / tests) */
+export const bakeMs: number[] = [];
+
+/** The job for this look of the backdrop: null when it is already baked (or no canvas), the running one if it is the same look. */
+function bakeJob(art: VillageArt, sig: string, W: number, H: number, q: number, houses: readonly HouseSlot[], moved: ReadonlySet<ResidentId>, eveId: ResidentId | null, env: Environment): Bake | null {
+  if (bgCache?.sig === sig) return null;
+  if (bake?.sig === sig) return bake;
+  if (typeof document === "undefined") return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.ceil(W * q);
+  canvas.height = Math.ceil(H * q);
+  const g = canvas.getContext("2d");
+  if (!g) return null;
+  g.fillStyle = "#171A31"; // the night ground under the bands still to come (never a hole)
+  g.fillRect(0, 0, canvas.width, canvas.height);
+  g.setTransform(q, 0, 0, q, 0, 0);
+  bake = { sig, canvas, g, steps: bgSteps(g, art, W, H, houses, moved, eveId, env), i: 0 };
+  return bake;
+}
+/** Run the next step and force its raster (a 1 px read). True while steps remain; the last one caches the backdrop. */
+function bakeStep(b: Bake): boolean {
+  if (b.i >= b.steps.length) return false;
+  const t0 = performance.now();
+  b.steps[b.i++]!();
+  b.g.getImageData(0, 0, 1, 1);
+  bakeMs.push(Math.round((performance.now() - t0) * 10) / 10);
+  if (b.i < b.steps.length) return true;
+  bgCache = { sig: b.sig, canvas: b.canvas };
+  if (bake === b) bake = null;
+  return false;
+}
+const idleSlot = (): Promise<void> =>
+  new Promise((r) => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(() => r(), { timeout: 1000 });
+    else setTimeout(r, 0);
+  });
+
+/**
+ * Bake the backdrop ahead, one step at a time, each in its own browser-idle slot and only while `idle()`
+ * still holds (any input / motion stops it at the next step; the job is kept). True = nothing left to do.
+ */
+async function prebakeBg(art: VillageArt, p: Progress, save: VillageSave, idle: () => boolean): Promise<boolean> {
+  if (typeof document === "undefined") return true;
   const u = Math.min(window.devicePixelRatio || 1, 3);
   const q = Math.min(u, 2);
   const app = document.getElementById("app");
   const W = (app?.clientWidth ?? window.innerWidth) || 0;
   const H = (app?.clientHeight ?? window.innerHeight) || 0;
-  if (!W || !H) return;
+  if (!W || !H) return true;
   const s = safeInsets();
   const inp: VillageInput = { cleared: p.cleared, dailyDates: p.dailyDates, v: save.sv, today: p.today };
   const moved = new Set(residents(inp).filter((r) => r.movedIn).map((r) => r.r.id));
   const nextIn = eve(inp)?.id ?? null;
   const env = environmentNow();
-  const sig = bgSig(W, H, q, moved, nextIn, env);
-  if (bgCache?.sig === sig) return;
-  const c = document.createElement("canvas");
-  c.width = Math.ceil(W * q);
-  c.height = Math.ceil(H * q);
-  const g = c.getContext("2d");
-  if (!g) return;
-  g.setTransform(q, 0, 0, q, 0, 0);
-  paintVillageBg(g, art, W, H, houseSlotsFor(art, W, H, s.top, H - s.bottom), moved, nextIn, env);
-  g.getImageData(0, 0, 1, 1);
-  bgCache = { sig, canvas: c };
+  const job = bakeJob(art, bgSig(W, H, q, moved, nextIn, env), W, H, q, houseSlotsFor(art, W, H, s.top, H - s.bottom), moved, nextIn, env);
+  while (job && bake === job) {
+    if (!idle()) return false;
+    await idleSlot();
+    if (!idle()) return false;
+    if (bake !== job) break; // the open finished it meanwhile
+    if (!bakeStep(job)) break;
+  }
+  return true;
 }
 
 type Progress = { cleared: { gentle: number; deduce: number }; dailyDates: string[]; today: string; hardToday?: boolean };
@@ -2258,12 +2399,18 @@ async function letterFont(art: VillageArt, lang: Lang): Promise<string | null> {
 }
 
 /** Load everything the village needs (store, lines, art) — the scene builds synchronously. */
+/** ms each part of the data phase took in the last cold open (perf notes) */
+export const dataMs: Record<string, number> = {};
+const timed = <T>(k: string, p: Promise<T>): Promise<T> => {
+  const t0 = performance.now();
+  return p.finally(() => (dataMs[k] = Math.round(performance.now() - t0)));
+};
 export async function prepareVillage(p: Progress, lang: Lang): Promise<VillageData> {
-  const [save, dev, lines, art] = await Promise.all([loadVillage(), deviceId(), loadLines(lang), loadArt()]);
+  const [save, dev, lines, art] = await Promise.all([timed("save", loadVillage()), timed("dev", deviceId()), timed("lines", loadLines(lang)), timed("art", loadArt())]);
   ready.lines.set(lang, lines);
   ready.art = art;
   ready.dev = dev;
-  return data(p, lang, save, dev, lines, art, await letterFont(art, lang));
+  return data(p, lang, save, dev, lines, art, await timed("font", letterFont(art, lang)));
 }
 
 /** The data right now when everything is warm (no await), else null. */
@@ -2273,15 +2420,23 @@ export function prepareNow(p: Progress, lang: Lang): VillageData | null {
   return lines && ready.art && ready.dev && save && ready.fonts.has(lang) ? data(p, lang, save, ready.dev, lines, ready.art, ready.fonts.get(lang) ?? null) : null;
 }
 
-/** Warm the caches prepareVillage reads (lines JSON, art kit chunk, the save, the device id) and pre-bake the backdrop. */
-export async function prewarm(lang: Lang, p?: Progress, idle: () => boolean = () => true): Promise<void> {
+/** Everything an open needs is in memory and the backdrop is baked: the open only blits (no veil needed). */
+export function isWarm(lang: Lang): boolean {
+  return !!(ready.lines.has(lang) && ready.art && ready.dev && peekVillage() && ready.fonts.has(lang) && bgCache && !bake);
+}
+
+/**
+ * Warm the caches prepareVillage reads (lines JSON, art kit chunk, the save, the device id), then bake the
+ * backdrop in small idle steps. True = all done; false = stopped by input (call again at the next idle moment).
+ */
+export async function prewarm(lang: Lang, p?: Progress, idle: () => boolean = () => true): Promise<boolean> {
+  if (!idle()) return false;
   const [lines, art, save, dev] = await Promise.all([loadLines(lang), loadArt(), loadVillage(), deviceId()]);
   ready.lines.set(lang, lines);
   ready.art = art;
   ready.dev = dev;
   await letterFont(art, lang);
-  // the bake is the heavy part (≈ 250 ms at 4× CPU): only if the player is still not doing anything
-  if (p && idle()) prebakeBg(art, p, save);
+  return p ? prebakeBg(art, p, save, idle) : true;
 }
 
 /** This device's sync id (the room records' tie-break), or a village-local one before sync made it. */

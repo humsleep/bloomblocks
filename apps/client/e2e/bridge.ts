@@ -50,6 +50,8 @@ const bridge = {
   },
   /** Gate G3 with the page's real fonts (src/village/g3check.ts). */
   villageG3: () => import("../src/village/g3check.ts"),
+  /** the art kit + its RNG (the backdrop's draw steps must not depend on what ran between two of them) */
+  villageKit: () => Promise.all([import("../src/render/village/index.ts"), import("../src/render/village/shade.ts")]),
   /** the village scene module (drawTracked: letter tracking with / without canvas letterSpacing) */
   villageScene: () => import("../src/village/VillageScene.ts"),
   get session(): AnyObj | undefined {

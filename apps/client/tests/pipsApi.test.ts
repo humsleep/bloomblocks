@@ -71,7 +71,7 @@ describe("share text wiring", () => {
       expect(dailyNumber(date)).toBeLessThanOrEqual(0);
       expect(t).not.toContain("#");
       // R2 (A5): the link line points at the dailies' home (no number before the epoch)
-      expect(t).toBe(`${APP_NAME} ${MOON_PHASES[moonPhase8(date)]}\n✨ ⏱ 2:41 🔥7\nhttps://humsleep.github.io/duskwick/?ct=share`);
+      expect(t).toBe(`${APP_NAME} ${MOON_PHASES[moonPhase8(date)]}\n✨ ⏱ 2:41 🔥7\nhttps://humsleep.github.io/apps/duskwick/?ct=share`);
     }
   });
   it("hint glyphs: ✨ without hints (undos don't matter), 💡n with hints", () => {
@@ -86,7 +86,7 @@ describe("share text wiring", () => {
         dateISO: d, seconds: rnd() * 40000 - 100, hints: Math.floor(rnd() * 2000) - 5, undos: Math.floor(rnd() * 5), streak: Math.floor(rnd() * 200000) - 3,
       }, { showTime: rnd() < 0.5 });
       const lines = t.split("\n");
-      expect(lines.at(-1)).toMatch(/^https:\/\/humsleep\.github\.io\/duskwick\/\d*\?ct=share$/);
+      expect(lines.at(-1)).toMatch(/^https:\/\/humsleep\.github\.io\/apps\/duskwick\/\d*\?ct=share$/);
       expect(lines.slice(0, -1).join("\n").replace(APP_NAME, "")).not.toMatch(/[A-Za-z]/);
       expect(lines.length).toBeLessThanOrEqual(4);
     }

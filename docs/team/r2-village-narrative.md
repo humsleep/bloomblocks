@@ -77,7 +77,7 @@
 | `host` | event=mailWaiting | 1.0 | Something came for you. The mailbox looks proud. | 편지가 왔어요. 우편함이 신나 보여요. |
 | `host` | event=moveInEve | 1.0 | That dark window? Someone's coming tomorrow. | 저기 불 꺼진 창 보여요? 내일 누가 이사 와요. |
 | `host` | event=residentMovedIn | 1.0 | Someone new moved in. Say hi whenever you like. | 새 이웃이 왔어요. 편할 때 인사해 줘요. |
-| `host` | event=marketOpen | 1.0 | Pick one you like. The others will come around again. | 마음에 드는 걸 하나 골라요. 나머지도 또 와요. |
+| `host` | event=marketOpen | 1.0 | Pick one you like. The others will come around again. | 마음에 드는 걸 하나 골라요. 나머지는 다음에 또 나와요. |
 | `host` | event=firstCabinVisit | 1.0 | This is your room. Put things wherever feels right. | 여기가 오두막 안이에요. 마음 가는 곳에 놓아 봐요. |
 | `host` | event=seasonChanged | 1.0 | The season turned while we weren't looking. Pom. | 어느새 계절이 바뀌었네요. 퐁. |
 | `host` | event=marketPicked | 1.0 | Good pick. It'll look nice somewhere. | 잘 골랐어요. 어디에 둬도 예쁠 거예요. |
@@ -321,7 +321,7 @@
 | `puzzle.hard` |  | 1.1 | Tangled, then sorted. Just like yarn. Lovely. | 엉켰다가 풀렸네요. 털실처럼요. 좋아요. |
 | `return` |  | 1.0 | Tea's still warm. Funny how that works. | 차가 아직 따뜻해요. 신기하죠. |
 | `return` |  | 1.0 | There you are. I kept your seat by the fire. | 왔네요. 불가 자리 비워 뒀어요. |
-| `season` | season=spring | 1.0 | Spring cleaning! I found three scarves I forgot. | 봄맞이 청소! 잊은 목도리를 세 개나 찾았어요. |
+| `season` | season=spring | 1.0 | Spring cleaning! I found three scarves I forgot. | 봄맞이 청소! 잊고 있던 목도리를 세 개나 찾았어요. |
 | `season` | season=summer | 1.0 | Too warm for scarves. I'm knitting one anyway. | 목도리엔 너무 더워요. 그래도 뜨는 중이에요. |
 | `season` | season=autumn | 1.0 | Chestnut season. My favorite. Can you tell? | 군밤 철이에요. 제일 좋아해요. 티 나죠? |
 | `season` | season=winter | 1.0 | Cold out. Come in. I knitted the door a cozy. | 밖이 춥죠. 들어와요. 문에도 덮개를 떠 줬어요. |
@@ -634,7 +634,7 @@ pick(resident, ctx):                       # ctx = 오늘 날짜, 시간대, 계
 
 | id | 이전 | 이후 |
 |---|---|---|
-| `wick.host.06` | 마음에 드는 걸 하나 골라요. 나머지는 또 와요. | 마음에 드는 걸 하나 골라요. 나머지도 또 와요. |
+| `wick.host.06` | 마음에 드는 걸 하나 골라요. 나머지는 또 와요. | 마음에 드는 걸 하나 골라요. 나머지는 다음에 또 나와요. |
 | `wick.letter.thanks.01` | 안녕하세요, / 구석에 불이 켜졌어요. 다들 거기서 이야기해요. / 고마워요. — 윅 | 안녕하세요, / 구석에 불이 켜졌어요. 다들 거기 모여 얘기해요. / 고마워요. — 윅 |
 | `wick.host.08` | 우리가 안 보는 사이 계절이 바뀌었어요. 퐁. | 어느새 계절이 바뀌었네요. 퐁. |
 | `wick.request.ask.01` | 오두막 구석이 어두워요. 등 하나면 돼요. | 오두막 구석이 좀 어둡네요. 등 하나면 될 텐데요. |

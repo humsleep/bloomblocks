@@ -3,7 +3,7 @@
 // chunk only). Pure drawing: same inputs, same pixels; variation from `seed`.
 import { drawFurnitureAt, FURNITURE_IDS, furnitureScale, ITEMS, type Colorway, type ItemId } from "./furniture.ts";
 import { drawLanternHouse, LANTERN_THEMES, LH_EXTENT, LH_MAIN, LH_SMALL, type LanternTheme, type LanternWindow, type ResidentId } from "./lanternHouse.ts";
-import { drawMailboxAt, drawVillageBackdrop } from "./nature.ts";
+import { drawMailboxAt, drawVillageBackdrop, villageBackdropSteps } from "./nature.ts";
 import { drawResidentAt, drawResidentPortrait, residentFit, RESIDENT_BOX, type ResidentExpr } from "./residents.ts";
 import { drawCottageOutside, drawRoomGuests, drawRoomShell } from "./room.ts";
 import { drawGiftStage, drawLetterSender, drawLetterStage, type GiftStageOpts, type LetterStageOpts } from "./stage.ts";
@@ -74,11 +74,11 @@ function drawHouseV(g: G, spec: HouseSpecV, at: Box): void {
   });
 }
 
-function drawResidentV(g: G, id: ResidentId, expr: ResidentExpr, at: Box): void {
+function drawResidentV(g: G, id: ResidentId, expr: ResidentExpr, at: Box, opts?: { pose?: "stand" | "sit" }): void {
   withUnit(g, () => {
     const size = residentFit(at.w, at.h);
     const gy = at.y + at.h - ((RESIDENT_BOX.y1 - 92) / 100) * size;
-    drawResidentAt(g, id, expr, at.x + at.w / 2, gy, size);
+    drawResidentAt(g, id, expr, at.x + at.w / 2, gy, size, opts?.pose ? { pose: opts.pose } : {});
   });
 }
 
@@ -93,18 +93,19 @@ function drawLocked(g: G, id: ItemId, cw: Colorway, at: Box, s: number): void {
   const x = c.getContext("2d") as G | null;
   if (!x) return;
   x.setTransform(sc, 0, 0, sc, (pad - at.x) * sc, (pad - at.y) * sc);
+  // final G1 #3 (G8): the item's OWN drawing, drained to a dusky plum-grey (detail stays: a clock keeps its dial,
+  // a dresser its drawers, a snow globe its house, a rug its stripes) — not one flat fill that reads as another object
   drawFurnitureAt(x, id, cw, at.x + at.w / 2, at.y + at.h, s, true);
   x.setTransform(1, 0, 0, 1, 0, 0);
-  x.globalCompositeOperation = "source-in";
-  x.fillStyle = "#6A5F82";
-  x.fillRect(0, 0, W, H);
-  // a soft top-left light on the silhouette so it still reads as an object, not a hole
   x.globalCompositeOperation = "source-atop";
+  x.fillStyle = "rgba(96,86,126,0.74)";
+  x.fillRect(0, 0, W, H);
   const gr = x.createLinearGradient(0, 0, W, H);
-  gr.addColorStop(0, hexA("#B8ACCF", 0.35));
+  gr.addColorStop(0, hexA("#B8ACCF", 0.3));
   gr.addColorStop(0.6, hexA("#B8ACCF", 0));
   x.fillStyle = gr;
   x.fillRect(0, 0, W, H);
+  x.globalCompositeOperation = "source-over";
   g.drawImage(c as CanvasImageSource, at.x - pad, at.y - pad, at.w + pad * 2, at.h + pad * 2);
 }
 
@@ -126,6 +127,9 @@ export const villageArt = {
   drawResident: drawResidentV,
   drawFurniture: drawFurnitureV,
   drawVillageBackdrop: (g: G, at: Box, o?: { time?: TimeOfDay; season?: Season }): void => withUnit(g, () => drawVillageBackdrop(g, at, { ...ENV, ...o })),
+  /** the backdrop as draw steps (run in order on the same ctx; each ≈ a few ms) — the scene's idle / progressive bake */
+  drawVillageBackdropSteps: (g: G, at: Box, o?: { time?: TimeOfDay; season?: Season }): Array<() => void> =>
+    villageBackdropSteps(g, at, { ...ENV, ...o }).map((f) => (): void => withUnit(g, f)),
   drawRoom: (g: G, at: Box, spec: { wallpaper: number; floor: number; time?: TimeOfDay; season?: Season }): void => withUnit(g, () => drawRoomShell(g, at, { ...ENV, ...spec })),
   // ---- round 3 (full village), the contract's §7 signatures (src/village/art.ts)
   /** the hour + season the next bakes use (the scene sets it before baking) */

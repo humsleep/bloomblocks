@@ -1,0 +1,130 @@
+[
+  {
+    "screen": "board",
+    "secs": 20,
+    "rendersPerSec": 30,
+    "framesPerSec": 30,
+    "taskMsPerSec": 70.8,
+    "scriptMsPerSec": 44.8,
+    "rendererCpuMsPerSec": 105.2,
+    "gpuCpuMsPerSec": 116.5,
+    "tapToRenderMs": 27.3,
+    "taps": [
+      12.3,
+      26.6,
+      27.3,
+      28.2,
+      212.8
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 46.3,
+      "CrRendererMain/PrePaint": 2.1,
+      "CrRendererMain/Layerize": 0.1
+    },
+    "governor": {
+      "mode": "ambient",
+      "fps": 0,
+      "why": [],
+      "sleeping": [],
+      "forced": null,
+      "installed": false
+    }
+  },
+  {
+    "screen": "town",
+    "secs": 20,
+    "rendersPerSec": 30,
+    "framesPerSec": 30,
+    "taskMsPerSec": 43.4,
+    "scriptMsPerSec": 20.7,
+    "rendererCpuMsPerSec": 116.7,
+    "gpuCpuMsPerSec": 87.4,
+    "tapToRenderMs": 27.8,
+    "taps": [
+      18.1,
+      24.3,
+      27.8,
+      27.9,
+      27.9
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 21.7,
+      "CrRendererMain/PrePaint": 2.7,
+      "CrRendererMain/Layerize": 0.1
+    },
+    "governor": {
+      "mode": "ambient",
+      "fps": 0,
+      "why": [],
+      "sleeping": [],
+      "forced": null,
+      "installed": false
+    }
+  },
+  {
+    "screen": "village",
+    "secs": 20,
+    "rendersPerSec": 30,
+    "framesPerSec": 30,
+    "taskMsPerSec": 48.8,
+    "scriptMsPerSec": 22.6,
+    "rendererCpuMsPerSec": 139,
+    "gpuCpuMsPerSec": 108.8,
+    "tapToRenderMs": 27.7,
+    "taps": [
+      22.4,
+      26.7,
+      27.7,
+      28.9,
+      29.7
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 23,
+      "CrRendererMain/PrePaint": 3,
+      "CrRendererMain/Layerize": 0.1,
+      "CrRendererMain/Layout": 0,
+      "CrRendererMain/Paint": 0
+    },
+    "governor": {
+      "mode": "ambient",
+      "fps": 0,
+      "why": [],
+      "sleeping": [],
+      "forced": null,
+      "installed": false
+    }
+  },
+  {
+    "screen": "room",
+    "secs": 20,
+    "rendersPerSec": 30,
+    "framesPerSec": 30,
+    "taskMsPerSec": 47.9,
+    "scriptMsPerSec": 20.9,
+    "rendererCpuMsPerSec": 144.7,
+    "gpuCpuMsPerSec": 93.3,
+    "tapToRenderMs": 25.5,
+    "taps": [
+      0.9,
+      25,
+      25.5,
+      28.3,
+      28.8
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 21.6,
+      "CrRendererMain/PrePaint": 3.1,
+      "CrRendererMain/Layerize": 0.1,
+      "CrRendererMain/Layout": 0,
+      "CrRendererMain/Paint": 0
+    },
+    "governor": {
+      "mode": "ambient",
+      "fps": 0,
+      "why": [],
+      "sleeping": [],
+      "forced": null,
+      "installed": false
+    }
+  }
+]

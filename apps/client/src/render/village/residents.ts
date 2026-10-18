@@ -111,7 +111,7 @@ function flame(ctx: Ctx, look: ResidentLook, mono: string | null): void {
  * A resident standing with the bottom-centre of its 100-unit box at (gx, gy), `size` px per 100 units.
  * silhouette = the eve-of-moving-in shape in a window: plum, one warm dot of lantern light.
  */
-export function drawResidentAt(ctx: Ctx, id: ResidentId, expr: ResidentExpr, gx: number, gy: number, size: number, o: { glow?: boolean; shadow?: boolean; arms?: "up" | "wave" | null } = {}): void {
+export function drawResidentAt(ctx: Ctx, id: ResidentId, expr: ResidentExpr, gx: number, gy: number, size: number, o: { glow?: boolean; shadow?: boolean; arms?: "up" | "wave" | null; pose?: "stand" | "sit" } = {}): void {
   const look = RESIDENTS[id];
   const pal = look.pal;
   // the eve silhouette: one dusky plum (never black), one warm dot of lantern light
@@ -144,9 +144,12 @@ export function drawResidentAt(ctx: Ctx, id: ResidentId, expr: ResidentExpr, gx:
     ctx.fill();
     ctx.restore();
   }
-  // proportions about the ground point
+  // proportions about the ground point; "sit" = settled onto the floor: a lower, wider mochi leaning a little
+  // (final G1 #2: visitors lounge by their piece instead of standing over it)
+  const sit = o.pose === "sit";
   ctx.translate(WICK_GROUND.x, WICK_GROUND.y);
-  ctx.scale(look.sx * look.k, look.sy * look.k);
+  if (sit) ctx.rotate(-0.06);
+  ctx.scale(look.sx * look.k * (sit ? 1.1 : 1), look.sy * look.k * (sit ? 0.82 : 1));
   ctx.translate(-WICK_GROUND.x, -WICK_GROUND.y);
   const bodyFill = (): string | CanvasGradient => {
     if (mono) return mono;

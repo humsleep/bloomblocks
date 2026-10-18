@@ -190,7 +190,7 @@
 | 대상(Targeting) | **GDPR 적용 국가(EEA, 영국, 스위스)** ("모든 곳"이 아님) |
 | 메시지 이름 | `Duskwick GDPR` (사용자에게 안 보인다) |
 | 문구 편집 | Google 기본 문구를 그대로 쓴다(법적 문구라 고치지 않는다) |
-| 개인정보처리방침 URL | `https://humsleep.github.io/duskwick/privacy` (`src/legal.ts`와 같은 값. **실제로 열려야 한다**) |
+| 개인정보처리방침 URL | `https://humsleep.github.io/apps/duskwick/privacy/` (`src/legal.ts`와 같은 값. **실제로 열려야 한다**) |
 
 → **게시(Publish)**. 사용자에게 보이기까지 최대 10분 걸린다.
 설정 아이콘의 "광고 파트너" 목록은 기본값("자주 사용하는 광고 파트너")으로 둔다.
@@ -249,9 +249,9 @@
 
 1. AdMob은 App Store 페이지의 **마케팅 URL(Marketing URL)**에서 **도메인(호스트 이름)만** 떼어 낸다.
 2. 그 도메인의 **맨 위(루트)**에서 `https://<도메인>/app-ads.txt`를 찾는다.
-3. 우리 마케팅 URL은 `https://humsleep.github.io/duskwick/`이다(`docs/app-store-connect-pack.md` 72줄). 그러므로 AdMob이 보는 곳은 **`https://humsleep.github.io/app-ads.txt`**다. `…/duskwick/app-ads.txt`가 아니다.
-4. 마케팅 URL이 **비어 있거나 다른 도메인**이면 AdMob은 파일을 찾지 못한다. App Store Connect에서 마케팅 URL은 "선택" 항목이지만 **우리는 꼭 채운다.** 지원 URL(`…/duskwick/support`)은 AdMob이 보지 않는다.
-5. AdMob은 하위 도메인을 한 단계까지만 본다. `humsleep.github.io`가 그 한 단계라서 GitHub 사용자 사이트에서도 동작한다. 프로젝트 사이트(`humsleep.github.io/저장소이름/`)의 루트는 우리 것이 아니다. 그래서 `docs/web/README.md`처럼 **사용자 사이트 저장소 `humsleep/humsleep.github.io`의 루트**에 둔다.
+3. 우리 마케팅 URL은 `https://humsleep.github.io`(경로 없음. 소유자 `apps` 저장소 README의 지침, pack §3)다. 그러므로 AdMob이 보는 곳은 **`https://humsleep.github.io/app-ads.txt`**다. `…/apps/duskwick/app-ads.txt`가 아니다. 이 파일은 이미 사이트 루트에 있다(AdMob 게시자 ID 한 줄).
+4. 마케팅 URL이 **비어 있거나 다른 도메인**이면 AdMob은 파일을 찾지 못한다. App Store Connect에서 마케팅 URL은 "선택" 항목이지만 **우리는 꼭 채운다.** 지원 URL(`…/apps/duskwick/`)은 AdMob이 보지 않는다.
+5. AdMob은 하위 도메인을 한 단계까지만 본다. `humsleep.github.io`가 그 한 단계라서 GitHub 사용자 사이트에서도 동작한다. 프로젝트 사이트(`humsleep.github.io/저장소이름/`)의 루트는 우리 것이 아니다. 그래서 **사용자 사이트 저장소 `humsleep/humsleep.github.io`의 루트**에 둔다.
 
 ### 6-2. 올리기 — [오너] (파일 내용은 [리드]가 준비)
 
@@ -261,10 +261,10 @@
    ```
    AdMob 화면에서 복사해도 된다: **앱 → 모든 앱 보기 → app-ads.txt → app-ads.txt 설정 방법(How to set up app-ads.txt)**.
    마지막 `f08c47fec0942fa0`은 Google 고유 값이라 모두에게 같다.
-2. `docs/web/README.md` 2단계처럼 `humsleep.github.io` 저장소 **루트**에 `app-ads.txt`로 저장해 올린다(확장자 `.txt`, 이름 그대로).
+2. (이미 끝남) `humsleep/humsleep.github.io` 저장소 **루트**에 `app-ads.txt`로 올라가 있다(확장자 `.txt`, 이름 그대로).
 3. 1~2분 뒤 확인한다: `curl -s https://humsleep.github.io/app-ads.txt` → 위 한 줄이 그대로 나오면 된다.
 4. 출시하고 2-2의 스토어 연결까지 마치면 AdMob이 파일을 읽는다. 최대 24시간 걸린다. **앱 → 모든 앱 보기 → app-ads.txt** 탭에서 상태를 보고, 필요하면 **업데이트 확인(Check for updates)**을 누른다.
-5. 개인정보처리방침(`/duskwick/privacy`)과 지원(`/duskwick/support`) 페이지도 같은 저장소에 같이 올린다(pack §9-3).
+5. 개인정보처리방침(`/apps/duskwick/privacy/`)과 지원(`/apps/duskwick/`) 페이지는 `humsleep/apps` 저장소에 있다(`docs/web/README.md`, pack §9-3).
 
 ---
 
@@ -285,7 +285,11 @@
 - **IDFA 찾기**: iOS는 IDFA를 설정 화면에 보여 주지 않는다. App Store의 무료 "IDFA 보기" 앱으로 확인할 수 있다(오너가 직접 설치). 그 앱에서도 추적을 허용해야 값이 보인다.
 - 시뮬레이터는 자동으로 테스트 기기다.
 - 개발 빌드(`testing: true`)는 기기 등록과 관계없이 항상 데모 광고만 받는다(4-2 리드 참고).
-- 조심해야 할 것은 **TestFlight나 App Store 빌드**(`testing: false`)를 내 폰에서 돌릴 때다.
+- **테스트 광고 / 실제 광고는 이렇게 정해진다 (2026-10-19)**: 앱이 네이티브 빌드 종류를 물어 **Release 구성 + 실제 기기 + `testing: false`**일 때만 실제 광고를 요청한다. Xcode Debug/Measure로 폰에 설치한 개발 빌드, 시뮬레이터, 웹은 실제 ID가 들어 있어도 항상 테스트 광고다(무효 트래픽 방지). 자세한 내용은 `docs/ads-plan.md` 9-5b.
+- 조심해야 할 것은 **TestFlight나 App Store 빌드**(Release)를 내 폰에서 돌릴 때다. 이 빌드는 **실제 광고**를 받는다.
+  1. 먼저 AdMob **설정 → 테스트 기기**에 내 iPhone을 등록한다(위 표). Xcode로 Release 구성을 폰에 한 번 실행하면 콘솔에 "To get test ads on this device ... 기기 ID"가 찍힌다. AdMob 화면에는 IDFA 또는 이 기기 ID를 넣는다. 반영에 최대 24시간이 걸리므로 등록 전에는 TestFlight 빌드로 광고를 열지 않는다.
+  2. 등록 후 "Test mode" 표시가 붙은 광고만 나오는지 확인한다. 표시가 없으면(실제 광고) 광고를 누르지 말고 앱을 닫는다.
+  3. 어느 경우에도 **내 광고를 직접 누르지 않는다**(계정 정지 사유, 7-2).
 
 ### 7-2. 계정이 정지되는 함정 (꼭 지킬 것)
 
@@ -332,8 +336,8 @@
 
 **웹과 App Store Connect — [오너]**
 - [ ] `https://humsleep.github.io/app-ads.txt`가 한 줄 그대로 열림 (`curl -s`로 확인)
-- [ ] `https://humsleep.github.io/duskwick/privacy`, `…/duskwick/support`가 열림
-- [ ] ASC **마케팅 URL** = `https://humsleep.github.io/duskwick/` (비우지 않음, 같은 도메인)
+- [ ] `https://humsleep.github.io/apps/duskwick/privacy/`, `https://humsleep.github.io/apps/duskwick/`가 열림
+- [ ] ASC **마케팅 URL** = `https://humsleep.github.io` (비우지 않음, 경로 없는 루트)
 - [ ] ASC App Privacy 답변이 pack §2와 같음 (추적: 예, 광고 데이터)
 - [ ] 실기기(TestFlight, `testing: false`)에서 무음 스위치 ON이면 광고 소리 없음 (`src/ads/README.md` 기기 확인 1~7). **실제 광고가 떠도 누르지 않는다**
 

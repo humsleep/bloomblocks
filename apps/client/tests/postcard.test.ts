@@ -36,7 +36,7 @@ beforeAll(() => {
   vi.stubGlobal("document", { createElement: () => ({ width: 0, height: 0, getContext: () => recorder().ctx }) });
 });
 
-const words: PostcardWords = { time: "Time", streak: "Streak", noHints: "No hints", order: "Lanterns, in order", yourTurn: "Your turn!", date: "Nov 14", link: "humsleep.github.io/duskwick/14", font: "system-ui" };
+const words: PostcardWords = { time: "Time", streak: "Streak", noHints: "No hints", order: "Lanterns, in order", yourTurn: "Your turn!", date: "Nov 14", link: "humsleep.github.io/apps/duskwick/14", font: "system-ui" };
 const r: DailyResult = { dateISO: "2026-11-14", seconds: 247, hints: 1, undos: 2, streak: 14 };
 
 describe("placementStrip: the order story, never a position", () => {
@@ -102,6 +102,6 @@ describe("postcardSpec: no board in, no board out", () => {
     // #n once: on the postmark (the title is the name only)
     expect(text).toContain("fillText(Duskwick,");
     expect(text.match(/fillText\(#14,/g)).toHaveLength(1);
-    expect(text).toContain("humsleep.github.io/duskwick/14");
+    expect(text).toContain("humsleep.github.io/apps/duskwick/14");
   });
 });

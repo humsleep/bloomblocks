@@ -85,7 +85,7 @@ App Store Connect에 실제로 입력할 값은 `docs/app-store-connect-pack.md`
 | 항목 | 상태 | 근거 | 변경 |
 | --- | --- | --- | --- |
 | 앱 안 개인정보처리방침 링크 | **고침** | `src/legal.ts`(`PRIVACY_POLICY_URL`, `SUPPORT_URL`: URL은 이 한 곳에서만 관리), 설정 시트 마지막 줄 `src/game/SettingsSheet.ts:65-68, 193, 259`, 탭 처리 `src/game/LanternsScene.ts:778-783`, VoiceOver 라벨 `src/a11y/strings.ts` P5(`cap.policy`, `policy`, 10개 언어) | 문서 아이콘 + 캡션 "Privacy policy" 줄을 **항상** 표시한다. EEA에서는 UMP "개인정보 선택"과 같은 줄에 반반으로 놓는다. 그래서 줄 수는 최대 7개로 그대로이고 iPhone SE(375×667)에 들어간다(스크린샷으로 확인). e2e `flow.spec.ts` 기대값을 갱신했다 |
-| 방침 웹 페이지 게시 | **사용자 조치 필요** | 문안: pack §6. 주소: `https://humsleep.github.io/duskwick/privacy` | 게이트는 형식만 검사한다(https, placeholder 아님) |
+| 방침 웹 페이지 게시 | **사용자 조치 필요** | 페이지: 사이트 저장소 `humsleep/apps`의 `apps/duskwick/privacy/`(docs/web/README.md). 주소: `https://humsleep.github.io/apps/duskwick/privacy/` | 게이트는 정확한 주소 문자열(legal.ts, 공유 링크 기반, AASA 사본)을 검사한다. 게시 여부는 검사하지 않는다 |
 | 수집 데이터와 App Privacy 답변 | OK(문서) | `PrivacyInfo.xcprivacy`(앱 자체는 수집 없음, `NSPrivacyTracking=false`) + GMA 13.11.0·UMP 3.1.0 번들 매니페스트. 빌드된 앱의 `Frameworks/*/PrivacyInfo.xcprivacy`를 직접 읽어 README 표와 대조했다 | pack §2 |
 | 계정 삭제 | 해당 없음 | 계정이 없다. iCloud KVS는 사용자 본인의 iCloud에 있다 | — |
 | 서드파티 고지 | **고침**(심사 요건은 아님) | MIT 라이선스는 고지문 동봉을 요구하는데, 빌드된 JS에서 라이선스 주석이 빠져 있었다 | `apps/client/public/licenses.txt` 추가(Phaser, Capacitor, 플러그인, IONFilesystemLib, Fredoka OFL). 폰트 OFL 원문은 이미 `public/fonts/OFL-Fredoka.txt` |
@@ -186,7 +186,7 @@ App Store Connect에 실제로 입력할 값은 `docs/app-store-connect-pack.md`
 - `npm --prefix apps/client run typecheck:all`: 통과
 - 클라이언트 vitest: 20개 파일, 350개 테스트 통과(동의 시점 변경 뒤)
 - e2e `flow.spec.ts` + `play.spec.ts`(chromium): 26개 통과(동의 시점 변경 뒤)
-- e2e `flow.spec.ts`의 설정 테스트 1건(chromium): 통과. 임시 스크립트로 375×667(ko)과 390×844(fr)에서 설정 시트를 캡처했다. 새 줄을 탭하면 `https://humsleep.github.io/duskwick/privacy` 새 탭이 열린다
+- e2e `flow.spec.ts`의 설정 테스트 1건(chromium): 통과. 임시 스크립트로 375×667(ko)과 390×844(fr)에서 설정 시트를 캡처했다. 새 줄을 탭하면 `https://humsleep.github.io/apps/duskwick/privacy/` 새 탭이 열린다
 - Debug 시뮬레이터 빌드(`-derivedDataPath apps/client/build/dd-review`): 성공. 빌드된 Info.plist의 `ITSAppUsesNonExemptEncryption=false`와 ATT 문구 확인
 - `npm run ios:release-check`: 테스트 광고 3건으로만 실패(`0 hard, 3 test-ad`). `--allow-test-ads`를 주면 `OK … 6 store checks`
 - 새 게이트 음성 테스트(스크래치 복사본에서 일부러 깨뜨림): 수출 키, 표시 이름, 언어별 ATT 문구, 백그라운드 모드, `aps-environment`, tracking=true + 빈 도메인, 알파 아이콘, 빌드 번호, URL 9건 모두 실패 처리됨

@@ -33,14 +33,14 @@ export const BREAK_CARD: Readonly<Record<BreakCardLang, BreakCardText>> = {
     body: "짧은 광고 하나를 보면 30분 동안 광고 없이 플레이해요.",
     watch: "광고 보기",
     notNow: "다음에",
-    unavailable: "지금은 광고가 없어요. 바뀐 건 없어요.",
+    unavailable: "지금은 볼 수 있는 광고가 없어요. 달라진 건 없어요.",
   },
   ja: {
     title: "30分 広告おやすみ",
     body: "短い広告を1本見ると、30分間 広告なしで遊べます。",
     watch: "広告を見る",
     notNow: "今はしない",
-    unavailable: "いまは広告がありません。変更はありません。",
+    unavailable: "いまは広告がありません。何も変わっていません。",
   },
   de: {
     title: "30 Minuten werbefrei",
@@ -72,7 +72,7 @@ export const BREAK_CARD: Readonly<Record<BreakCardLang, BreakCardText>> = {
   },
   it: {
     title: "30 minuti senza pubblicità",
-    body: "Guarda un breve annuncio: poi 30 minuti senza pubblicità.",
+    body: "Guarda un breve annuncio, poi 30 minuti senza pubblicità.",
     watch: "Guarda",
     notNow: "Non ora",
     unavailable: "Nessun annuncio al momento. Non è cambiato nulla.",

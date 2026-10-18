@@ -61,6 +61,7 @@ import { PRIVACY_POLICY_URL } from "../legal.ts";
 import { openExternal } from "../native/external.ts";
 import { AskCard, type AskSpec } from "./AskCard.ts";
 import { drawAlleyHouse, drawBackDisc, drawBell, drawClock, drawGearDisc, drawLampMark, drawRulesDisc, drawTodayDisc, drawTowerFloor, drawVillageDisc } from "./hudArt.ts";
+import { hideVillageVeil, showVillageVeil } from "./villageVeil.ts";
 import { DIGIT_FONT, drawBreakChip as drawBreakChipArt, drawCalendarTile } from "../render/draw.ts";
 import { Preferences } from "@capacitor/preferences";
 import { alleyOf, giftEarned, milestoneOf, monthStrip, streakMilestone, towerOpen } from "./progress.ts";
@@ -614,22 +615,34 @@ export class LanternsScene extends Phaser.Scene {
       if (w.requestIdleCallback) w.requestIdleCallback(f, { timeout: 2000 });
       else setTimeout(f, 0);
     };
+    // small steps (code chunk, data, then the backdrop one house at a time), each only while idle() still holds:
+    // input / motion stops it at the next step and it resumes at the next quiet moment — so it starts early
     const tryWarm = (): void => {
       if (!idle()) {
-        setTimeout(tryWarm, 2_000);
+        setTimeout(tryWarm, 500);
         return;
       }
       ric(() => {
-        if (!idle()) return void setTimeout(tryWarm, 2_000);
+        if (!idle()) return void setTimeout(tryWarm, 500);
         const s = this.deps.session;
         const progress = async (): Promise<{ cleared: { gentle: number; deduce: number }; dailyDates: string[]; today: string }> => {
           const log = await this.daily().then((m) => m.loadLog()).catch(() => ({}));
           return { cleared: { gentle: s.cleared("gentle"), deduce: s.cleared("deduce") }, dailyDates: Object.keys(log), today: localDateISO() };
         };
-        void villageLoader().then((m) => m.prewarmVillage(a11y.lang(), progress, idle)).catch(() => undefined);
+        console.info(`[village] prewarm start at ${Math.round(performance.now())} ms`);
+        void villageLoader()
+          .then((m) => {
+            this.villageIdx = m;
+            return m.prewarmVillage(a11y.lang(), progress, idle);
+          })
+          .then((done) => {
+            console.info(`[village] prewarm ${done ? "done" : "paused"} at ${Math.round(performance.now())} ms`);
+            if (!done) setTimeout(tryWarm, 500);
+          })
+          .catch(() => undefined);
       });
     };
-    setTimeout(tryWarm, firstRun ? 20_000 : 8_000);
+    setTimeout(tryWarm, 2_500);
     // VoiceOver layer + iOS text size / bold / contrast / reduce motion (agent A), off the cold-start path
     try {
       this.a11y = new A11yLayer(this.u);
@@ -784,6 +797,8 @@ export class LanternsScene extends Phaser.Scene {
 
   /** R2: right edge of the top row's discs / captions (the alley strip starts after it), canvas px. */
   private topRight = 0;
+  /** the Settings caption's slide to the right of its disc, canvas px (keeps it inside the left edge) */
+  private gearCapDx = 0;
 
   /**
    * R2 (A1 HUD grammar): Settings · Rules (· Back on the daily) as discs in the top-left row, each caption
@@ -796,9 +811,12 @@ export class LanternsScene extends Phaser.Scene {
     const y = Math.round(this.deps.safe.top * u + TOP_Y * u);
     const x0 = Math.round(Math.max(g.side, 12 * u) + d / 2 + 2 * u);
     const capW = (key: string): number => this.caps.find((c) => c.key === key)?.t.displayWidth ?? 0;
-    const pitch = (a: string, b: string): number => Math.round(Math.max(d + 12 * u, (capW(a) + capW(b)) / 2 + 10 * u));
+    const pitch = (a: string, b: string, shift = 0): number => Math.round(Math.max(d + 12 * u, shift + (capW(a) + capW(b)) / 2 + 10 * u));
+    // a long Settings caption ("Impostazioni", "Einstellungen") centred on the disc would cross the left edge:
+    // it slides right (the disc stays) and Rules' disc follows so the two captions keep their gap
+    this.gearCapDx = Math.max(0, Math.round(Math.max(6 * u, g.side - 4 * u) + capW("cap.settings") / 2 - x0));
     this.gearIcon.setPosition(x0, y);
-    this.howBtn.setPosition(x0 + pitch("cap.settings", "cap.how"), y);
+    this.howBtn.setPosition(x0 + pitch("cap.settings", "cap.how", this.gearCapDx), y);
     this.backChip.setPosition(this.howBtn.x + pitch("cap.how", "cap.back"), y);
     const last = this.deps.session.daily ? { o: this.backChip, k: "cap.back" } : { o: this.howBtn, k: "cap.how" };
     this.topRight = Math.round(last.o.x + Math.max(d / 2, capW(last.k) / 2));
@@ -2234,11 +2252,20 @@ export class LanternsScene extends Phaser.Scene {
       const capMax = (c.dy === -1 ? 84 : 76) * u;
       if (c.t.width > capMax) c.t.setScale(capMax / c.t.width);
     }
+    // the bottom row's neighbours (Town | Today, Undo | Hint) sit one pitch apart: a pair shrinks together
+    // (Dynamic Type) so ≥ 6 pt stays between its captions
+    const room = 2 * (g.ctrlS + 14 * u - 6 * u);
+    for (const [ka, kb] of [["cap.town", "cap.today"], ["cap.undo", "cap.hint"]] as const) {
+      const a = this.caps.find((c) => c.key === ka);
+      const b = this.caps.find((c) => c.key === kb);
+      const sum = (a?.t.displayWidth ?? 0) + (b?.t.displayWidth ?? 0);
+      if (a && b && sum > room) for (const c of [a, b]) c.t.setScale((c.t.scaleX * room) / sum);
+    }
     // R2 (Reality #10): every caption UNDER its disc — the top row's pitch follows its captions
     this.placeTopRow();
     for (const c of this.caps) {
       const y = c.dy >= 0 ? g.ctrlY + g.ctrlS / 2 + 1 * u + c.dy * u : c.of.y + (TOP_DISC * u) / 2 + 1 * u;
-      c.t.setOrigin(0.5, 0).setPosition(c.of.x, y);
+      c.t.setOrigin(0.5, 0).setPosition(c.of.x + (c.key === "cap.settings" ? this.gearCapDx : 0), y);
     }
     this.layoutAlley();
   }
@@ -2433,6 +2460,9 @@ export class LanternsScene extends Phaser.Scene {
   /** The village (lazy chunk). While it is open the scene treats it like the town (townOpen: input off, HUD hidden). */
   private openVillageLazy(): void {
     if (this.finale || this.switching || this.travel || this.townOpen || this.moonPending) return;
+    const t0 = performance.now();
+    // work left before the first village frame (code, data, backdrop): the night comes in and the lantern lights meanwhile
+    if (!this.villageIdx?.villageWarm(a11y.lang())) this.showVillageVeil(t0);
     cue("tap");
     this.clearHint();
     this.hideBlocked();
@@ -2448,11 +2478,16 @@ export class LanternsScene extends Phaser.Scene {
     const progress = now ? of(now) : async (): Promise<ReturnType<typeof of>> => of(await this.daily().then((m) => m.loadLog()).catch(() => ({})));
     void villageLoader().then(
       (m) => {
+        console.info(`[village] index chunk at ${Math.round(performance.now() - t0)} ms`);
+        this.villageIdx = m;
         this.clock?.stop();
         m.openVillage(this, {
           progress,
           lang: a11y.lang(),
+          t0,
+          onShown: () => this.hideVillageVeil(),
           onClose: () => {
+            this.hideVillageVeil();
             this.townOpen = false;
             this.lastInput = this.time.now;
           },
@@ -2460,9 +2495,25 @@ export class LanternsScene extends Phaser.Scene {
       },
       (e: unknown) => {
         console.warn("[village] failed to load", e);
+        this.hideVillageVeil();
         this.townOpen = false;
       },
     );
+  }
+
+  /** the village's index chunk once loaded (prewarm or a first tap): its warm state decides whether a tap needs the veil */
+  private villageIdx: typeof import("../village/index.ts") | null = null;
+  /**
+   * A Village tap with work left: the night comes in and the village lantern lights up at once (a DOM layer,
+   * src/game/villageVeil.ts: it must not cost the busy main thread a single frame), until the village's first frame.
+   */
+  private showVillageVeil(t0: number): void {
+    showVillageVeil(motion.reduced);
+    // the frame that first shows it (two animation frames: the draw, then the present)
+    requestAnimationFrame(() => requestAnimationFrame(() => console.info(`[village] feedback ${Math.round(performance.now() - t0)} ms`)));
+  }
+  private hideVillageVeil(): void {
+    hideVillageVeil();
   }
 
   /** The daily's back chip (beside the gear): home to the track. */

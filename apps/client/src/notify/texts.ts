@@ -20,7 +20,7 @@ export const REMINDER_TEXTS: Readonly<Record<Lang, ReminderTexts>> = {
   },
   ja: {
     lines: ["今夜のランタンパズルが届きました。", "新しい月、新しいパズル。", "通りに灯すランタンがもうひとつ。", "静かなパズルがひとつ待っています。"],
-    streak: "{n}日目、通りにもうひとつ灯しませんか?",
+    streak: "{n}日目、通りにもうひとつ灯しませんか？",
   },
   de: {
     lines: ["Das Laternenrätsel für heute Abend ist da.", "Ein neuer Mond, ein neues Rätsel.", "Die Gasse hat noch eine Laterne zum Anzünden.", "Ein ruhiges Rätsel wartet auf dich."],
@@ -28,7 +28,7 @@ export const REMINDER_TEXTS: Readonly<Record<Lang, ReminderTexts>> = {
   },
   fr: {
     lines: ["L'énigme des lanternes de ce soir est prête.", "Une nouvelle lune, une nouvelle énigme.", "La rue a encore une lanterne à allumer.", "Une énigme tranquille vous attend."],
-    streak: "Jour {n} : une lanterne de plus pour la rue ?",
+    streak: "Jour {n}\u00a0: une lanterne de plus pour la rue\u00a0?",
   },
   es: {
     lines: ["El acertijo de faroles de esta noche está listo.", "Una luna nueva, un acertijo nuevo.", "La calle tiene un farol más por encender.", "Un acertijo tranquilo te espera."],

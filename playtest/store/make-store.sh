@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 # ONE command: real-app captures → framed App Store screenshots + contact sheet, per locale and size.
 #
-#   playtest/store/make-store.sh <lang[,lang…]|all> [--size 6.9] [--device <udid>] [--compose-only] [--no-build]
+#   playtest/store/make-store.sh <lang[,lang…]|all> [--size 6.9] [--device <udid>] [--phase all|auto|taps|village] [--compose-only] [--no-build]
 #
 #   lang      en ko ja de fr es pt-BR it zh-Hans zh-Hant (captions.json) or "all"
 #   --size    a key of sizes.json (default 6.9 → 1320×2868, iPhone 17 Pro Max simulator)
 #   --device  simulator UDID (default: a simulator named "DW Store <size>", created and booted if missing)
+#   --phase   auto     = the 6 shots that need no taps (board, 3 rule boards, daily, postcard)
+#             taps     = settings (1 tap)
+#             village  = village, letter, gift, cottage (4 taps). The village and the room follow the device
+#                        clock (dawn 05–09, day 09–17, dusk 17–21, night 21–05): run this phase after 17:00 for
+#                        the dusk look the store set uses
+#             all      = everything (default)
+#            Taps use `idb ui tap` when idb is installed; otherwise the script prints each point and waits
+#            for Enter (tap it in the Simulator window, or with the Claude simulator tool).
 #
 # What it does (README.md has the details):
 #   1. build: production web bundle (vite --mode m1, no test bridge) → Debug simulator app with that bundle
@@ -19,11 +27,12 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 CLIENT="$HERE/../../apps/client"
 LANGS="${1:?usage: make-store.sh <lang[,lang]|all> [--size 6.9] [--device udid] [--compose-only] [--no-build]}"; shift
-SIZE=6.9; DEV=""; COMPOSE_ONLY=0; BUILD=1
+SIZE=6.9; DEV=""; COMPOSE_ONLY=0; BUILD=1; PHASE=all
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --size) SIZE="$2"; shift 2 ;;
     --device) DEV="$2"; shift 2 ;;
+    --phase) PHASE="$2"; shift 2 ;;
     --compose-only) COMPOSE_ONLY=1; shift ;;
     --no-build) BUILD=0; shift ;;
     *) echo "unknown option $1" >&2; exit 2 ;;
@@ -63,19 +72,26 @@ if [[ $COMPOSE_ONLY == 0 ]]; then
     sleep 2.5
   }
   for L in ${LANGS//,/ }; do
-    echo "== $L ($SIZE)"
-    for s in board-mid rule-light rule-conflict rule-number daily-mid daily-done; do
-      T seed "$s" --lang "$L" >/dev/null
-      if [[ $s == daily-done ]]; then sleep 13; else sleep 8; fi
-      T grab "$s" --lang "$L" >/dev/null
-    done
-    T seed world --lang "$L" >/dev/null; sleep 8
-    tap village; T grab village --lang "$L" >/dev/null
-    tap mailbox; T grab letter --lang "$L" >/dev/null
-    tap openGift; T grab gift --lang "$L" >/dev/null
-    tap putInCottage; sleep 1; T grab room --lang "$L" >/dev/null
-    T seed world --lang "$L" >/dev/null; sleep 8
-    tap settings; T grab settings --lang "$L" >/dev/null
+    echo "== $L ($SIZE) phase $PHASE"
+    if [[ $PHASE == all || $PHASE == auto ]]; then
+      for s in board-mid rule-light rule-conflict rule-number daily-mid daily-done; do
+        T seed "$s" --lang "$L" >/dev/null
+        if [[ $s == daily-done ]]; then sleep 13; else sleep 8; fi
+        T grab "$s" --lang "$L" >/dev/null
+      done
+    fi
+    if [[ $PHASE == all || $PHASE == taps ]]; then
+      T seed world --lang "$L" >/dev/null; sleep 8
+      tap settings; T grab settings --lang "$L" >/dev/null
+    fi
+    if [[ $PHASE == all || $PHASE == village ]]; then
+      T seed world --lang "$L" >/dev/null; sleep 8
+      tap village; T grab village --lang "$L" >/dev/null
+      tap mailbox; T grab letter --lang "$L" >/dev/null
+      tap openGift; T grab gift --lang "$L" >/dev/null
+      tap putInCottage; tap closeDrawer; T grab room --lang "$L" >/dev/null
+    fi
   done
 fi
-(cd "$CLIENT" && node "$HERE/compose.mjs" --lang "$LANGS" --size "$SIZE")
+if [[ $PHASE == all || $COMPOSE_ONLY == 1 ]]; then (cd "$CLIENT" && node "$HERE/compose.mjs" --lang "$LANGS" --size "$SIZE")
+fi # partial phases leave composing to a later run (--compose-only)

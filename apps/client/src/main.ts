@@ -122,7 +122,7 @@ async function boot(): Promise<void> {
       scene.onResume();
       governor.resume("app");
     });
-    // R2 (A5): duskwick://daily/<n> and https://humsleep.github.io/duskwick/<n> open today's daily
+    // R2 (A5): duskwick://daily/<n> and https://humsleep.github.io/apps/duskwick/<n> open today's daily
     // (src/game/deepLink.ts; the cold-start launch URL is read here too, after the first frame)
     void import("./game/deepLink.ts").then((m) => m.installDeepLinks(scene, localDateISO)).catch((e: unknown) => console.warn("[link]", e));
     if (import.meta.env.DEV) void import("./dev/shot.ts").then((m) => m.devShot(scene, session));

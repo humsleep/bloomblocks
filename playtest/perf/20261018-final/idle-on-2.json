@@ -1,0 +1,208 @@
+[
+  {
+    "screen": "board",
+    "secs": 20,
+    "rendersPerSec": 15.1,
+    "framesPerSec": 15.1,
+    "taskMsPerSec": 52.3,
+    "scriptMsPerSec": 31.3,
+    "rendererCpuMsPerSec": 83.4,
+    "gpuCpuMsPerSec": 67.7,
+    "tapToRenderMs": 25.7,
+    "taps": [
+      11.7,
+      25,
+      25.7,
+      27.5,
+      219.6
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 31.7,
+      "CrRendererMain/PrePaint": 1.7,
+      "CrRendererMain/Layerize": 0.1
+    },
+    "governor": {
+      "mode": "full",
+      "fps": 19,
+      "why": [
+        "input"
+      ],
+      "sleeping": [],
+      "forced": null,
+      "installed": true
+    }
+  },
+  {
+    "screen": "town",
+    "secs": 20,
+    "rendersPerSec": 15,
+    "framesPerSec": 15,
+    "taskMsPerSec": 33.7,
+    "scriptMsPerSec": 14.6,
+    "rendererCpuMsPerSec": 103.7,
+    "gpuCpuMsPerSec": 58.5,
+    "tapToRenderMs": 27.6,
+    "taps": [
+      9.7,
+      25.7,
+      27.6,
+      28.6,
+      29.5
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 14.4,
+      "CrRendererMain/PrePaint": 1.7,
+      "CrRendererMain/Layerize": 0.1
+    },
+    "governor": {
+      "mode": "full",
+      "fps": 19,
+      "why": [
+        "input"
+      ],
+      "sleeping": [],
+      "forced": null,
+      "installed": true
+    }
+  },
+  {
+    "screen": "village",
+    "secs": 20,
+    "rendersPerSec": 15,
+    "framesPerSec": 15,
+    "taskMsPerSec": 36.7,
+    "scriptMsPerSec": 16.1,
+    "rendererCpuMsPerSec": 115,
+    "gpuCpuMsPerSec": 58.9,
+    "tapToRenderMs": 27.5,
+    "taps": [
+      27,
+      27.4,
+      27.5,
+      27.9,
+      30.8
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 15.7,
+      "CrRendererMain/PrePaint": 1.9,
+      "CrRendererMain/Layerize": 0.1,
+      "CrRendererMain/Layout": 0,
+      "CrRendererMain/Paint": 0
+    },
+    "governor": {
+      "mode": "full",
+      "fps": 19,
+      "why": [
+        "input"
+      ],
+      "sleeping": [],
+      "forced": null,
+      "installed": true
+    }
+  },
+  {
+    "screen": "room",
+    "secs": 20,
+    "rendersPerSec": 15,
+    "framesPerSec": 15,
+    "taskMsPerSec": 26,
+    "scriptMsPerSec": 10.6,
+    "rendererCpuMsPerSec": 105.1,
+    "gpuCpuMsPerSec": 45.3,
+    "tapToRenderMs": 27.7,
+    "taps": [
+      19.7,
+      27.1,
+      27.7,
+      28.2,
+      28.2
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 9.8,
+      "CrRendererMain/PrePaint": 1.4,
+      "CrRendererMain/Layerize": 0.1,
+      "CrRendererMain/Layout": 0,
+      "CrRendererMain/Paint": 0
+    },
+    "governor": {
+      "mode": "full",
+      "fps": 19,
+      "why": [
+        "input"
+      ],
+      "sleeping": [],
+      "forced": null,
+      "installed": true
+    }
+  },
+  {
+    "screen": "market",
+    "secs": 20,
+    "rendersPerSec": 15,
+    "framesPerSec": 15,
+    "taskMsPerSec": 31,
+    "scriptMsPerSec": 13.1,
+    "rendererCpuMsPerSec": 108.3,
+    "gpuCpuMsPerSec": 45.7,
+    "tapToRenderMs": 27.2,
+    "taps": [
+      8.1,
+      26.5,
+      27.2,
+      27.9,
+      29.1
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 12.3,
+      "CrRendererMain/PrePaint": 1.6,
+      "CrRendererMain/Layerize": 0.1,
+      "CrRendererMain/Layout": 0,
+      "CrRendererMain/Paint": 0
+    },
+    "governor": {
+      "mode": "full",
+      "fps": 19,
+      "why": [
+        "input"
+      ],
+      "sleeping": [],
+      "forced": null,
+      "installed": true
+    }
+  },
+  {
+    "screen": "drawer",
+    "secs": 20,
+    "rendersPerSec": 15,
+    "framesPerSec": 15,
+    "taskMsPerSec": 35.1,
+    "scriptMsPerSec": 14.3,
+    "rendererCpuMsPerSec": 122,
+    "gpuCpuMsPerSec": 55.3,
+    "tapToRenderMs": 27.4,
+    "taps": [
+      26.5,
+      26.8,
+      27.4,
+      29.1,
+      33.4
+    ],
+    "traceMsPerSec": {
+      "CrRendererMain/FireAnimationFrame": 13.4,
+      "CrRendererMain/PrePaint": 1.9,
+      "CrRendererMain/Layerize": 0.1,
+      "CrRendererMain/Layout": 0,
+      "CrRendererMain/Paint": 0
+    },
+    "governor": {
+      "mode": "full",
+      "fps": 19,
+      "why": [
+        "input"
+      ],
+      "sleeping": [],
+      "forced": null,
+      "installed": true
+    }
+  }
+]

@@ -256,6 +256,11 @@ export const RULES = {
 - `Info.plist`: 미디에이션 파트너별 `SKAdNetworkItems`(파트너 문서의 목록), `NSUserTrackingUsageDescription`, `GADApplicationIdentifier`(실제 ID 발급 후).
 - app-ads.txt: v3대로 마케팅 URL에 연결.
 
+
+### 9-4b. AdMob 콘솔 메뉴 경로 (Google 도움말 확인, 2026-10-18)
+- 고참여 광고 끄기: 사이드바 **앱** → 앱 선택 → **앱 설정(App settings)** → "고참여 광고(High-engagement ads)" 옆 연필 아이콘 → 스위치 끄기 → **저장**. 앱 단위 설정이고 전면·보상형 전체에 적용된다. https://support.google.com/admob/answer/15525707
+- 빈도 제한: 앱 단위 = **앱 설정** → "빈도 제한(Frequency capping)" 연필 아이콘. 광고 단위 단위 = 사이드바 **광고 단위** → 단위 클릭 → **고급 설정(Advanced settings)** → "빈도 제한" 연필 아이콘. 사용자당 노출 수와 기간(분·시간·일) 입력 → 저장. 반영까지 최대 24시간. 양쪽을 다 걸면 먼저 걸리는 쪽이 적용된다. https://support.google.com/admob/answer/6244508
+
 ### 9-5. `src/ads/config.ts` — 테스트 광고 단위 ID (Google iOS 데모, 2026-10-16 확인)
 
 ```ts
@@ -272,6 +277,15 @@ export const ADMOB_IOS = {
 // 참고용, 쓰지 않음: 보상형 전면 .../6978759866, 네이티브 .../3986624511,
 // 네이티브 동영상 .../2521693316, 고정 배너 .../2934735716
 ```
+
+#### 9-5b. 테스트 광고 / 실제 광고를 정하는 규칙 (2026-10-19)
+
+- 웹 번들은 모든 구성이 같다(`build:m1`; App Store 아카이브도 `--mode m1`). 그래서 `import.meta.env.MODE`로는 구분할 수 없다(이걸 쓰면 앱스토어 빌드가 영원히 테스트 광고를 낸다). 구분 신호는 **네이티브 빌드 종류**뿐이다.
+- `AdAudio.buildKind()`(`ios/App/App/AdAudio.swift`) → `{ release }`. `DEBUG`, `PERF_PROBE`(Debug/Measure 구성), 시뮬레이터이면 `false`, 그 외(Release 구성, 실제 기기)이면 `true`. JS는 `src/native/adAudio.ts`의 `isReleaseBuild()`.
+- `src/ads/AdMobAds.ts` `adsAreTest(testing, release)`: **실제 광고는 `config.testing === false` 그리고 `release === true`일 때만**. 웹/e2e/개발, 네이티브 호출 실패(오류·구버전 셸), 아직 모름(null)은 전부 테스트 광고(fail-safe, 실패는 `[ads] build kind unavailable` 1회 경고).
+- 빌드 종류는 `start()`에서 SDK `initialize`보다 먼저 한 번 확정한다. 그 전에는 전면/보상형/배너 어떤 요청도 나가지 않는다(`live()` 가드, `src/ads/__tests__/testMode.test.ts`).
+- `scripts/release-gates.mjs`가 `AdMobAds.ts`의 `import.meta.env` 사용, `isReleaseBuild()` 호출 누락, `buildKind`의 PERF_PROBE 분기 훼손을 막는다(`npm run ios:release-check`).
+- 확인: Debug 시뮬레이터 빌드 로그에 `[ads] buildKind release=false`(첫 수 이후)가 찍히면 테스트 광고 경로다.
 
 ### 9-6. 미디에이션 (모두 무료, 비딩 우선)
 
