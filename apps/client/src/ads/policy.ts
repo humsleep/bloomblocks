@@ -23,8 +23,9 @@
 //   grace: a shown consent form starts the 90 s full-screen cooldown, and no interstitial can come
 //   before the 6th completed non-daily unit whatever the consent timing.
 //
-// Remote config (none wired yet): resolveRules()/resolveFlags() clamp every value, so a broken
-// remote value can never make "an ad after every unit" or "an ad in the daily" possible.
+// Remote config (./remote.ts, GitHub Pages JSON, applied in ads.init()): resolveRules()/resolveFlags()
+// clamp every value, so a broken remote value can never make "an ad after every unit" or "an ad in
+// the daily" possible.
 
 export const FLAGS = {
   /** B+: anchored adaptive banner on track boards. Remote-config only, after the CA/AU/NZ verdict. */

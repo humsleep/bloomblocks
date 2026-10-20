@@ -53,6 +53,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 async function readyAdMob() {
@@ -142,7 +143,14 @@ const fake = {
 const MIN = 60_000;
 
 /** Facade with a fake provider. The clock starts 3 min after "launch" (resume-quiet over). */
-async function facade(stateOver: Record<string, unknown> = {}, prefs: Record<string, string> = {}) {
+async function facade(
+  stateOver: Record<string, unknown> = {},
+  prefs: Record<string, string> = {},
+  remoteFetch: () => Promise<Response> = async () => {
+    throw new TypeError("offline"); // ./remote.ts: tests never touch the network
+  },
+) {
+  vi.stubGlobal("fetch", vi.fn(remoteFetch));
   vi.useFakeTimers({ toFake: ["Date"] });
   const t0 = new Date(2026, 9, 16, 10, 0, 0).getTime();
   vi.setSystemTime(t0);
@@ -397,5 +405,48 @@ describe("ads facade B: banner state machine (flag ON via remote config)", () =>
     ads.applyRemoteConfig({ flags: { banner: true } });
     ads.setScreen("track");
     expect(fake.showBanner).not.toHaveBeenCalled();
+  });
+});
+
+describe("ads facade B: remote config (GitHub Pages JSON, ./remote.ts)", () => {
+  beforeEach(() => {
+    for (const f of Object.values(fake)) if (typeof f === "function") f.mockClear();
+    fake.gatherConsent.mockImplementation(async () => false);
+  });
+  afterEach(() => {
+    vi.doUnmock("@capacitor/core");
+    vi.doUnmock("@capacitor/app");
+    vi.doUnmock("@capacitor/preferences");
+    vi.doUnmock("../AdMobAds.ts");
+  });
+  const cache = (cfg: unknown): Record<string, string> => ({ "ads.remote.v1": JSON.stringify(cfg) });
+
+  it("offline with no cache: built-in defaults (banner stays OFF)", async () => {
+    const { ads } = await facade({ bannerHoldout: false });
+    ads.setScreen("track");
+    expect(fake.showBanner).not.toHaveBeenCalled();
+  });
+
+  it("the copy cached on an earlier launch is applied on the next launch, even offline", async () => {
+    const { ads } = await facade({ bannerHoldout: false }, cache({ flags: { banner: true } }));
+    ads.setScreen("track");
+    expect(fake.showBanner).toHaveBeenCalledTimes(1);
+  });
+
+  it("a fresh fetch applies once it lands", async () => {
+    const ok = async (): Promise<Response> => new Response(JSON.stringify({ flags: { banner: true } }));
+    const { ads } = await facade({ bannerHoldout: false }, {}, ok);
+    await tick();
+    ads.setScreen("track");
+    expect(fake.showBanner).toHaveBeenCalledTimes(1);
+  });
+
+  it("out-of-range remote rules are clamped: grace and pacing floors hold, the daily never shows", async () => {
+    const wild = { rules: { graceUnits: 0, unitsBetween: 0, playSecondsBetween: 0, resumeQuietMs: 0, afterFullscreenMs: 0 } };
+    const { ads } = await facade({ units: 4 }, cache(wild)); // pacing met: only the grace floor blocks
+    expect(await ads.beforeNextBoard({ ...trackUnit, playSeconds: 1 })).toBe(false); // unit 5 ≤ grace 5
+    expect(fake.showInterstitial).not.toHaveBeenCalled();
+    expect(await ads.beforeNextBoard({ track: "daily", daily: true, playSeconds: 900, dailyStreak: 1 })).toBe(false);
+    expect(fake.showInterstitial).not.toHaveBeenCalled();
   });
 });

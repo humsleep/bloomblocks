@@ -2386,7 +2386,7 @@ export class LanternsScene extends Phaser.Scene {
         finished: (how) => this.endTutorial(how),
         faces,
       };
-      this.tut = new m.Tutorial(host, replay);
+      this.tut = new m.Tutorial(host);
       this.tut.start(this.time.now);
       this.flow(replay ? "tutorial-replay" : "tutorial");
     } catch (e) {

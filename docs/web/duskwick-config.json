@@ -1,0 +1,14 @@
+{
+  "_doc": "puzzle-lab docs/web/remote-config.md",
+  "rules": {
+    "graceUnits": 5,
+    "unitsBetween": 2,
+    "playSecondsBetween": 240,
+    "perSession": 2,
+    "perSessionLong": 3,
+    "perDay": 10
+  },
+  "flags": {
+    "banner": false
+  }
+}

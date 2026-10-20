@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # App Store archive: release gates → bump CFBundleVersion → build M1 web → cap sync →
 # `xcodebuild archive` (Release, automatic signing) → prove the ColdStartProbe is absent.
-# Does NOT export or upload: that needs the developer's App Store Connect record for the bundle id
-# (Xcode Organizer → Distribute App).
+# With --upload it then exports straight to App Store Connect (TestFlight) using the Apple ID signed in to
+# Xcode (needs the App Store Connect record for the bundle id); without it, Xcode Organizer → Distribute App.
 #
-# Usage: scripts/archive-ios.sh [--check-only] [--allow-test-ads] [--marketing 1.1]
+# Usage: scripts/archive-ios.sh [--check-only] [--allow-test-ads] [--marketing 1.1] [--upload]
 #   --check-only      run only the gates (scripts/release-gates.mjs + check-no-probe.sh on the newest
 #                     existing Release App.app); nothing is bumped, built, synced or archived.
 #   --allow-test-ads  let Google's sample AdMob IDs / testing:true through with a loud warning —
@@ -16,11 +16,13 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 CHECK_ONLY=0
+UPLOAD=0
 GATE_ARGS=()
 BUMP_ARGS=()
 while (($#)); do
   case "$1" in
     --check-only) CHECK_ONLY=1 ;;
+    --upload) UPLOAD=1 ;;
     --allow-test-ads) GATE_ARGS+=(--allow-test-ads) ;;
     --marketing) BUMP_ARGS+=("$1" "${2:?--marketing needs a version}"); shift ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
@@ -63,3 +65,9 @@ if ! scripts/check-no-probe.sh "$ARCHIVE/Products/Applications/App.app"; then
 fi
 [[ -n "$SUFFIX" ]] && echo "!!! $ARCHIVE serves GOOGLE TEST ADS — internal TestFlight only, never submit for review !!!" >&2
 echo "archived $ARCHIVE"
+if ((UPLOAD)); then
+  [[ -n "$SUFFIX" ]] && { echo "refusing to upload a TESTADS archive" >&2; exit 1; }
+  xcodebuild -quiet -exportArchive -archivePath "$ARCHIVE" -exportOptionsPlist scripts/ExportOptions-upload.plist \
+    -exportPath build/export -allowProvisioningUpdates
+  echo "uploaded $VER to App Store Connect — TestFlight lists it after processing (~5–30 min)"
+fi

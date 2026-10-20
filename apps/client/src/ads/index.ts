@@ -35,6 +35,7 @@ import { breakCardText } from "./breakCard.ts";
 import type { RewardPlacement } from "./config.ts";
 import { NullAds } from "./NullAds.ts";
 import * as P from "./policy.ts";
+import { fetchRemoteConfig, loadCachedConfig } from "./remote.ts";
 
 export type { AdsProvider, RewardPlacement };
 export type { AdScreen } from "./policy.ts";
@@ -119,6 +120,11 @@ async function loadState(): Promise<void> {
 }
 
 async function doInit(): Promise<void> {
+  // remote config: last good copy first (bannerHoldout is drawn from rules in loadState), then a
+  // fresh fetch in the background that applies whenever it lands. iOS only: web / e2e stay offline
+  const cached = await loadCachedConfig();
+  if (cached) ads.applyRemoteConfig(cached);
+  if (Capacitor.getPlatform() === "ios") void fetchRemoteConfig().then((c) => c && ads.applyRemoteConfig(c));
   loadP = loadState();
   await loadP;
   void App.addListener("appStateChange", ({ isActive }) => {
@@ -368,7 +374,7 @@ export const ads = {
     return () => void fullscreenCbs.delete(cb);
   },
 
-  /** Future Firebase Remote Config hook: anything broken is clamped / ignored (policy.ts). */
+  /** Remote config (./remote.ts, applied by init): anything broken is clamped / ignored (policy.ts). */
   applyRemoteConfig(raw: { rules?: unknown; flags?: unknown } | null | undefined): void {
     rules = P.resolveRules(raw?.rules);
     flags = P.resolveFlags(raw?.flags);

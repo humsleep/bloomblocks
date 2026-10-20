@@ -9,7 +9,7 @@
 //   end     "You're ready. Light up the town!" · "No guessing needed, ever." · [Start]
 // A wrong tap is not applied: the yard shakes, the band's second line says why (2.5 s), the hand
 // shows the tap again; after two wrong taps the guide makes the move. 6 s without input → the hand
-// comes back. Skippable (always on a replay; on the first run from T3 on).
+// comes back. Skippable from the first yard (experienced players; the "?" pulses after a skip).
 // Rules: the yards are smaller than the generator's 5×5 minimum, so they are built here as plain
 // PipsLevel values (no validateLevel) and judged ONLY with the rules' own toggle (lanternsPips.apply),
 // isComplete and analyzeBoard — the rules code is untouched. The session is never touched either:
@@ -129,11 +129,7 @@ export class Tutorial {
   /** what happened (tests / logs) */
   readonly log: string[] = [];
 
-  constructor(
-    private readonly host: TutorialHost,
-    /** a replay (from the "?" sheet): the Skip button shows from the start */
-    private readonly replay: boolean,
-  ) {
+  constructor(private readonly host: TutorialHost) {
     const s = host.scene;
     const D = 12;
     this.band = new LineBand(s, host.bank, D);
@@ -800,9 +796,9 @@ export class Tutorial {
     this.skipTxt.setPosition(x + w / 2, y + h / 2);
   }
 
-  /** Skip: always on a replay; on the first run once the first two yards are done (spec: hidden on a first install). */
+  /** Skip: from the first yard, first run included — a player who knows the rules is never held in the lesson. */
   private updateSkip(): void {
-    const on = !this.over && !this.cardOpen && (this.replay || this.stepNo >= 3);
+    const on = !this.over && !this.cardOpen;
     this.skipBg.setVisible(on);
     this.skipTxt.setVisible(on);
   }

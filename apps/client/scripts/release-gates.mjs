@@ -220,10 +220,13 @@ try {
     if (!/pixelWidth: 1024/.test(out) || !/pixelHeight: 1024/.test(out)) hard.push(`${set} icon ${any.filename} is not 1024×1024`);
     storeChecks++;
   }
-  const alternates = sets.filter((x) => x !== "AppIcon");
   const appCfgs = [...pbx.matchAll(/buildSettings = \{([^}]*ASSETCATALOG_COMPILER_APPICON_NAME[^}]*)\}/g)].map((m) => m[1]);
   if (appCfgs.length === 0) hard.push("project.pbxproj: no build configuration sets ASSETCATALOG_COMPILER_APPICON_NAME");
   for (const cfg of appCfgs) {
+    // the primary set is whichever ASSETCATALOG_COMPILER_APPICON_NAME names (Wick since 1.0 build 3); every other set is an alternate
+    const primary = (cfg.match(/ASSETCATALOG_COMPILER_APPICON_NAME = "?([^";]*)"?;/) ?? [])[1] ?? "";
+    if (!sets.includes(primary)) hard.push(`project.pbxproj: primary app icon "${primary}" has no ${primary}.appiconset`);
+    const alternates = sets.filter((x) => x !== primary);
     const names = ((cfg.match(/ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "?([^";]*)"?;/) ?? [])[1] ?? "").split(/\s+/).filter(Boolean);
     for (const a of alternates) if (!names.includes(a)) hard.push(`project.pbxproj: ${a}.appiconset is not in ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES of every App configuration (PPO needs it in the binary)`);
     for (const n of names) if (!sets.includes(n)) hard.push(`project.pbxproj: alternate app icon "${n}" has no ${n}.appiconset`);

@@ -61,6 +61,8 @@ async function boot(): Promise<void> {
     safe,
     onInteractive: () => {
       markInteractive(__VARIANT__);
+      // the intro overlay (index.html) leaves once its minimum time is up and the board is drawn underneath
+      (window as unknown as { __intro?: { ready(): void } }).__intro?.ready();
       // L: the level worker starts only after the first presented frame (cold-start gate)
       requestAnimationFrame(() => requestAnimationFrame(() => markFirstPaint()));
       // decorate after the first presented frame (same 2 rAF as the probe)

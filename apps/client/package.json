@@ -24,6 +24,7 @@
     "test:e2e:chromium": "playwright test --project=chromium",
     "ios:archive": "scripts/archive-ios.sh",
     "ios:release-check": "scripts/archive-ios.sh --check-only",
+    "ios:testflight": "scripts/archive-ios.sh --upload",
     "ios:bump": "node scripts/bump-build.mjs",
     "ios:skan": "node scripts/skan-update.mjs",
     "art": "node scripts/make-art.mjs",
