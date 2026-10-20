@@ -26,6 +26,7 @@ GitHub Pages가 1–2분 안에 반영하고(캐시 최대 10분), 각 iPhone은
 | `rules.breakAfterNthInterstitial` | 2 | 1–5 | 그날 몇 번째 전면 광고 뒤 "30분 쉬기"를 제안할지 |
 | `rules.bannerHoldout` | 0.5 | 0–1 | 배너를 받지 않는 설치 비율(새 설치에만 적용) |
 | `flags.banner` | false | true/false | 트랙 보드 배너(B+) |
+| `flags.cozyEvening` | true | true/false | R4 아늑한 저녁(아늑함 5단계, 마을 방문 뒤 30분 전면 광고 없음, 하루 1번). 수익이 걱정되면 `false` |
 | `flags.rewardKeepsake`, `flags.rewardArchive` | false | — | 아직 만들지 않은 기능. **켜지 않는다**(지침 2.5.19 휴면 기능) |
 
 `breakMs`(30분)와 `streakGiftMs`는 카드에 약속한 값이라 원격으로 바뀌지 않는다. 파일에 적힌 키는 빌드 기본값을 덮으므로, 나중 빌드에서 기본값을 바꾸면 이 파일도 같이 본다.

@@ -317,6 +317,17 @@ export const ads = {
     return { title: t.title, text: t.body, yes: t.watch, no: t.notNow, unavailable: t.unavailable };
   },
 
+  /** R4 cozy evening (cozy level 5, the village calls it on a visit): true when it started now. */
+  cozyEvening(): boolean {
+    if (!state || !flags.cozyEvening) return false;
+    const next = P.cozyEvening(state, Date.now());
+    if (!next) return false;
+    state = next;
+    persist();
+    syncBanner();
+    return true;
+  },
+
   /** 7-day streak gift (1 h without interstitials): ms epoch while active, else 0. */
   giftActiveUntil(): number {
     return state && P.giftActive(state, Date.now()) ? state.giftUntil : 0;

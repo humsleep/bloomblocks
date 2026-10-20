@@ -690,3 +690,124 @@ export const RESIDENT_NAMES: Record<Lang, Record<ResidentId, string>> = {
   "zh-Hans": { wick: "小烛", momo: "桃桃", sage: "叶叶", luna: "月月", pip: "皮皮", kuri: "栗栗", yuki: "雪雪" },
   "zh-Hant": { wick: "小燭", momo: "桃桃", sage: "葉葉", luna: "月月", pip: "皮皮", kuri: "栗栗", yuki: "雪雪" },
 };
+
+/**
+ * R4 cozy level and rewards (docs/team/r4-village-story-rewards.md §3): the cottage's chip + rewards panel.
+ * AI drafts in 10 locales (owner 2026-10-18: back-translation QA instead of native review), glossary terms kept
+ * (cottage, lantern, shield, board).
+ */
+const COZY_EN = {
+  chip: "Cozy {n}",
+  chipA11y: "Cozy level {n} of 5: see your rewards",
+  title: "Cozy level {n}",
+  score: "{score} points · {left} more to the next level",
+  scoreMax: "{score} points · the coziest cottage",
+  how: "Place different pieces, finish a friend's set, match three colours.",
+  r1: "Momo's and Sage's lanterns",
+  r2: "A garden board",
+  r3: "A third streak shield each month",
+  r4: "Luna's and Kuri's lanterns, a snowy board",
+  r5: "Cozy evening: no ads for 30 min after a visit",
+  lanterns: "Lanterns",
+  boards: "Board",
+  "theme.stone": "Stone",
+  "theme.garden": "Garden",
+  "theme.snow": "Snow",
+  needLevel: "Cozy level {n}",
+  needFriend: "Friends with {name}",
+  inUse: "{name}: in use",
+  use: "Use {name}",
+  locked: "{name}: {how}",
+  up: "Your cottage got cozier!",
+  set: "{name}'s set",
+};
+export type CozyKey = keyof typeof COZY_EN;
+type CozyTable = Record<CozyKey, string>;
+export const COZY: Record<Lang, CozyTable> = {
+  en: COZY_EN,
+  ko: {
+    chip: "아늑함 {n}", chipA11y: "아늑함 {n}단계 (5단계 중): 보상 보기", title: "아늑함 {n}단계",
+    score: "{score}점 · 다음 단계까지 {left}점", scoreMax: "{score}점 · 가장 아늑한 오두막",
+    how: "서로 다른 가구를 놓고, 친구 세트를 완성하고, 같은 색 셋을 맞춰 보세요.",
+    r1: "모모와 세이지의 등불", r2: "정원 판", r3: "매달 연속 기록 보호막 하나 더", r4: "루나와 쿠리의 등불, 눈 내린 판", r5: "아늑한 저녁: 마을에 들르면 30분 동안 광고 없음",
+    lanterns: "등불", boards: "판", "theme.stone": "돌", "theme.garden": "정원", "theme.snow": "눈",
+    needLevel: "아늑함 {n}단계", needFriend: "{name}의 친구 되기", inUse: "{name}: 사용 중", use: "{name} 쓰기", locked: "{name}: {how}",
+    up: "오두막이 더 아늑해졌어요!", set: "{name}의 세트",
+  },
+  ja: {
+    chip: "くつろぎ {n}", chipA11y: "くつろぎレベル {n}（5まで）：ごほうびを見る", title: "くつろぎレベル {n}",
+    score: "{score}ポイント・次のレベルまであと{left}", scoreMax: "{score}ポイント・いちばんくつろげる小屋",
+    how: "ちがう家具を置いて、なかまのセットをそろえ、同じ色を3つ合わせましょう。",
+    r1: "モモとセージのランタン", r2: "お庭の盤", r3: "連続記録のお守りが毎月ひとつ増える", r4: "ルナとクリのランタン、雪の盤", r5: "くつろぎの夜：村に寄ると30分広告なし",
+    lanterns: "ランタン", boards: "盤", "theme.stone": "石", "theme.garden": "お庭", "theme.snow": "雪",
+    needLevel: "くつろぎレベル {n}", needFriend: "{name}となかよくなる", inUse: "{name}：使用中", use: "{name}を使う", locked: "{name}：{how}",
+    up: "小屋がもっとくつろげるようになりました！", set: "{name}のセット",
+  },
+  de: {
+    chip: "Gemütlich {n}", chipA11y: "Gemütlichkeit Stufe {n} von 5: Belohnungen ansehen", title: "Gemütlichkeit Stufe {n}",
+    score: "{score} Punkte · noch {left} bis zur nächsten Stufe", scoreMax: "{score} Punkte · die gemütlichste Hütte",
+    how: "Stelle verschiedene Stücke auf, vervollständige ein Freundes-Set, kombiniere drei gleiche Farben.",
+    r1: "Laternen von Momo und Sage", r2: "Ein Garten-Spielfeld", r3: "Jeden Monat ein dritter Serienschutz", r4: "Laternen von Luna und Kuri, ein verschneites Spielfeld", r5: "Gemütlicher Abend: 30 Min. ohne Werbung nach einem Besuch",
+    lanterns: "Laternen", boards: "Spielfeld", "theme.stone": "Stein", "theme.garden": "Garten", "theme.snow": "Schnee",
+    needLevel: "Gemütlichkeit Stufe {n}", needFriend: "Freundschaft mit {name}", inUse: "{name}: in Benutzung", use: "{name} verwenden", locked: "{name}: {how}",
+    up: "Deine Hütte ist gemütlicher geworden!", set: "Set von {name}",
+  },
+  fr: {
+    chip: "Douillet {n}", chipA11y: "Niveau douillet {n} sur 5 : voir les récompenses", title: "Niveau douillet {n}",
+    score: "{score} points · encore {left} pour le niveau suivant", scoreMax: "{score} points · la chaumière la plus douillette",
+    how: "Placez des meubles différents, complétez l'ensemble d'un ami, assortissez trois couleurs.",
+    r1: "Les lanternes de Momo et de Sage", r2: "Un plateau jardin", r3: "Un troisième bouclier de série chaque mois", r4: "Les lanternes de Luna et de Kuri, un plateau enneigé", r5: "Soirée douillette : 30 min sans pub après une visite",
+    lanterns: "Lanternes", boards: "Plateau", "theme.stone": "Pierre", "theme.garden": "Jardin", "theme.snow": "Neige",
+    needLevel: "Niveau douillet {n}", needFriend: "Devenir ami avec {name}", inUse: "{name} : utilisée", use: "Utiliser {name}", locked: "{name} : {how}",
+    up: "Votre chaumière est plus douillette !", set: "L'ensemble de {name}",
+  },
+  es: {
+    chip: "Acogedor {n}", chipA11y: "Nivel acogedor {n} de 5: ver recompensas", title: "Nivel acogedor {n}",
+    score: "{score} puntos · faltan {left} para el siguiente nivel", scoreMax: "{score} puntos · la cabaña más acogedora",
+    how: "Coloca muebles distintos, completa el conjunto de un amigo, combina tres colores iguales.",
+    r1: "Los faroles de Momo y Sage", r2: "Un tablero de jardín", r3: "Un tercer escudo de racha cada mes", r4: "Los faroles de Luna y Kuri, un tablero nevado", r5: "Tarde acogedora: 30 min sin anuncios tras una visita",
+    lanterns: "Faroles", boards: "Tablero", "theme.stone": "Piedra", "theme.garden": "Jardín", "theme.snow": "Nieve",
+    needLevel: "Nivel acogedor {n}", needFriend: "Hazte amigo de {name}", inUse: "{name}: en uso", use: "Usar {name}", locked: "{name}: {how}",
+    up: "¡Tu cabaña es más acogedora!", set: "El conjunto de {name}",
+  },
+  "pt-BR": {
+    chip: "Aconchego {n}", chipA11y: "Nível de aconchego {n} de 5: ver recompensas", title: "Nível de aconchego {n}",
+    score: "{score} pontos · faltam {left} para o próximo nível", scoreMax: "{score} pontos · a cabana mais aconchegante",
+    how: "Coloque móveis diferentes, complete o conjunto de um amigo, combine três cores iguais.",
+    r1: "As lanternas de Momo e Sage", r2: "Um tabuleiro de jardim", r3: "Um terceiro escudo de sequência por mês", r4: "As lanternas de Luna e Kuri, um tabuleiro com neve", r5: "Noite aconchegante: 30 min sem anúncios após uma visita",
+    lanterns: "Lanternas", boards: "Tabuleiro", "theme.stone": "Pedra", "theme.garden": "Jardim", "theme.snow": "Neve",
+    needLevel: "Nível de aconchego {n}", needFriend: "Fazer amizade com {name}", inUse: "{name}: em uso", use: "Usar {name}", locked: "{name}: {how}",
+    up: "Sua cabana ficou mais aconchegante!", set: "O conjunto de {name}",
+  },
+  it: {
+    chip: "Accogliente {n}", chipA11y: "Livello accogliente {n} su 5: vedi le ricompense", title: "Livello accogliente {n}",
+    score: "{score} punti · ancora {left} al prossimo livello", scoreMax: "{score} punti · la casetta più accogliente",
+    how: "Metti mobili diversi, completa il set di un amico, abbina tre colori uguali.",
+    r1: "Le lanterne di Momo e Sage", r2: "Un tavoliere giardino", r3: "Un terzo scudo della serie ogni mese", r4: "Le lanterne di Luna e Kuri, un tavoliere innevato", r5: "Serata accogliente: 30 min senza pubblicità dopo una visita",
+    lanterns: "Lanterne", boards: "Tavoliere", "theme.stone": "Pietra", "theme.garden": "Giardino", "theme.snow": "Neve",
+    needLevel: "Livello accogliente {n}", needFriend: "Fai amicizia con {name}", inUse: "{name}: in uso", use: "Usa {name}", locked: "{name}: {how}",
+    up: "La tua casetta è più accogliente!", set: "Il set di {name}",
+  },
+  "zh-Hans": {
+    chip: "温馨 {n}", chipA11y: "温馨等级 {n}（共 5 级）：查看奖励", title: "温馨等级 {n}",
+    score: "{score} 分 · 距下一级还差 {left} 分", scoreMax: "{score} 分 · 最温馨的小屋",
+    how: "摆放不同的家具，集齐朋友的套组，凑齐三件同色家具。",
+    r1: "桃桃和叶叶的灯笼", r2: "花园棋盘", r3: "每月多一个连续记录护盾", r4: "月月和栗栗的灯笼、雪景棋盘", r5: "温馨夜晚：逛完小镇后 30 分钟无广告",
+    lanterns: "灯笼", boards: "棋盘", "theme.stone": "石头", "theme.garden": "花园", "theme.snow": "雪景",
+    needLevel: "温馨等级 {n}", needFriend: "和{name}成为朋友", inUse: "{name}：使用中", use: "使用{name}", locked: "{name}：{how}",
+    up: "小屋更温馨了！", set: "{name}的套组",
+  },
+  "zh-Hant": {
+    chip: "溫馨 {n}", chipA11y: "溫馨等級 {n}（共 5 級）：查看獎勵", title: "溫馨等級 {n}",
+    score: "{score} 分 · 距下一級還差 {left} 分", scoreMax: "{score} 分 · 最溫馨的小屋",
+    how: "擺放不同的家具，集齊朋友的套組，湊齊三件同色家具。",
+    r1: "桃桃和葉葉的燈籠", r2: "花園棋盤", r3: "每月多一個連續紀錄護盾", r4: "月月和栗栗的燈籠、雪景棋盤", r5: "溫馨夜晚：逛完小鎮後 30 分鐘無廣告",
+    lanterns: "燈籠", boards: "棋盤", "theme.stone": "石頭", "theme.garden": "花園", "theme.snow": "雪景",
+    needLevel: "溫馨等級 {n}", needFriend: "和{name}成為朋友", inUse: "{name}：使用中", use: "使用{name}", locked: "{name}：{how}",
+    up: "小屋更溫馨了！", set: "{name}的套組",
+  },
+};
+export function cozyText(lang: Lang, key: CozyKey, vars?: Record<string, string | number>): string {
+  const s = COZY[lang][key] ?? COZY_EN[key];
+  return vars ? s.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m)) : s;
+}

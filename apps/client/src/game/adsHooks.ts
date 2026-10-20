@@ -86,6 +86,10 @@ export const adsApi = {
   breakConfirm(lang?: string | readonly string[]): ReturnType<typeof ads.breakConfirm> {
     return inited ? guard(() => ads.breakConfirm(lang), null) : null;
   },
+  /** R4: cozy level 5 → 30 min without interstitials after a village visit (once a day); true = started now */
+  cozyEvening(): boolean {
+    return guard(() => ads.cozyEvening(), false);
+  },
   giftActiveUntil(): number {
     return guard(() => ads.giftActiveUntil(), 0);
   },

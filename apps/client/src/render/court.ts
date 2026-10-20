@@ -282,12 +282,29 @@ function slabPath(ctx: Ctx, x: number, y: number, s: number, r: Rnd): void {
 
 const slabs = new Map<string, HTMLCanvasElement>();
 
+/** R4 board themes (game/cosmetics.ts): only the DARK slabs change, so lit vs dark reads the same in every theme. */
+export type ThemeId = "stone" | "garden" | "snow";
+let theme: ThemeId = "stone";
+export function setBoardTheme(t: ThemeId): void {
+  theme = t;
+}
+export const boardThemeId = (): ThemeId => theme;
+/** two dark slab tints of a theme (the village's theme swatches) */
+export const themeTints = (t: ThemeId): readonly [string, string] => [DARK_TINT[t][1]!, DARK_TINT[t][2]!];
+const DARK_TINT: Record<ThemeId, readonly string[]> = {
+  stone: [PAL.floorHi, "#2A3050", "#2E2F52", PAL.floorHi, "#282E4E", "#2D3150", "#29304F", "#2C2F4F"],
+  // mossy garden flagstones: green-grey, same lightness as the stone set
+  garden: ["#2A3A3A", "#263634", "#2C3B38", "#2A3A3A", "#243431", "#2B3A37", "#273734", "#2A3936"],
+  // frosted slate: a cool blue, a touch lighter, with frost flecks (still far darker than a lit slab)
+  snow: ["#33405E", "#303C5A", "#364362", "#33405E", "#2E3A57", "#35425F", "#313E5B", "#34415E"],
+};
+
 /** Lit stone palette: the same slab under full lantern light (warm sandstone, ≈ L 0.42 average). */
 const LIT_TINT = ["#F0C688", "#ECC084", "#EEC282", "#F2CA8E", "#E9BD84", "#EFC58A", "#EDC083", "#F1C88C"] as const;
 
 /** One flagstone `s` px square, variant v (0–7); lit = the same stone under lantern light. Cached. */
 export function slab(s: number, v: number, u: number, lit = false): HTMLCanvasElement {
-  const key = `${s}:${v}:${lit ? 1 : 0}`;
+  const key = `${s}:${v}:${lit ? 1 : 0}:${lit ? "" : theme}`;
   const hit = slabs.get(key);
   if (hit) return hit;
   const c = document.createElement("canvas");
@@ -296,7 +313,7 @@ export function slab(s: number, v: number, u: number, lit = false): HTMLCanvasEl
   const ctx = c.getContext("2d")!;
   const seed = hashStr(`slab${v}`);
   const r = rng(seed);
-  const tint = lit ? LIT_TINT[v % 8]! : [PAL.floorHi, "#2A3050", "#2E2F52", PAL.floorHi, "#282E4E", "#2D3150", "#29304F", "#2C2F4F"][v % 8]!;
+  const tint = lit ? LIT_TINT[v % 8]! : DARK_TINT[theme][v % 8]!;
   const g = ctx.createLinearGradient(0, 0, s * 0.35, s);
   if (lit) {
     g.addColorStop(0, mix(tint, "#FFE2A8", 0.35));
@@ -350,6 +367,19 @@ export function slab(s: number, v: number, u: number, lit = false): HTMLCanvasEl
     hg.addColorStop(1, "rgba(8,10,24,0)");
     ctx.fillStyle = hg;
     ctx.fillRect(0, 0, s, s);
+  }
+  // R4 theme marks on dark slabs: moss tufts along the edges (garden), frost flecks (snow)
+  if (!lit && theme !== "stone") {
+    const n = theme === "garden" ? 5 : 9;
+    for (let k = 0; k < n; k++) {
+      const edge = r() < 0.5;
+      const x = edge ? (r() < 0.5 ? s * 0.06 : s * 0.94) : s * (0.1 + r() * 0.8);
+      const y = edge ? s * (0.1 + r() * 0.8) : r() < 0.5 ? s * 0.06 : s * 0.94;
+      ctx.fillStyle = theme === "garden" ? `rgba(124,176,108,${0.3 + r() * 0.25})` : `rgba(232,242,255,${0.22 + r() * 0.25})`;
+      ctx.beginPath();
+      ctx.ellipse(x, y, s * (0.03 + r() * 0.04), s * (0.02 + r() * 0.025), r() * 3, 0, TAU);
+      ctx.fill();
+    }
   }
   // edge occlusion: worn slabs are a touch darker towards their rims
   const ao = ctx.createRadialGradient(s / 2, s / 2, s * 0.32, s / 2, s / 2, s * 0.75);

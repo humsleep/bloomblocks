@@ -46,11 +46,25 @@ function rr(ctx: Ctx, x: number, y: number, w: number, h: number, r: number): vo
   ctx.closePath();
 }
 
+/** R4 lantern skins (board lanterns only; game/cosmetics.ts): each resident's paper colour + one small mark. */
+export type SkinId = "wick" | "momo" | "sage" | "luna" | "pip" | "kuri" | "yuki";
+/** lit paper gradient stops (centre → rim) per skin; "wick" is the icon's own warm paper */
+const PAPER: Record<SkinId, readonly [string, string, string, string, string]> = {
+  wick: ["#FFF3DA", "#FFEECB", "#FFDD94", "#FFC864", "#E8B05A"],
+  momo: ["#FFF3F2", "#FFE6E6", "#FFCAD3", "#F6A6B8", "#E08AA0"],
+  sage: ["#F7FCEC", "#ECF6D6", "#D3EBAE", "#AFD585", "#8CBA66"],
+  luna: ["#F8F3FF", "#ECE2FF", "#D6C4F8", "#BBA0EA", "#9C82D2"],
+  pip: ["#FFF9E0", "#FFF2B8", "#FFE184", "#FFC950", "#EFAE3A"],
+  kuri: ["#FFF3EA", "#FFE3CF", "#FFC9A6", "#F2A479", "#D9875A"],
+  yuki: ["#F6FBFF", "#E5F2FF", "#CAE3F8", "#A6CDEE", "#88B4DC"],
+};
+
 /**
  * The framed lantern, `h` px tall. glow 1 = lit (warm paper, the flame sprite adds the
- * light), 0 = unlit (cool dusk paper: basket, town "waiting", shields).
+ * light), 0 = unlit (cool dusk paper: basket, town "waiting", shields). `skin` (R4): board lanterns only.
  */
-export function drawFramedLantern(ctx: Ctx, h: number, glow: number): void {
+export function drawFramedLantern(ctx: Ctx, h: number, glow: number, skin: SkinId = "wick"): void {
+  const P = PAPER[skin];
   const s = h / K;
   ctx.save();
   ctx.scale(s, s);
@@ -67,11 +81,11 @@ export function drawFramedLantern(ctx: Ctx, h: number, glow: number): void {
   // paper body
   const g = ctx.createRadialGradient(512, 408.8, 0, 512, 408.8, 108.8);
   // v12 (A4): a cream centre, not white — the lantern face's ink and blush stay readable on it
-  g.addColorStop(0, mix("#D9CDB0", "#FFF3DA", glow));
-  g.addColorStop(0.3, mix("#CDBE9C", "#FFEECB", glow));
-  g.addColorStop(0.6, mix("#B9A47E", "#FFDD94", glow));
-  g.addColorStop(0.9, mix("#9C8462", "#FFC864", glow));
-  g.addColorStop(1, mix("#7E6A50", "#E8B05A", glow));
+  g.addColorStop(0, mix("#D9CDB0", P[0], glow));
+  g.addColorStop(0.3, mix("#CDBE9C", P[1], glow));
+  g.addColorStop(0.6, mix("#B9A47E", P[2], glow));
+  g.addColorStop(0.9, mix("#9C8462", P[3], glow));
+  g.addColorStop(1, mix("#7E6A50", P[4], glow));
   bodyPath(ctx);
   ctx.fillStyle = g;
   ctx.fill();
@@ -134,7 +148,107 @@ export function drawFramedLantern(ctx: Ctx, h: number, glow: number): void {
   ctx.fill();
   ctx.fillStyle = `rgba(255,214,140,${0.4 * glow})`;
   ctx.fillRect(432, 493.6, 160, 2.6);
+  if (skin !== "wick") drawSkinMark(ctx, skin);
   ctx.restore();
+}
+
+/** The skin's one mark, in icon units (body 430–594 × 333–501, roof 305–335, handle top ≈ 269). */
+function drawSkinMark(ctx: Ctx, skin: SkinId): void {
+  const ink = "rgba(59,44,69,0.55)";
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = ink;
+  if (skin === "momo") {
+    // a blossom on the roof's right corner
+    for (let k = 0; k < 5; k++) {
+      const a = (k / 5) * Math.PI * 2 - Math.PI / 2;
+      ctx.beginPath();
+      ctx.ellipse(586 + Math.cos(a) * 11, 316 + Math.sin(a) * 11, 9, 7, a, 0, Math.PI * 2);
+      ctx.fillStyle = "#FF9FB6";
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(586, 316, 6, 0, Math.PI * 2);
+    ctx.fillStyle = "#FFE08A";
+    ctx.fill();
+  } else if (skin === "sage") {
+    // two leaves sprouting from the handle's top
+    for (const d of [-1, 1]) {
+      ctx.save();
+      ctx.translate(512 + d * 12, 262);
+      ctx.rotate(d * 0.7);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 18, 8, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#7DBB6A";
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+  } else if (skin === "luna") {
+    // a gold star on the roof's left corner
+    ctx.beginPath();
+    for (let k = 0; k < 10; k++) {
+      const a = (k / 10) * Math.PI * 2 - Math.PI / 2;
+      const r = k % 2 ? 7 : 16;
+      ctx.lineTo(438 + Math.cos(a) * r, 314 + Math.sin(a) * r);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "#F4D38A";
+    ctx.fill();
+    ctx.stroke();
+  } else if (skin === "pip") {
+    // a little bow on the handle
+    ctx.fillStyle = "#FF9A4D";
+    for (const d of [-1, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(512, 269);
+      ctx.lineTo(512 + d * 22, 257);
+      ctx.lineTo(512 + d * 22, 281);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(512, 269, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  } else if (skin === "kuri") {
+    // a knitted scarf across the body's lower part (cream stitches on rust)
+    ctx.save();
+    bodyPath(ctx, 3);
+    ctx.clip();
+    ctx.fillStyle = "#C8553D";
+    ctx.fillRect(400, 456, 230, 22);
+    ctx.fillStyle = "rgba(255,243,222,0.85)";
+    for (let x = 436; x < 596; x += 16) {
+      ctx.beginPath();
+      ctx.moveTo(x, 461);
+      ctx.lineTo(x + 5, 467);
+      ctx.lineTo(x + 10, 461);
+      ctx.lineTo(x + 5, 473);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  } else if (skin === "yuki") {
+    // snow resting on the roof
+    ctx.beginPath();
+    ctx.moveTo(424, 312);
+    ctx.quadraticCurveTo(430, 294, 456, 297);
+    ctx.quadraticCurveTo(476, 286, 500, 296);
+    ctx.quadraticCurveTo(526, 284, 552, 296);
+    ctx.quadraticCurveTo(580, 290, 598, 308);
+    ctx.quadraticCurveTo(604, 318, 592, 316);
+    ctx.quadraticCurveTo(586, 326, 578, 316);
+    ctx.lineTo(450, 316);
+    ctx.quadraticCurveTo(440, 326, 434, 316);
+    ctx.quadraticCurveTo(418, 320, 424, 312);
+    ctx.closePath();
+    ctx.fillStyle = "#F4FAFF";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(120,150,190,0.6)";
+    ctx.stroke();
+  }
 }
 
 /** The lantern's silhouette outline (ghost / hint): paper body + roof + base as one stroke path set. */

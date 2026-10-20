@@ -61,6 +61,6 @@ describe("remote ad config", () => {
     expect(r.perDay).toBe(10);
     expect(r.playSecondsBetween).toBe(RULES.playSecondsBetween);
     expect(r.breakMs).toBe(RULES.breakMs); // the card's promise is not remote-configurable
-    expect(resolveFlags(cfg?.flags)).toEqual({ banner: false, rewardKeepsake: false, rewardArchive: true });
+    expect(resolveFlags(cfg?.flags)).toEqual({ banner: false, rewardKeepsake: false, rewardArchive: true, cozyEvening: true });
   });
 });

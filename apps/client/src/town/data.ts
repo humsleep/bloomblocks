@@ -4,6 +4,7 @@
 //   Preferences "streak"                    {v:1, last, streak, best, shields{"YYYY-MM": n}}      (src/game/daily.ts)
 // Houses = gentle levels before the current one (level − 1): those are exactly the
 // seed keys the player lit, in order. Tower windows = deduce level − 1.
+import { shieldsPerMonthNow } from "../game/shieldCount.ts";
 import { Preferences } from "@capacitor/preferences";
 import { readAtomicText } from "../save/store.ts";
 import type { FestivalLantern } from "./layout.ts";
@@ -17,8 +18,6 @@ export interface TownData {
   today: string;
 }
 
-/** Shields per calendar month (mirror of daily.ts SHIELDS_PER_MONTH — read-only copy, see docs/town.md). */
-const SHIELDS_PER_MONTH = 2;
 
 /** Today on the session's injectable wall clock (L: tests move it with window.__test.clock). */
 export function localISO(d: Date = clock.now()): string {
@@ -57,7 +56,7 @@ export function festivalFor(s: StreakLike | null, today: string): FestivalLanter
     let pending = 0;
     for (let d = lday + 1; d < tday; d++) {
       const k = monthOf(d);
-      if ((s.shields[k] ?? 0) + (spend[k] ?? 0) >= SHIELDS_PER_MONTH) {
+      if ((s.shields[k] ?? 0) + (spend[k] ?? 0) >= shieldsPerMonthNow()) {
         alive = false;
         break;
       }
@@ -108,7 +107,7 @@ export function devFakeTown(d: { gentle: number; deduce?: number; streak?: numbe
   const streak = Math.max(0, d.streak ?? 0);
   const covered = Math.max(0, d.covered ?? 0);
   const month = today.slice(0, 7);
-  const s: StreakLike = { last: d.doneToday ? today : localISO(new Date(clock.now().getTime() - 86400000)), streak, shields: { [month]: Math.min(covered, SHIELDS_PER_MONTH) } };
+  const s: StreakLike = { last: d.doneToday ? today : localISO(new Date(clock.now().getTime() - 86400000)), streak, shields: { [month]: Math.min(covered, shieldsPerMonthNow()) } };
   devData = { gentle: Math.max(0, d.gentle), deduce: Math.max(0, d.deduce ?? 0), festival: festivalFor(streak > 0 ? s : null, today), today };
 }
 

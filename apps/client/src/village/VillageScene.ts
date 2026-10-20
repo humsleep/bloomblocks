@@ -28,7 +28,16 @@ import {
   activeRequests, fulfilled, isoOfDay, marketOffers, marketState, nextAsk, roomCategories, visitors,
   autoSlot, cards, COTTAGE, coverOf, dayOf, deliver, roomOf, emptyRoom, encodeRoom, eve, FLOOR_COLS, FLOOR_SLOTS, itemOfBit, jarProgress, drops, litDayList,
   type Mail, mailOrder, mails, overflow, owned, partnerSlot, place, placedBits, removeAt, residents, type ResidentState, type RoomLayout, slotWhere, SLOTS, type VillageInput,
+  COZY_AT, cozyLevel, cozyScore,
 } from "./model.ts";
+import { cozyText, type CozyKey } from "./strings.ts";
+import {
+  boardTheme, type BoardTheme, chooseSkin, chooseTheme, cozyBit, EVENING_LEVEL, friendBit, type LanternSkin, lanternSkin, notePending, noteUnlocks,
+  SKIN_NEEDS, SKINS, skinUnlocked, THEME_NEEDS, THEMES, themeUnlocked,
+} from "../game/cosmetics.ts";
+import { adsApi } from "../game/adsHooks.ts";
+import { drawFramedLantern } from "../render/lantern.ts";
+import { themeTints } from "../render/court.ts";
 import { firstSnowSeason, type Hemisphere, hemisphereOf, type Line, pickHost, pickLine, type Pick, pickVisit, pushSeen, regionOf, seasonOf, timeBandOf } from "./picker.ts";
 import { loadVillage, onVillageChange, peekVillage, updateVillage, type VillageSave } from "./store.ts";
 import { placeholderArt } from "./placeholderArt.ts";
@@ -205,6 +214,11 @@ export class VillageScene extends Phaser.Scene {
   private highlight = -1;
   private drawer: { slot: number; tab: string; cw: Partial<Record<ItemId, Colorway>> } | null = null;
   private stateLog: string[] = [];
+  /** R4: the cozy rewards panel over the cottage; the level it just reached (0 = no level-up moment) */
+  private cozyOpen = false;
+  private cozyUp = 0;
+  /** a locked reward's "how to get it" line, shown in the panel after a tap */
+  private cozyMsg = "";
 
   constructor() {
     super({ key: VILLAGE_KEY });
@@ -386,6 +400,28 @@ export class VillageScene extends Phaser.Scene {
       const next = first && news.consume ? pickHost(this.d.lines.lines, "firstVillageVisit", new Set([...once, news.consume])) : null;
       this.showHost(news, next, k);
     }
+    // R4: rewards reached so far (a room decorated before 1.1, friendships), then the cozy evening (level 5, once a day)
+    this.syncUnlocks();
+    if (this.d.save.sv.cz.includes(cozyBit(EVENING_LEVEL)) && adsApi.cozyEvening()) notePending("evening");
+  }
+
+  /** R4: write the rewards reached (this room's cozy levels, residents at friendship 3) as synced bits; returns the new ones. */
+  private syncUnlocks(): number[] {
+    const want = new Set<number>();
+    const lvl = cozyLevel(cozyScore(this.room));
+    for (let k = 1; k <= lvl; k++) want.add(cozyBit(k));
+    for (const r of this.residentsNow()) if (r.movedIn && r.friendship >= 3) want.add(friendBit(r.r.index));
+    const have = new Set(this.d.save.sv.cz);
+    const add = [...want].filter((b) => !have.has(b));
+    if (add.length) {
+      const apply = (x: VillageSave): void => void (x.sv.cz = normBits([...x.sv.cz, ...add]));
+      apply(this.d.save);
+      void updateVillage(apply);
+      notePending("reward");
+      this.log(`unlocks ${add.join(",")}`);
+    }
+    noteUnlocks(this.d.save.sv.cz);
+    return add;
   }
   private returning = false;
   /** the hour's light and the season, read when the village opens (a long visit keeps them) */
@@ -513,6 +549,7 @@ export class VillageScene extends Phaser.Scene {
     if (s === "letter") this.renderLetter();
     else if (s === "gift") this.renderGift();
     else if (s === "market") this.renderMarket();
+    else if (s === "room" && this.cozyOpen && !this.drawer) this.renderCozy();
     else this.overlay.setVisible(false);
     if (s !== "room" || !this.drawer) {
       this.drawerImg.setVisible(false);
@@ -1550,6 +1587,25 @@ export class VillageScene extends Phaser.Scene {
         g.stroke();
         g.restore();
         this.text(g, [vt(lang, "postcard")], pd.x, pd.y + pd.r + 4, pd.cap, { align: "center", color: UI.caption });
+        // R4: the cozy chip (left column, under the back disc): level + five dots
+        const cc = this.cozyChip();
+        const lvl = cozyLevel(cozyScore(room));
+        g.save();
+        g.fillStyle = "rgba(30,26,61,0.82)";
+        g.beginPath();
+        g.roundRect(cc.x, cc.y, cc.w, cc.h, cc.h / 2);
+        g.fill();
+        g.strokeStyle = "rgba(244,211,138,0.65)";
+        g.lineWidth = 1.5;
+        g.stroke();
+        for (let k = 0; k < 5; k++) {
+          g.beginPath();
+          g.arc(cc.x + cc.w - 14 - (4 - k) * 9, cc.y + cc.h / 2, 3.2, 0, Math.PI * 2);
+          g.fillStyle = k < lvl ? "#F4D38A" : "rgba(244,235,208,0.25)";
+          g.fill();
+        }
+        g.restore();
+        this.text(g, [cozyText(lang, "chip", { n: lvl })], cc.x + 12, cc.y + (cc.h - 13) / 2, 13, { color: UI.caption, weight: 700 });
       }
       // the title sits between the back disc and the postcard disc (never under them)
       const tl = 16 + 44 + 8;
@@ -1671,12 +1727,257 @@ export class VillageScene extends Phaser.Scene {
         label: rug ? vt(lang, "slotHas", { where: vt(lang, "rug"), item: itemName(lang, rug.item), cw: vt(lang, `cw.${rug.cw}` as "cw.cream") }) : vt(lang, "slotEmpty", { where: vt(lang, "rug") }),
         act: () => this.openDrawer(FLOOR_SLOTS),
       });
+      // last = on top of the room's own tap areas (the chip overlaps the roof)
+      const cc = this.cozyChip();
+      this.hits.push({ id: "cozy", x: cc.x, y: cc.y - 7, w: cc.w, h: cc.h + 14, label: cozyText(lang, "chipA11y", { n: cozyLevel(cozyScore(room)) }), act: () => this.openCozy() });
       this.drawerImg.setVisible(false);
     } else this.renderDrawer();
   }
 
+
+  // --- R4 cozy rewards
+
+  /** the cozy chip: under the back disc, left column of the header (pt) */
+  private cozyChip(): { x: number; y: number; w: number; h: number } {
+    const m = this.measureAt(this.scratch(), 700);
+    const w = Math.ceil(m(13)(cozyText(this.d.lang, "chip", { n: 5 }))) + 12 + 10 + 5 * 9 + 10;
+    return { x: 12, y: this.top + 62, w, h: 30 };
+  }
+
+  private openCozy(): void {
+    cue("tap");
+    this.card = null;
+    this.cozyOpen = true;
+    this.cozyUp = 0;
+    this.cozyMsg = "";
+    this.render();
+  }
+
+  private closeCozy(): void {
+    cue("tap");
+    this.cozyOpen = false;
+    this.cozyUp = 0;
+    this.render();
+  }
+
+  private skinHow(sk: LanternSkin): string {
+    const lang = this.d.lang;
+    const n = SKIN_NEEDS[sk];
+    const parts: string[] = [];
+    if (n.cozy !== null) parts.push(cozyText(lang, "needLevel", { n: n.cozy }));
+    if (n.friend) parts.push(cozyText(lang, "needFriend", { name: residentName(lang, sk) }));
+    return parts.join(" / ");
+  }
+
+  /** The rewards panel: level, score, the five level rewards, the lanterns and the boards to choose from. */
+  private renderCozy(): void {
+    const { W, H } = this;
+    const lang = this.d.lang;
+    const cz = this.d.save.sv.cz;
+    const score = cozyScore(this.room);
+    const lvl = cozyLevel(score);
+    const meas = this.measureAt(this.scratch());
+    const colW = Math.min(W, 520) - 32;
+    const x0 = (W - colW) / 2;
+    const upY = this.top + 12;
+    const titleY = upY + (this.cozyUp ? 28 : 0);
+    const scoreY = titleY + 28;
+    const howF = fitPill(cozyText(lang, "how"), colW, 1, meas, lang);
+    const howY = scoreY + 22;
+    const rowH = 38;
+    const rowsY0 = howY + howF.lines.length * howF.size * 1.2 + 12;
+    const lanY = rowsY0 + 5 * rowH + 6;
+    const cardsY = lanY + 22;
+    const gap = 6;
+    const cw = Math.min(54, (colW - gap * (SKINS.length - 1)) / SKINS.length);
+    const ch = Math.round(cw * 1.3);
+    const cx0 = (W - (SKINS.length * cw + (SKINS.length - 1) * gap)) / 2;
+    const thY = cardsY + ch + 12;
+    const swY = thY + 22;
+    const sw = Math.min(92, (colW - 20) / 3);
+    const sh = Math.round(sw * 0.6);
+    const sx0 = (W - (3 * sw + 20)) / 2;
+    const msgY = swY + sh + 22;
+    const bw = Math.min(260, W - 64);
+    const by = Math.min(this.bottom - 52, msgY + (this.cozyMsg ? 28 : 4));
+    const lock = (g: CanvasRenderingContext2D, x: number, y: number): void => {
+      g.save();
+      g.fillStyle = "rgba(244,235,208,0.9)";
+      g.strokeStyle = "rgba(244,235,208,0.9)";
+      g.lineWidth = 1.6;
+      g.beginPath();
+      g.arc(x, y - 3, 3.2, Math.PI, 0);
+      g.stroke();
+      g.beginPath();
+      g.roundRect(x - 4.5, y - 3, 9, 7, 1.5);
+      g.fill();
+      g.restore();
+    };
+    const key = this.tex("village-overlay", W, H, (g) => {
+      g.fillStyle = "rgba(14,12,32,0.95)";
+      g.fillRect(0, 0, W, H);
+      if (this.cozyUp) this.text(g, [cozyText(lang, "up")], W / 2, upY, 16, { align: "center", color: "#F4D38A", weight: 700 });
+      this.text(g, [cozyText(lang, "title", { n: lvl })], W / 2, titleY, 20, { align: "center", color: UI.caption, weight: 700 });
+      const sline = lvl >= 5 ? cozyText(lang, "scoreMax", { score }) : cozyText(lang, "score", { score, left: COZY_AT[lvl + 1]! - score });
+      this.text(g, [sline], W / 2, scoreY, 13, { align: "center", color: UI.caption, weight: 500 });
+      this.text(g, howF.lines, W / 2, howY, howF.size, { align: "center", color: "rgba(244,235,208,0.72)", weight: 500, lineH: 1.2 });
+      for (let k = 1; k <= 5; k++) {
+        const yy = rowsY0 + (k - 1) * rowH;
+        const got = cz.includes(cozyBit(k));
+        const rh = rowH - 6;
+        g.save();
+        g.fillStyle = this.cozyUp === k ? "rgba(244,211,138,0.24)" : "rgba(255,255,255,0.05)";
+        g.beginPath();
+        g.roundRect(x0, yy, colW, rh, 10);
+        g.fill();
+        g.beginPath();
+        g.arc(x0 + 18, yy + rh / 2, 11, 0, Math.PI * 2);
+        g.fillStyle = got ? "#F4D38A" : "rgba(244,235,208,0.16)";
+        g.fill();
+        g.restore();
+        this.text(g, [String(k)], x0 + 18, yy + rh / 2 - 7, 13, { align: "center", color: got ? INK : UI.caption, weight: 700 });
+        const rf = fitPill(cozyText(lang, `r${k}` as CozyKey), colW - 40 - 26, 1, meas, lang);
+        const lines = rf.lines.slice(0, 2);
+        this.text(g, lines, x0 + 38, yy + (rh - lines.length * rf.size * 1.15) / 2, rf.size, { color: got ? UI.caption : "rgba(244,235,208,0.55)", weight: 600, lineH: 1.15 });
+        if (got) {
+          g.save();
+          g.strokeStyle = "#F4D38A";
+          g.lineWidth = 2.2;
+          g.lineCap = "round";
+          g.beginPath();
+          g.moveTo(x0 + colW - 22, yy + rh / 2);
+          g.lineTo(x0 + colW - 17, yy + rh / 2 + 5);
+          g.lineTo(x0 + colW - 9, yy + rh / 2 - 5);
+          g.stroke();
+          g.restore();
+        } else lock(g, x0 + colW - 15, yy + rh / 2);
+      }
+      this.text(g, [cozyText(lang, "lanterns")], x0, lanY, 13, { color: UI.caption, weight: 700 });
+      SKINS.forEach((sk, i) => {
+        const x = cx0 + i * (cw + gap);
+        const open = skinUnlocked(sk, cz);
+        const sel = lanternSkin() === sk;
+        g.save();
+        g.fillStyle = sel ? "rgba(244,211,138,0.26)" : "rgba(255,255,255,0.06)";
+        g.beginPath();
+        g.roundRect(x, cardsY, cw, ch, 10);
+        g.fill();
+        if (sel) {
+          g.strokeStyle = UI.primary;
+          g.lineWidth = 2;
+          g.stroke();
+        }
+        const lh = ch * 0.8;
+        g.globalAlpha = open ? 1 : 0.3;
+        g.translate(x + cw / 2 - lh * 0.4, cardsY + (ch - lh) / 2);
+        drawFramedLantern(g, lh, open ? 1 : 0.5, sk);
+        g.restore();
+        if (!open) lock(g, x + cw - 9, cardsY + 11);
+      });
+      this.text(g, [cozyText(lang, "boards")], x0, thY, 13, { color: UI.caption, weight: 700 });
+      THEMES.forEach((t, i) => {
+        const x = sx0 + i * (sw + 10);
+        const open = themeUnlocked(t, cz);
+        const sel = boardTheme() === t;
+        const [a, b] = themeTints(t);
+        const cs = (sw - 8) / 3;
+        const rs = (sh - 6) / 2;
+        g.save();
+        g.fillStyle = "#15172B";
+        g.beginPath();
+        g.roundRect(x, swY, sw, sh, 8);
+        g.fill();
+        g.globalAlpha = open ? 1 : 0.35;
+        for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) {
+          const lit = r === 0 && c === 1;
+          const px = x + 2 + c * (cs + 2);
+          const py = swY + 2 + r * (rs + 2);
+          g.fillStyle = lit ? "#F0C688" : (r + c) % 2 ? a : b;
+          g.beginPath();
+          g.roundRect(px, py, cs, rs, 3);
+          g.fill();
+          if (!lit && t !== "stone") {
+            g.fillStyle = t === "garden" ? "rgba(124,176,108,0.6)" : "rgba(232,242,255,0.55)";
+            g.beginPath();
+            g.ellipse(px + cs * 0.2, py + rs * 0.8, cs * 0.12, rs * 0.08, 0, 0, Math.PI * 2);
+            g.ellipse(px + cs * 0.8, py + rs * 0.25, cs * 0.1, rs * 0.07, 0, 0, Math.PI * 2);
+            g.fill();
+          }
+        }
+        g.restore();
+        if (sel) {
+          g.save();
+          g.strokeStyle = UI.primary;
+          g.lineWidth = 2;
+          g.beginPath();
+          g.roundRect(x - 2, swY - 2, sw + 4, sh + 4, 9);
+          g.stroke();
+          g.restore();
+        }
+        if (!open) lock(g, x + sw - 10, swY + 11);
+        this.text(g, [cozyText(lang, `theme.${t}` as CozyKey)], x + sw / 2, swY + sh + 4, 12, { align: "center", color: open ? UI.caption : "rgba(244,235,208,0.55)", weight: 600 });
+      });
+      if (this.cozyMsg) {
+        const mf = fitPill(this.cozyMsg, colW, 1, meas, lang);
+        this.text(g, mf.lines, W / 2, msgY, mf.size, { align: "center", color: "#F4D38A", weight: 600, lineH: 1.2 });
+      }
+      this.pill(g, (W - bw) / 2, by, bw, 48, vt(lang, "close"), false);
+    });
+    this.show(this.overlay, key, 0, 0);
+    this.children.bringToTop(this.overlay);
+    for (let k = 1; k <= 5; k++) {
+      const got = cz.includes(cozyBit(k));
+      this.hits.push({ id: `cozy-r${k}`, x: x0, y: rowsY0 + (k - 1) * rowH, w: colW, h: rowH - 6, label: `${k}. ${cozyText(lang, `r${k}` as CozyKey)}${got ? " ✓" : ""}`, act: () => undefined });
+    }
+    SKINS.forEach((sk, i) => {
+      const name = residentName(lang, sk);
+      const open = skinUnlocked(sk, cz);
+      const sel = lanternSkin() === sk;
+      const label = open ? cozyText(lang, sel ? "inUse" : "use", { name }) : cozyText(lang, "locked", { name, how: this.skinHow(sk) });
+      this.hits.push({ id: `skin-${sk}`, x: cx0 + i * (cw + gap), y: cardsY, w: cw, h: ch, label, ...(open ? { pressed: sel } : {}), act: () => this.pickSkin(sk, label) });
+    });
+    THEMES.forEach((t, i) => {
+      const name = cozyText(lang, `theme.${t}` as CozyKey);
+      const open = themeUnlocked(t, cz);
+      const sel = boardTheme() === t;
+      const label = open ? cozyText(lang, sel ? "inUse" : "use", { name }) : cozyText(lang, "locked", { name, how: cozyText(lang, "needLevel", { n: THEME_NEEDS[t] }) });
+      this.hits.push({ id: `theme-${t}`, x: sx0 + i * (sw + 10), y: swY, w: sw, h: sh + 18, label, ...(open ? { pressed: sel } : {}), act: () => this.pickTheme(t, label) });
+    });
+    this.hits.push({ id: "cozy-close", x: (W - bw) / 2, y: by, w: bw, h: 48, label: vt(lang, "close"), act: () => this.closeCozy() });
+  }
+
+  private pickSkin(sk: LanternSkin, label: string): void {
+    if (!skinUnlocked(sk, this.d.save.sv.cz)) {
+      cue("tap");
+      this.cozyMsg = label;
+      a11y.announce(label);
+    } else {
+      chooseSkin(sk);
+      haptic.place();
+      cue("tap");
+      this.cozyMsg = "";
+    }
+    this.render();
+  }
+
+  private pickTheme(t: BoardTheme, label: string): void {
+    if (!themeUnlocked(t, this.d.save.sv.cz)) {
+      cue("tap");
+      this.cozyMsg = label;
+      a11y.announce(label);
+    } else {
+      chooseTheme(t);
+      haptic.place();
+      cue("tap");
+      this.cozyMsg = "";
+    }
+    this.render();
+  }
+
   private leaveRoom(): void {
     cue("tap");
+    this.cozyOpen = false;
+    this.cozyUp = 0;
     this.screenNow = "village";
     this.highlight = -1;
     this.card = null;
@@ -2014,6 +2315,15 @@ export class VillageScene extends Phaser.Scene {
     apply(this.d.save);
     void updateVillage(apply);
     this.checkRequests();
+    // R4: a new cozy level opens the rewards panel on its moment
+    const up = Math.max(0, ...this.syncUnlocks().filter((b) => b >= 1 && b <= 5));
+    if (up > 0) {
+      this.cozyOpen = true;
+      this.cozyUp = up;
+      this.cozyMsg = "";
+      cue("nearComplete");
+      haptic.success();
+    }
   }
 
   /**

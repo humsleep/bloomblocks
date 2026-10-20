@@ -14,7 +14,7 @@
 import type PhaserTypes from "phaser";
 import Phaser from "../phaser.ts";
 import { drawGlow, drawHomeButton, GLOW } from "../render/draw.ts";
-import { PAL, rgba } from "../render/palette.ts";
+import { PAL, rgba, UI } from "../render/palette.ts";
 import { vis } from "../render/vis.ts";
 import { a11y, type A11yControl } from "../a11y/index.ts";
 import { moonPhase, type PipsLevel, trackParams } from "../game/pipsApi.ts";
@@ -25,6 +25,7 @@ import type { TownData } from "./data.ts";
 import { keepsakeSize, paintKeepsake, paintKeepsakeWaiting } from "./keepsakeBoard.ts";
 import { buildStreet, openingScroll, type Street, type StreetHouse, type StreetItem } from "./layout.ts";
 import { haptic } from "../game/feedback.ts";
+import { makeText, styleText } from "../game/uiText.ts";
 import { VISIT_MS, VISIT_REDUCED_MS } from "../game/progress.ts";
 import { catTail, heartOf, itemLights, paintBackdrop, paintChunk, paintItemBloom, paintTail, type TowerInfo, townGeom, type TownGeom } from "./paint.ts";
 
@@ -107,6 +108,9 @@ export class TownScene extends Phaser.Scene {
   private glowImgs: PhaserTypes.GameObjects.Image[] = [];
   private homeBtn!: PhaserTypes.GameObjects.Image;
   private grabber!: PhaserTypes.GameObjects.Image;
+  /** the street's one explanation (what a house is, what the tower is), under the grabber; caption box in pt */
+  private caption: PhaserTypes.GameObjects.Text[] = [];
+  private captionBox = { x: 0, y: 0, w: 0, h: 0 };
   private keys: string[] = [];
   private scrollX = 0;
   private maxScroll = 0;
@@ -250,6 +254,20 @@ export class TownScene extends Phaser.Scene {
     // THE house button (the same glyph as the daily's way home and the result sheet)
     const home = this.mk(`town-home@${u}`, hb * u, hb * u, (ctx, w) => drawHomeButton(ctx, w));
     this.homeBtn = this.add.image((W / 2) * u, (H - g.safeBottom - 40) * u, home);
+    // the street has no other words: say once, quietly, what a house and the tower are
+    const wrap = (W - 48) * u;
+    // below today's moon (paintBackdrop: centre 0.8 W, safeTop + 46), above the tower's top even on an SE
+    const capTop = g.safeTop + 74;
+    let cy = capTop * u;
+    let cw = 0;
+    for (const [key, pt, alpha] of [["town.caption", 15, 1], ["town.captionTower", 13, 0.72]] as const) {
+      const t = makeText(this, 10).setPosition((W / 2) * u, cy).setAlpha(alpha).setShadow(0, u, "rgba(10,12,30,0.7)", 4 * u).setVisible(true);
+      const sz = styleText(t, a11y.t(key), { pt, u, weight: "600", color: UI.caption, wrap, cap: 1.4 });
+      cy += sz.h + 4 * u;
+      cw = Math.max(cw, sz.w);
+      this.caption.push(t);
+    }
+    this.captionBox = { x: (W * u - cw) / 2 / u, y: capTop, w: cw / u, h: cy / u - capTop };
 
     // idle life (phase 2): moths around the lamps, the roof cats' tails — off under Reduce Motion
     const moth = this.mk(`town-moth@${u}`, 8 * u, 6 * u, (ctx, w, h) => {
@@ -855,6 +873,8 @@ export class TownScene extends Phaser.Scene {
       const hx = this.homeBtn.x / this.u;
       const hy = this.homeBtn.y / this.u + this.sheetY;
       ctl.push({ id: "town-close", label: a11y.t("close"), x: hx - 28, y: hy - 28, w: 56, h: 56, onActivate: () => this.close() });
+      const cb = this.captionBox;
+      ctl.push({ id: "town-caption", label: `${a11y.t("town.caption")} ${a11y.t("town.captionTower")}`, x: cb.x, y: cb.y + this.sheetY, w: cb.w, h: cb.h, onActivate: () => undefined });
       sig += `c${Math.round(hy)}|`;
       for (const h of this.street.houses) {
         if (!h.lit) continue;

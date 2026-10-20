@@ -5,7 +5,7 @@ import { PAL, UI, hex, rgba } from "./palette.ts";
 import { vis } from "./vis.ts";
 import { drawMarkerStone, NUM_FACE_Y, stampSlab } from "./court.ts";
 import { strokeNumerals, drawNumerals } from "./glyphs.ts";
-import { drawFramedLantern, strokeLanternOutline } from "./lantern.ts";
+import { drawFramedLantern, type SkinId, strokeLanternOutline } from "./lantern.ts";
 
 export type Ctx = CanvasRenderingContext2D;
 export type Rnd = () => number;
@@ -678,9 +678,9 @@ export function drawFlower(ctx: Ctx, cx: number, cy: number, r: number, petal: s
  * Round paper lantern, `h` px tall (width 0.8h). Origin = canvas top-left;
  * body centre at (0.4h, 0.56h) — the flame sprite sits there.
  */
-export function drawLantern(ctx: Ctx, h: number, glow: number): void {
+export function drawLantern(ctx: Ctx, h: number, glow: number, skin: SkinId = "wick"): void {
   // v9: the icon's framed paper lantern (src/render/lantern.ts) — one object everywhere
-  drawFramedLantern(ctx, h, glow);
+  drawFramedLantern(ctx, h, glow, skin);
 }
 
 /** Soft radial glow (for additive sprites). stops: [pos, css color][] */

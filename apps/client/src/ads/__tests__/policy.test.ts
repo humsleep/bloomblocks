@@ -178,10 +178,11 @@ describe("ads policy B: remote config can never break the floors", () => {
     expect(P.resolveRules(undefined)).toEqual(P.RULES);
   });
 
-  it("flags take booleans only and default OFF", () => {
+  it("flags take booleans only; ad features default OFF, the R4 cozy evening (fewer ads) ON", () => {
     expect(P.resolveFlags({ banner: "yes", rewardKeepsake: 1 })).toEqual(P.FLAGS);
     expect(P.resolveFlags({ banner: true }).banner).toBe(true);
-    expect(P.FLAGS).toEqual({ banner: false, rewardKeepsake: false, rewardArchive: false });
+    expect(P.resolveFlags({ cozyEvening: false }).cozyEvening).toBe(false);
+    expect(P.FLAGS).toEqual({ banner: false, rewardKeepsake: false, rewardArchive: false, cozyEvening: true });
     expect("appOpen" in P.FLAGS).toBe(false);
   });
 });
@@ -300,5 +301,25 @@ describe("ads policy B: storage", () => {
     expect(s.units).toBe(0);
     expect(s.unitsSinceAd).toBe(0);
     expect(s.day).toBe(P.dayKey(T0));
+  });
+});
+
+describe("R4 cozy evening", () => {
+  it("30 min of the no-interstitial gift window, at most once per local day", () => {
+    const s0 = P.initialState(T0, 0.9);
+    const s1 = P.cozyEvening(s0, T0)!;
+    expect(s1.giftUntil).toBe(T0 + 30 * MIN);
+    expect(P.giftActive(s1, T0 + 29 * MIN)).toBe(true);
+    expect(P.cozyEvening(s1, T0 + 2 * 60 * MIN)).toBeNull(); // same day
+    expect(P.cozyEvening(s1, T0 + DAY)!.giftUntil).toBe(T0 + DAY + 30 * MIN);
+  });
+  it("never shortens a longer gift (the 7-day streak hour)", () => {
+    const s0 = { ...P.initialState(T0, 0.9), giftUntil: T0 + 60 * MIN };
+    expect(P.cozyEvening(s0, T0)!.giftUntil).toBe(T0 + 60 * MIN);
+  });
+  it("survives a restart (cozyDay is revived)", () => {
+    const s1 = P.cozyEvening(P.initialState(T0, 0.9), T0)!;
+    const back = P.reviveState(JSON.parse(JSON.stringify(s1)), T0 + MIN, 0.9);
+    expect(P.cozyEvening(back, T0 + MIN)).toBeNull();
   });
 });

@@ -34,6 +34,8 @@ export const FLAGS = {
   rewardKeepsake: false,
   /** rewarded "replay an old daily" (archive, not built yet) */
   rewardArchive: false,
+  /** R4 cozy evening: cozy level 5 → a village visit grants 30 min without interstitials, once a day */
+  cozyEvening: true,
 };
 export type Flags = typeof FLAGS;
 
@@ -124,6 +126,8 @@ export interface AdState {
   dayBreakOffered: boolean;
   /** day key of the last streak gift granted (one gift per day at most) */
   giftDay: string;
+  /** day key of the last cozy evening (R4: once a day) */
+  cozyDay: string;
   breakUntil: number;
   giftUntil: number;
   /** end of the last full-screen ad / consent form (afterFullscreenMs) */
@@ -177,6 +181,7 @@ export function initialState(now: number, rand: number, r: Rules = RULES): AdSta
     dayInterstitials: 0,
     dayBreakOffered: false,
     giftDay: "",
+    cozyDay: "",
     breakUntil: 0,
     giftUntil: 0,
     lastFullscreenAt: 0,
@@ -199,6 +204,7 @@ export function reviveState(raw: unknown, now: number, rand: number, r: Rules = 
     dayInterstitials: num(s.dayInterstitials, 0),
     dayBreakOffered: s.dayBreakOffered === true,
     giftDay: typeof s.giftDay === "string" ? s.giftDay : "",
+    cozyDay: typeof s.cozyDay === "string" ? s.cozyDay : "",
     // clamp: a clock moved backwards must not grant a near-infinite break / cooldown
     breakUntil: Math.min(num(s.breakUntil, 0), now + RULES.breakMs),
     giftUntil: Math.min(num(s.giftUntil, 0), now + RULES.streakGiftMs),
@@ -219,6 +225,14 @@ export function rollDay(s: AdState, now: number): AdState {
 }
 
 export const breakActive = (s: AdState, now: number): boolean => now < s.breakUntil;
+/** R4 cozy evening length (a promise shown to the player: not remote-tunable, like breakMs) */
+export const COZY_EVENING_MS = 30 * 60_000;
+/** The cozy evening (R4): the gift window for 30 min, at most once per local day; null when today's was used. */
+export function cozyEvening(s: AdState, now: number): AdState | null {
+  const day = dayKey(now);
+  if (s.cozyDay === day) return null;
+  return { ...s, cozyDay: day, giftUntil: Math.max(s.giftUntil, now + COZY_EVENING_MS) };
+}
 export const giftActive = (s: AdState, now: number): boolean => now < s.giftUntil;
 
 /** Records a completed unit (call on the result moment, before deciding). */

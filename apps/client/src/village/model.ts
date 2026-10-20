@@ -15,7 +15,9 @@
 //                (local decision, cached on the device: deliver())
 //   friendship   0–5 from talk days since the resident moved in (+2 per request, 1.1)
 //   cottage      one room, 18 snap slots (15 floor in 3 rows of 5 + 3 wall) + the rug layer
-import { ALL_PIECES, COLORWAYS, CW_STRIDE, GIFT_SEQ, ITEMS, itemById, type Item, type Piece, pieceBit, pieceOfBit, REQUESTS, type Request, RESIDENTS, type Resident, type ResidentId, STARTER } from "./catalog.ts";
+//   cozy (R4)    score of the cottage (distinct items, resident sets, a colour match) → level 0–5;
+//                levels reached are kept as synced bits (v.cz) so a reward never goes away
+import { ALL_PIECES, COLORWAYS, CW_STRIDE, type FurnitureSet, GIFT_SEQ, ITEMS, itemById, type Item, type ItemId, type Piece, pieceBit, pieceOfBit, REQUESTS, type Request, RESIDENTS, type Resident, type ResidentId, SETS, STARTER } from "./catalog.ts";
 import type { VState } from "./vstate.ts";
 
 /** Days since 1970-01-01 of a local ISO date (UTC arithmetic, as pipsApi.isoDay). */
@@ -269,6 +271,36 @@ export function decodeRoom(s: string | undefined): RoomLayout {
   out.floor = parseInt(s[39]!, 36) || 0;
   return sanitize(out);
 }
+
+/**
+ * R4 cozy score (docs/team/r4-village-story-rewards.md §3), derived from the room, never stored: distinct
+ * items placed + 3 per completed resident set + 1 when three or more of the placed pieces share a colourway.
+ */
+export function cozyScore(r: RoomLayout): number {
+  const items = new Set<ItemId>();
+  const perCw = new Map<string, number>();
+  for (const p of [...r.slots, r.rug]) {
+    const piece = p ? pieceOfBit(p.bit) : null;
+    if (!piece || items.has(piece.item)) continue;
+    items.add(piece.item);
+    perCw.set(piece.cw, (perCw.get(piece.cw) ?? 0) + 1);
+  }
+  const sets = SETS.filter((x) => x.items.every((i) => items.has(i))).length;
+  const match = [...perCw.values()].some((n) => n >= 3) ? 1 : 0;
+  return items.size + 3 * sets + match;
+}
+/** score needed for cozy level 0..5 (the starter room's 4 pieces stay at level 0; [P]) */
+export const COZY_AT = [0, 6, 10, 14, 18, 24] as const;
+export function cozyLevel(score: number): number {
+  let l = 0;
+  for (let i = 0; i < COZY_AT.length; i++) if (score >= COZY_AT[i]!) l = i;
+  return l;
+}
+/** The resident sets this room completes. */
+export const setsDone = (r: RoomLayout): FurnitureSet[] => {
+  const have = new Set([...r.slots, r.rug].flatMap((p) => (p ? [pieceOfBit(p.bit)?.item] : [])));
+  return SETS.filter((x) => x.items.every((i) => have.has(i)));
+};
 
 export const slotLayer = (slot: number): "floor" | "wall" => (slot < FLOOR_SLOTS ? "floor" : "wall");
 export const itemOfBit = (bit: number): Item | undefined => {

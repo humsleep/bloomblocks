@@ -9,7 +9,7 @@
 import Phaser from "../phaser.ts";
 import type PhaserTypes from "phaser";
 import { drawNumberedRock, drawRock } from "../render/draw.ts";
-import { bloomA, DIR_ROT, groutOf, paintCourtyard, paintLightStill, paintLitFloor, planLight, rimA, type CourtFrame, type CourtGeom, type LightStamps } from "../render/court.ts";
+import { bloomA, boardThemeId, DIR_ROT, groutOf, paintCourtyard, paintLightStill, paintLitFloor, planLight, rimA, type CourtFrame, type CourtGeom, type LightStamps } from "../render/court.ts";
 import { PAL } from "../render/palette.ts";
 import { hashStr, rng } from "../render/rng.ts";
 import { vis } from "../render/vis.ts";
@@ -19,6 +19,7 @@ import { clamp01, easeInCubic, easeOutBack, easeOutCubic, lerp, motion, spreadDe
 import { hasBit, index, NO_CLUE, type PipsLevel, raysOf, type StoneStatus } from "./pipsApi.ts";
 import { ambient, governor } from "./frameGovernor.ts";
 import { lanternGeom } from "../render/lantern.ts";
+import { lanternSkin } from "./cosmetics.ts";
 import type { FaceExpr } from "../render/wick.ts";
 
 /** A stuck dark cell as drawn: crossed-out sparkle on the cell, threads to what blocks it. */
@@ -572,7 +573,7 @@ export class BoardView {
     const isFloor = (c: number, rr: number): boolean => !hasBit(level.stones, index(c, rr));
     const court: CourtFrame = frame === "daily" ? "daily" : frame === "deduce" ? "deduce" : "track";
     const cg = { cw, ch, gx, gy, cols: this.w, rows: this.h, cs, gap, wall, face, u, bulge, vig: 22 * u };
-    const key = `board:${seedKey}@${cs}:${court}:${Math.round(ext)}`;
+    const key = `board:${seedKey}@${cs}:${court}:${Math.round(ext)}:${boardThemeId()}`;
     if (this.baseKey && this.baseKey !== key) this.bank.remove(this.baseKey);
     this.baseKey = this.bank.canvas(key, cw, ch, (ctx) => {
       paintCourtyard(ctx, cg, court, seedKey, isFloor);
@@ -705,7 +706,7 @@ export class BoardView {
     this.faceW = Math.max(8, Math.round(lanternGeom(lh).bodyW * 0.92));
     this.happyAt.fill(1e12);
     this.texKeys = {
-      lantern: this.bank.lantern(lh, 1),
+      lantern: this.bank.lantern(lh, 1, lanternSkin()),
       flame: this.bank.flame(Math.round(cs * 0.5), false),
       flameMoon: this.bank.flame(Math.round(cs * 0.5), true),
       halo: this.bank.pool(cs),

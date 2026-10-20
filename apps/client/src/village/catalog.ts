@@ -134,6 +134,24 @@ export const STARTER: readonly Piece[] = [
   { item: "roundRug", cw: "rose" },
 ];
 
+/**
+ * R4 (docs/team/r4-village-story-rewards.md §4): one furniture set per resident, three catalog items each (any
+ * colourway). A completed set in the cottage brings that resident over and counts 3 cozy points.
+ */
+export interface FurnitureSet {
+  r: ResidentId;
+  items: readonly [ItemId, ItemId, ItemId];
+}
+export const SETS: readonly FurnitureSet[] = [
+  { r: "momo", items: ["teaTable", "teapot", "cushion"] },
+  { r: "wick", items: ["bookshelf", "rockingChair", "floorLamp"] },
+  { r: "sage", items: ["smallPot", "cactus", "hangingPlant"] },
+  { r: "luna", items: ["smallBed", "stringLights", "candles"] },
+  { r: "pip", items: ["roundTable", "flowerVase", "frame"] },
+  { r: "kuri", items: ["knitBasket", "archChair", "stripedRug"] },
+  { r: "yuki", items: ["snowGlobe", "wreath", "dresser"] },
+];
+
 /** Requests: each resident asks for its liked categories, in order (id = resident index × 2 + k; sync bits 2·id asked, 2·id+1 done). */
 export interface Request {
   id: number;

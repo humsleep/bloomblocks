@@ -20,13 +20,15 @@
 // stored StreakState. Players from before the log: migrateLog() recovers the dates from the
 // runs/p5-daily-<date>.bin files (only those written on their own local date: the rest were
 // after-midnight practice), the streak's last date and the current DailyState.
+import { BASE_SHIELDS, shieldsPerMonthNow } from "./shieldCount.ts";
 import { Preferences } from "@capacitor/preferences";
 import { type DailyResult, isoDay, isoFromDay, type PipsLevel, shareText } from "./pipsApi.ts";
 import { clock, localDateISO } from "./session.ts";
 import { enqueue, listDir, mtimeOf, readAtomicText, writeAtomic } from "../save/store.ts";
 import { syncSignal } from "../sync/signal.ts";
 
-export const SHIELDS_PER_MONTH = 2;
+/** the base count; cozy level 3 makes it 3 (shieldCount.ts) */
+export const SHIELDS_PER_MONTH = BASE_SHIELDS;
 
 export interface DailyState {
   date: string;
@@ -102,7 +104,7 @@ function cover(s: StreakState, day: number): Record<string, number> | null {
   for (let m = from; m < day; m++) {
     const k = monthOf(m);
     const used = (s.shields[k] ?? 0) + (spend[k] ?? 0);
-    if (used >= SHIELDS_PER_MONTH) return null;
+    if (used >= shieldsPerMonthNow()) return null;
     spend[k] = (spend[k] ?? 0) + 1;
   }
   return spend;
@@ -291,7 +293,7 @@ export function shieldsLeft(s: StreakState, today: string): number {
   const day = isoDay(today);
   const k = monthOf(day);
   const pending = s.last ? (cover(s, day)?.[k] ?? 0) : 0;
-  return Math.max(0, SHIELDS_PER_MONTH - (s.shields[k] ?? 0) - pending);
+  return Math.max(0, shieldsPerMonthNow() - (s.shields[k] ?? 0) - pending);
 }
 
 /** Active-time clock: runs only while started and not paused. */

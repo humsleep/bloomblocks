@@ -12,6 +12,7 @@ import { drawLitWindow } from "./house.ts";
 import { drawLanternGlass } from "./village/lanternHouse.ts";
 import { drawNumerals, numeralWidth } from "./glyphs.ts";
 import { BLOOM_K, LIGHT_BAKE, paintBloom, paintContactShadow, paintMarkerRim, paintPool, paintRayFalloff, paintRockRim, paintSrcFalloff, POOL_R, RIM_K } from "./court.ts";
+import type { SkinId } from "./lantern.ts";
 import { PAL } from "./palette.ts";
 import { drawLanternFace, drawWickBody, drawWickFlame, drawWickShadow, type FaceExpr, flameBox, type WickExpr } from "./wick.ts";
 import { vis } from "./vis.ts";
@@ -137,8 +138,8 @@ export class TextureBank {
   }
 
   /** Lantern body, `h` px tall; glow 0 (basket, cool paper) .. 1 (lit on the board). */
-  lantern(h: number, glow: number): string {
-    return this.canvas(`lantern${glow}@${h}`, h * 0.8, h, (ctx, _w, hh) => drawLantern(ctx, hh, glow));
+  lantern(h: number, glow: number, skin: SkinId = "wick"): string {
+    return this.canvas(`lantern${glow}${skin === "wick" ? "" : `:${skin}`}@${h}`, h * 0.8, h, (ctx, _w, hh) => drawLantern(ctx, hh, glow, skin));
   }
 
   flame(size: number, moon: boolean): string {

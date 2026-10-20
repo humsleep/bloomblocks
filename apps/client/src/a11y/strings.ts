@@ -894,6 +894,68 @@ const VILLAGE: Record<Lang, Dict> = {
 };
 for (const l of LANGS) Object.assign(BASE[l], VILLAGE[l]);
 
+// 1.0 build 5 (owner testing: "what is the tower, and how is it different from the houses?"). Shown lines:
+// tower.intro / introSub in the band after the tower's first-unlock look and on arriving at the tower until
+// its first puzzle is solved; town.caption / captionTower at the top of the street.
+const TOWER: Record<Lang, Dict> = {
+  en: {
+    "tower.intro": "The tower has harder puzzles.", "tower.introSub": "Each one you solve lights up a floor.",
+    "town.caption": "Each house is a puzzle you solved. Tap one to see it.", "town.captionTower": "The tower on the hill holds harder puzzles.",
+  },
+  ko: {
+    "tower.intro": "탑에는 조금 더 어려운 퍼즐이 있어요.", "tower.introSub": "하나 풀 때마다 탑 한 층에 불이 켜져요.",
+    "town.caption": "집 하나는 내가 푼 퍼즐 하나예요. 누르면 다시 볼 수 있어요.", "town.captionTower": "언덕 위 탑에는 더 어려운 퍼즐이 있어요.",
+  },
+  ja: {
+    "tower.intro": "塔には、少しむずかしいパズルがあります", "tower.introSub": "1問解くごとに、1階ずつ明かりがつきます",
+    "town.caption": "家はひとつずつ、解いたパズルです。タップで見られます", "town.captionTower": "丘の上の塔には、むずかしいパズルがあります",
+  },
+  de: {
+    "tower.intro": "Im Turm warten schwerere Rätsel.", "tower.introSub": "Jedes gelöste Rätsel erhellt ein Stockwerk.",
+    "town.caption": "Jedes Haus ist ein gelöstes Rätsel. Tippe, um es anzusehen.", "town.captionTower": "Im Turm auf dem Hügel warten schwerere Rätsel.",
+  },
+  fr: {
+    "tower.intro": "La tour cache des énigmes plus difficiles.", "tower.introSub": "Chaque énigme résolue allume un étage.",
+    "town.caption": "Chaque maison est une énigme résolue. Touchez pour la voir.", "town.captionTower": "La tour sur la colline cache des énigmes plus difficiles.",
+  },
+  es: {
+    "tower.intro": "La torre tiene acertijos más difíciles.", "tower.introSub": "Cada uno que resuelves ilumina un piso.",
+    "town.caption": "Cada casa es un acertijo resuelto. Tócala para verlo.", "town.captionTower": "La torre de la colina guarda acertijos más difíciles.",
+  },
+  "pt-BR": {
+    "tower.intro": "A torre tem quebra-cabeças mais difíceis.", "tower.introSub": "Cada um que você resolve acende um andar.",
+    "town.caption": "Cada casa é um quebra-cabeça resolvido. Toque para ver.", "town.captionTower": "A torre no morro guarda quebra-cabeças mais difíceis.",
+  },
+  it: {
+    "tower.intro": "La torre ha enigmi più difficili.", "tower.introSub": "Ogni enigma risolto accende un piano.",
+    "town.caption": "Ogni casa è un enigma risolto. Toccala per rivederlo.", "town.captionTower": "La torre sulla collina custodisce enigmi più difficili.",
+  },
+  "zh-Hans": {
+    "tower.intro": "高塔里有更难一点的谜题。", "tower.introSub": "每解开一题，就点亮一层。",
+    "town.caption": "每间小屋都是你解开的一道谜题，点一下就能再看。", "town.captionTower": "山丘上的高塔里有更难的谜题。",
+  },
+  "zh-Hant": {
+    "tower.intro": "高塔裡有更難一點的謎題。", "tower.introSub": "每解開一題，就點亮一層。",
+    "town.caption": "每間小屋都是你解開的一道謎題，點一下就能再看。", "town.captionTower": "山丘上的高塔裡有更難的謎題。",
+  },
+};
+for (const l of LANGS) Object.assign(BASE[l], TOWER[l]);
+
+// R4 rewards: the band line on the puzzle screen after a village visit brought something (≤ 60 chars).
+const COZY: Record<Lang, Dict> = {
+  en: { "cozy.reward": "A new reward is waiting in your cottage!", "cozy.evening": "Cozy evening: no ads for the next 30 minutes." },
+  ko: { "cozy.reward": "오두막에 새 보상이 생겼어요!", "cozy.evening": "아늑한 저녁: 30분 동안 광고가 나오지 않아요." },
+  ja: { "cozy.reward": "小屋に新しいごほうびがあります！", "cozy.evening": "くつろぎの夜：これから30分は広告なし" },
+  de: { "cozy.reward": "In deiner Hütte wartet eine neue Belohnung!", "cozy.evening": "Gemütlicher Abend: 30 Minuten ohne Werbung." },
+  fr: { "cozy.reward": "Une nouvelle récompense vous attend !", "cozy.evening": "Soirée douillette : 30 minutes sans pub." },
+  es: { "cozy.reward": "¡Hay una recompensa nueva en tu cabaña!", "cozy.evening": "Tarde acogedora: 30 minutos sin anuncios." },
+  "pt-BR": { "cozy.reward": "Uma nova recompensa espera na sua cabana!", "cozy.evening": "Noite aconchegante: 30 minutos sem anúncios." },
+  it: { "cozy.reward": "Una nuova ricompensa ti aspetta in casetta!", "cozy.evening": "Serata accogliente: 30 minuti senza pubblicità." },
+  "zh-Hans": { "cozy.reward": "小屋里有新奖励在等你！", "cozy.evening": "温馨夜晚：接下来 30 分钟没有广告。" },
+  "zh-Hant": { "cozy.reward": "小屋裡有新獎勵在等你！", "cozy.evening": "溫馨夜晚：接下來 30 分鐘沒有廣告。" },
+};
+for (const l of LANGS) Object.assign(BASE[l], COZY[l]);
+
 export const STRINGS: Readonly<Record<Lang, Dict>> = BASE;
 
 /**

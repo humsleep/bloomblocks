@@ -34,6 +34,7 @@
 // Phaser objects, EACH FACT ONCE (Reality P1-14): "Time … 0:11", "Streak … 3", "Shields … ◒◒" —
 // no glyph repeating a label, no number inside a label. Primary "Continue", secondary "Share"
 // (the share image is the same postcard, baked only when Share is tapped).
+import { shieldsPerMonthNow } from "./shieldCount.ts";
 import type PhaserTypes from "phaser";
 import { Preferences } from "@capacitor/preferences";
 import { drawLantern, drawPanel, rrectPath } from "../render/draw.ts";
@@ -131,6 +132,10 @@ export class ResultSheet {
   private breakOn = false;
   /** what the stats show (kept for a relayout) */
   private shieldsLeft = 2;
+  /** the shield slots this month shows (2, or 3 from cozy level 3) */
+  private get row(): Image[] {
+    return this.shields.slice(0, shieldsPerMonthNow());
+  }
   private dateISO = "";
   /** the postcard's box in root coordinates (VoiceOver) */
   private cardBox = { x: 0, y: 0, w: 0, h: 0 };
@@ -154,7 +159,8 @@ export class ResultSheet {
     this.cardImg = s.add.image(0, 0, "__DEFAULT").setOrigin(0, 0);
     this.time = s.add.image(0, 0, "__DEFAULT").setOrigin(0, 0.5);
     this.streak = s.add.image(0, 0, "__DEFAULT").setOrigin(0, 0.5);
-    for (let k = 0; k < 2; k++) this.shields.push(s.add.image(0, 0, "__DEFAULT"));
+    // R4: a third shield slot, shown from cozy level 3 (shieldCount.ts)
+    for (let k = 0; k < 3; k++) this.shields.push(s.add.image(0, 0, "__DEFAULT"));
     // v11: Share is the secondary button now (no breathe); Continue is the primary
     this.shareBtn = s.add.image(0, 0, "__DEFAULT");
     this.shareGlyph = s.add.image(0, 0, "__DEFAULT");
@@ -235,6 +241,7 @@ export class ResultSheet {
     const shS = Math.round((compact ? 28 : 32) * u);
     const shPitch = (compact ? 28 : 32) * u;
     for (let k = 0; k < this.shields.length; k++) this.shields[k]!.setTexture(this.bank.shield(shS, k < this.shieldsLeft));
+    this.shields.forEach((sh, k) => sh.setVisible(k < this.row.length));
     // each fact once (Reality P1-14): the label names it, the value says it — no number in a label
     const lpt = compact ? 15 : 16;
     const lw = vis.p.boldText ? "700" : "600";
@@ -293,7 +300,7 @@ export class ResultSheet {
     this.lblShield.setPosition(rowsX, rowY(2));
     this.time.setPosition(right - this.time.width, rowY(0));
     this.streak.setPosition(right - this.streak.width, rowY(1));
-    this.shields.forEach((sh, k) => sh.setPosition(right - shS * 0.45 - (this.shields.length - 1 - k) * shPitch, rowY(2) - 2 * u));
+    this.row.forEach((sh, k) => sh.setPosition(right - shS * 0.45 - (this.row.length - 1 - k) * shPitch, rowY(2) - 2 * u));
     // a label too long for its row (largest text sizes) is scaled down rather than overlapping the value
     const fit = (l: Text, valueW: number): void => {
       const room = geo.rows.w - valueW - 8 * u;
@@ -301,7 +308,7 @@ export class ResultSheet {
     };
     fit(this.lblTime, this.time.width);
     fit(this.lblStreak, this.streak.width);
-    fit(this.lblShield, shS * 0.45 + shPitch * (this.shields.length - 1) + shS * 0.5);
+    fit(this.lblShield, shS * 0.45 + shPitch * (this.row.length - 1) + shS * 0.5);
     // month strip: "This month" + one quiet baked row of dots under the card
     const my0 = cardY + geo.h + gap * 0.8;
     if (month.length) {
@@ -426,8 +433,8 @@ export class ResultSheet {
     };
     this.demoDays.forEach((d, k) => d.setTexture(k === 1 ? this.demoKeys.dark : this.demoKeys.lit).setPosition((k - 1) * pitch, bh / 2));
     this.demoFly.setTexture(this.bank.shield(shS, true));
-    const s0 = this.shields[0]!;
-    const s1 = this.shields[this.shields.length - 1]!;
+    const s0 = this.row[0]!;
+    const s1 = this.row[this.row.length - 1]!;
     const right = s1.x + shS * 0.5 + 10 * u;
     if (right + bw <= this.W / 2 - 8 * u) this.demo.setPosition(right + bw / 2, s1.y - bh / 2);
     else {
@@ -555,7 +562,7 @@ export class ResultSheet {
     if (inBox(this.shareBox)) return "share";
     if (inBox(this.homeBox)) return "home";
     if (this.breakOn && near(this.breakBtn)) return "break";
-    if (this.shields.some((sh) => Math.hypot(x - sh.x, y - sh.y) <= 26 * this.u)) return "shields";
+    if (this.row.some((sh) => Math.hypot(x - sh.x, y - sh.y) <= 26 * this.u)) return "shields";
     return y >= 0 ? "inside" : "outside";
   }
 
@@ -569,8 +576,8 @@ export class ResultSheet {
     const out = [box2("share", this.shareBox), box2("home", this.homeBox)];
     if (this.breakOn) out.push(at("break", this.breakBtn));
     // VoiceOver: "Shields: n left this month, one per missed day"; activating replays the bubble
-    const s0 = this.shields[0]!;
-    const s1 = this.shields[this.shields.length - 1]!;
+    const s0 = this.row[0]!;
+    const s1 = this.row[this.row.length - 1]!;
     const hr = 22 * this.u;
     out.push({ id: "shields", x: this.cx + s0.x - hr, y: this.cy + s0.y - hr, w: s1.x - s0.x + 2 * hr, h: 2 * hr, vars: { n: this.shieldsLeft } });
     const box = (id: CtlId, b: Image, vars?: Record<string, number>): C => ({

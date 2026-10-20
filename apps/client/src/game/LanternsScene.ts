@@ -66,6 +66,7 @@ import { DIGIT_FONT, drawBreakChip as drawBreakChipArt, drawCalendarTile } from 
 import { Preferences } from "@capacitor/preferences";
 import { alleyOf, giftEarned, milestoneOf, monthStrip, streakMilestone, towerOpen } from "./progress.ts";
 import type { SheetExtras } from "./ResultSheet.ts";
+import { cosmeticsVersion, takeNote } from "./cosmetics.ts";
 import { ambient, GRACE_MS, governor } from "./frameGovernor.ts";
 import { BigWord, LineBand } from "./LineBand.ts";
 import { dailyMoment, type HappyMoment, houseMoment, rating } from "./rating.ts";
@@ -2181,6 +2182,7 @@ export class LanternsScene extends Phaser.Scene {
         if (motion.reduced) {
           this.scenery.revealTower(now);
           markGuide(GUIDE.tower);
+          this.sayTower(now);
         } else this.startTravel("reveal", f.x, f.y);
         return;
       }
@@ -2490,6 +2492,7 @@ export class LanternsScene extends Phaser.Scene {
             this.hideVillageVeil();
             this.townOpen = false;
             this.lastInput = this.time.now;
+            this.afterVillage();
           },
         });
       },
@@ -2500,6 +2503,19 @@ export class LanternsScene extends Phaser.Scene {
       },
     );
   }
+
+  /** R4: back from the village — re-bake the board when the lantern skin / board theme changed, then say what the visit brought. */
+  private afterVillage(): void {
+    const v = cosmeticsVersion();
+    if (v !== this.cosmeticsSeen) {
+      this.cosmeticsSeen = v;
+      this.layout();
+      this.redraw();
+    }
+    const n = takeNote();
+    if (n) this.showLine("lesson", { main: a11y.t(n === "evening" ? "cozy.evening" : "cozy.reward") }, this.time.now, 4200);
+  }
+  private cosmeticsSeen = cosmeticsVersion();
 
   /** the village's index chunk once loaded (prewarm or a first tap): its warm state decides whether a tap needs the veil */
   private villageIdx: typeof import("../village/index.ts") | null = null;
@@ -2593,7 +2609,10 @@ export class LanternsScene extends Phaser.Scene {
     this.hideBlocked();
     cue("tap");
     if (motion.reduced) {
-      this.startSwitch(() => this.deps.session.switchTrack(), () => this.refreshFar(false));
+      this.startSwitch(() => this.deps.session.switchTrack(), () => {
+        this.refreshFar(false);
+        this.sayTowerOnArrival(this.time.now);
+      });
       return;
     }
     this.startTravel("go", f.x, f.y);
@@ -2667,6 +2686,7 @@ export class LanternsScene extends Phaser.Scene {
       }
       if (t >= 1) {
         done();
+        this.sayTower(now);
         // then the finger shows the way: it taps the tower (once, until the player does)
         if (!guideDone(GUIDE.track)) {
           const f = this.scenery.farTarget;
@@ -2703,7 +2723,21 @@ export class LanternsScene extends Phaser.Scene {
     const hx = g.bcx;
     const hy = g.houseBaseY - this.scenery.houseHeight * 0.4;
     look(1 + (TRAVEL_ZOOM - 1) * k, lerp(cx, hx, k), lerp(cy, hy, k));
-    if (t >= 1) done();
+    if (t >= 1) {
+      done();
+      this.sayTowerOnArrival(now);
+    }
+  }
+
+  /** What the tower is (the far landmark has no words of its own): after its first-unlock look. */
+  private sayTower(now: number): void {
+    this.showLine("lesson", { main: a11y.t("tower.intro"), sub: a11y.t("tower.introSub") }, now, 5200);
+  }
+
+  /** Arriving at the tower: say it again until its first puzzle is solved. */
+  private sayTowerOnArrival(now: number): void {
+    const s = this.deps.session;
+    if (s.track === "deduce" && !s.daily && s.cleared("deduce") === 0) this.sayTower(now);
   }
 
   /** Board + house out, `task` (switch track / open or leave the daily), back in; `after` runs once swapped. */

@@ -6,6 +6,7 @@ import Phaser from "./phaser.ts";
 import { App } from "@capacitor/app";
 import { Preferences } from "@capacitor/preferences";
 import { adsApi } from "./game/adsHooks.ts";
+import { loadCosmetics, refreshUnlocks } from "./game/cosmetics.ts";
 import { governor } from "./game/frameGovernor.ts";
 import { loadGuide, loadNumberStyle, loadSessionCount, loadShareTime, noteResume, setAdAudio, setHapticsEnabled, startAudio } from "./game/feedback.ts";
 import { LanternsScene, type SafeInsets } from "./game/LanternsScene.ts";
@@ -33,8 +34,8 @@ function safeInsets(): SafeInsets {
 async function boot(): Promise<void> {
   const parent = document.getElementById("app")!;
   const sessionP = Session.restore(); // file reads start immediately, in parallel with the rest
-  // the number style decides the first bake; the guide bits decide the first-run lesson (both tiny Preferences reads)
-  const prefsP = Promise.all([loadNumberStyle(), loadGuide(), loadSessionCount()]);
+  // the number style (and the R4 lantern skin / board theme) decide the first bake; the guide bits decide the first-run lesson (both tiny Preferences reads)
+  const prefsP = Promise.all([loadNumberStyle(), loadGuide(), loadSessionCount(), loadCosmetics()]);
   startAudio(); // arms the first-gesture unlock only; no AudioContext yet
   const { w, h, dpr } = canvasSize(parent);
   const game = new Phaser.Game({
@@ -107,6 +108,7 @@ async function boot(): Promise<void> {
       else governor.resume("ad");
     });
     void loadShareTime();
+    void refreshUnlocks(); // R4: the village's unlock bits (third shield, cozy evening) — after the first frame
     // Focus loss (notification shade, consent, ads) is not a session end: just
     // drop the half tap, remember when, and skip animations on return.
     let pausedAt = 0;
