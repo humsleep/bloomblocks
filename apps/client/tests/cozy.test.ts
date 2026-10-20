@@ -2,7 +2,8 @@
 // needs, and the third streak shield (cozy level 3). The ads side (cozy evening) is in src/ads/__tests__/policy.test.ts.
 import { afterEach, describe, expect, it } from "vitest";
 import { pieceBit, SETS } from "../src/village/catalog.ts";
-import { COZY_AT, cozyLevel, cozyScore, emptyRoom, place, setsDone, starterRoom } from "../src/village/model.ts";
+import { COZY_AT, cozyLevel, cozyScore, emptyRoom, place, setOfItem, setProgress, setsDone, starterRoom, visitors } from "../src/village/model.ts";
+import { emptyV } from "../src/village/vstate.ts";
 import { cozyBit, cozyReached, friendBit, SKINS, skinUnlocked, themeUnlocked } from "../src/game/cosmetics.ts";
 import { liveStreak, shieldsLeft, type StreakState } from "../src/game/daily.ts";
 import { setShieldsPerMonth, shieldsPerMonthNow } from "../src/game/shieldCount.ts";
@@ -68,5 +69,31 @@ describe("third streak shield (cozy level 3)", () => {
   it("anything but 3 means the base 2", () => {
     setShieldsPerMonth(7);
     expect(shieldsPerMonthNow()).toBe(2);
+  });
+});
+
+describe("resident sets in the room (R4 C)", () => {
+  const momoSet = (): ReturnType<typeof emptyRoom> => {
+    let r = emptyRoom();
+    r = place(r, 0, pieceBit({ item: "teaTable", cw: "cream" }))!;
+    r = place(r, 1, pieceBit({ item: "teapot", cw: "rose" }))!;
+    return r;
+  };
+  it("progress counts the set's items in the room", () => {
+    const r = momoSet();
+    expect(setProgress(r).get("momo")).toBe(2);
+    expect(setProgress(r).get("sage")).toBe(0);
+    expect(setOfItem("teapot")?.r).toBe("momo");
+    expect(setOfItem("paperLantern")).toBeUndefined();
+  });
+  it("a completed set brings its resident over, ahead of request visitors", () => {
+    let r = momoSet();
+    expect(visitors(emptyV(), r)).toEqual([]);
+    r = place(r, 2, pieceBit({ item: "cushion", cw: "rose" }))!;
+    expect(visitors(emptyV(), r)).toEqual([{ r: "momo", cat: "table" }]);
+  });
+  it("every item is in at most one set", () => {
+    const all = SETS.flatMap((x) => x.items);
+    expect(new Set(all).size).toBe(all.length);
   });
 });

@@ -28,7 +28,7 @@ import {
   activeRequests, fulfilled, isoOfDay, marketOffers, marketState, nextAsk, roomCategories, visitors,
   autoSlot, cards, COTTAGE, coverOf, dayOf, deliver, roomOf, emptyRoom, encodeRoom, eve, FLOOR_COLS, FLOOR_SLOTS, itemOfBit, jarProgress, drops, litDayList,
   type Mail, mailOrder, mails, overflow, owned, partnerSlot, place, placedBits, removeAt, residents, type ResidentState, type RoomLayout, slotWhere, SLOTS, type VillageInput,
-  COZY_AT, cozyLevel, cozyScore,
+  COZY_AT, cozyLevel, cozyScore, setOfItem, setProgress, setsDone,
 } from "./model.ts";
 import { cozyText, type CozyKey } from "./strings.ts";
 import {
@@ -219,6 +219,8 @@ export class VillageScene extends Phaser.Scene {
   private cozyUp = 0;
   /** a locked reward's "how to get it" line, shown in the panel after a tap */
   private cozyMsg = "";
+  /** R4 C: a short line over the cottage (a set just completed), until `until` (ms, performance.now) */
+  private roomToast: { text: string; until: number } | null = null;
 
   constructor() {
     super({ key: VILLAGE_KEY });
@@ -1688,6 +1690,20 @@ export class VillageScene extends Phaser.Scene {
       // the caption stays on screen (it may be wider than the disc: right-aligned to the edge then)
       const capW = this.measureAt(g)(capPx)(vt(lang, "rugChip"));
       this.text(g, [vt(lang, "rugChip")], Math.min(rd.x, W - 8 - capW / 2), rd.y + rd.r + 4, capPx, { align: "center", color: UI.caption });
+      // R4 C: the set-complete line, an amber paper strip under the header — painted last, over the room
+      const t = this.roomToast;
+      if (t && !this.drawer && performance.now() < t.until) {
+        const tf = fitPill(t.text, W - 48, 1, this.measureAt(g), lang);
+        const th = tf.lines.length * tf.size * 1.2 + 16;
+        const ty = this.cozyChip().y + 30 + 10;
+        g.save();
+        g.fillStyle = "#F4D38A";
+        g.beginPath();
+        g.roundRect(16, ty, W - 32, th, 12);
+        g.fill();
+        g.restore();
+        this.text(g, tf.lines, W / 2, ty + 8, tf.size, { align: "center", color: INK, weight: 700, lineH: 1.2 });
+      } else if (t && performance.now() >= t.until) this.roomToast = null;
     });
     this.show(this.bg, key, 0, 0);
     for (const sp of this.res) sp.img.setVisible(false);
@@ -2015,6 +2031,7 @@ export class VillageScene extends Phaser.Scene {
     const { W, H } = this;
     const lang = this.d.lang;
     const fresh = new Set(this.d.save.loc.fresh);
+    const progress = setProgress(this.room);
     // owned first (Reality G1 #20), catalog order inside each group
     const list = [...this.drawerCards()].sort((a, b) => Number(b.unlocked) - Number(a.unlocked) || a.item.index - b.item.index);
     const cols = 4;
@@ -2166,6 +2183,19 @@ export class VillageScene extends Phaser.Scene {
           drawLock(g, cx0 + cw / 2 - w0 / 2 - 4, top + lh / 2, 3.8);
           this.text(g, sf.lines, cx0 + cw / 2 + 4, top, sf.size, { align: "center", color: UI.inkSoft, weight: 600, lineH: 1.12 });
         }
+        // R4 C: the resident set this item belongs to — "2/3" (amber when complete), top left
+        const set = setOfItem(c.item.id);
+        if (set && c.unlocked) {
+          const have = progress.get(set.r) ?? 0;
+          const label = `${have}/3`;
+          g.save();
+          g.fillStyle = have === 3 ? "#F4D38A" : "rgba(125,187,106,0.92)";
+          g.beginPath();
+          g.roundRect(cx0 + 6, cy0 + 6, 30, 17, 8.5);
+          g.fill();
+          g.restore();
+          this.text(g, [label], cx0 + 21, cy0 + 8, 11, { align: "center", color: have === 3 ? INK : "#FFFFFF", weight: 700 });
+        }
         if (c.cws.some((x) => fresh.has(x.bit) && x.owned && !x.placed)) {
           g.save();
           g.fillStyle = UI.primary;
@@ -2212,7 +2242,9 @@ export class VillageScene extends Phaser.Scene {
       const name = itemName(lang, c.item.id);
       const cwName = vt(lang, `cw.${sel}` as "cw.cream");
       const src = cur.source.kind === "resident" ? vt(lang, "fromResident", { name: residentName(lang, cur.source.id) }) : vt(lang, "fromJar");
-      const label = !cur.owned ? vt(lang, "locked", { item: name, cw: cwName, source: src }) : cur.placed ? vt(lang, "pickPlaced", { item: name, cw: cwName }) : vt(lang, "pick", { item: name, cw: cwName });
+      const base = !cur.owned ? vt(lang, "locked", { item: name, cw: cwName, source: src }) : cur.placed ? vt(lang, "pickPlaced", { item: name, cw: cwName }) : vt(lang, "pick", { item: name, cw: cwName });
+      const set = c.unlocked ? setOfItem(c.item.id) : undefined;
+      const label = set ? `${base}. ${cozyText(lang, "setOf", { name: residentName(lang, set.r), have: setProgress(this.room).get(set.r) ?? 0 })}` : base;
       this.hits.push({ id: `card-${c.item.id}`, x: cx0, y: cy0, w: cw, h: ch - 22, label, grid: true, act: () => this.pickCard(c.item.id, sel, cur.owned) });
       if (c.unlocked) {
         const dy0 = dotRowY(cy0, cw, ch, fitCardName(name, W, meas, lang)) - 11;
@@ -2303,6 +2335,7 @@ export class VillageScene extends Phaser.Scene {
 
   /** Save the room (per-room LWW stamp: Lamport n + monotonic at — vstate.roomStamp). */
   private commitRoom(next: RoomLayout, placedBit: number): void {
+    const setsBefore = new Set(setsDone(this.room).map((x) => x.r));
     this.room = next;
     const s = encodeRoom(next);
     const dev = roomDev(this.d.dev);
@@ -2315,6 +2348,19 @@ export class VillageScene extends Phaser.Scene {
     apply(this.d.save);
     void updateVillage(apply);
     this.checkRequests();
+    // R4 C: a set just completed — its resident comes over (drawn as a visitor) and says its visit line
+    const fresh = setsDone(next).find((x) => !setsBefore.has(x.r));
+    if (fresh) {
+      const lang = this.d.lang;
+      const text = cozyText(lang, "setDone", { name: residentName(lang, fresh.r) });
+      this.roomToast = { text, until: performance.now() + 3600 };
+      this.time.delayedCall(3700, () => this.render());
+      a11y.announce(text);
+      const v = pickVisit(this.d.lines.lines, fresh.r);
+      if (v) this.showSpeaker(fresh.r, v);
+      cue("nearComplete");
+      this.log(`set done ${fresh.r}`);
+    }
     // R4: a new cozy level opens the rewards panel on its moment
     const up = Math.max(0, ...this.syncUnlocks().filter((b) => b >= 1 && b <= 5));
     if (up > 0) {

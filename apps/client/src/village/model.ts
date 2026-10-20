@@ -483,12 +483,23 @@ export function fulfilled(v: VState, room: RoomLayout): Request[] {
 /** Residents visiting the cottage: their fulfilled request's category is in the room (latest two). */
 export function visitors(v: VState, room: RoomLayout): Array<{ r: ResidentId; cat: string }> {
   const cats = roomCategories(room);
-  return REQUESTS.filter((q) => requestDone(v.q, q) && cats.has(q.cat))
+  // R4 C: a completed resident set brings that resident over first (it sits by its set's first piece)
+  const bySet = setsDone(room).map((x) => ({ r: x.r, cat: itemById(x.items[0])!.cat as string }));
+  const byRequest = REQUESTS.filter((q) => requestDone(v.q, q) && cats.has(q.cat))
     .reverse()
+    .map((q) => ({ r: q.r, cat: q.cat as string }));
+  return [...bySet, ...byRequest]
     .filter((q, i, a) => a.findIndex((x) => x.r === q.r) === i)
-    .slice(0, 2)
-    .map((q) => ({ r: q.r, cat: q.cat }));
+    .slice(0, bySet.length ? 3 : 2);
 }
+
+/** R4 C: how many of each set's items stand in the room (drawer badges "2/3"). */
+export function setProgress(room: RoomLayout): Map<ResidentId, number> {
+  const have = new Set([...room.slots, room.rug].flatMap((p) => (p ? [pieceOfBit(p.bit)?.item] : [])));
+  return new Map(SETS.map((x) => [x.r, x.items.filter((i) => have.has(i)).length]));
+}
+/** The set an item belongs to (each catalog item is in at most one). */
+export const setOfItem = (item: ItemId): FurnitureSet | undefined => SETS.find((x) => x.items.includes(item));
 /** The thank-you gift: a piece of the asked category (fixed per request; a repeat brings nothing new). */
 export function requestGift(q: Request): Piece {
   const pool = ALL_PIECES.filter((p) => itemById(p.item)!.cat === q.cat && !STARTER.some((s) => pieceBit(s) === pieceBit(p)));
