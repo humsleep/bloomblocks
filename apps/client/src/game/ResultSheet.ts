@@ -46,7 +46,7 @@ import { type DailyResult, dailyLink, dailyNumber, mmss } from "./pipsApi.ts";
 import { drawGiftChip, drawMilestoneLantern, drawMonthDay } from "./hudArt.ts";
 import type { MonthDay } from "./progress.ts";
 import { a11y } from "../a11y/index.ts";
-import { makeText, primaryButton, styleText, uiFont } from "./uiText.ts";
+import { makeText, primaryButton, secondaryPill, styleText, uiFont } from "./uiText.ts";
 import { drawSheetCard, postcardSpec, type PostcardSpec, type PostcardWords, sheetCardGeo } from "./postcard.ts";
 import type { ShareCard } from "./daily.ts";
 
@@ -79,8 +79,8 @@ export function postcardWords(dateISO: string): PostcardWords {
 
 type Image = PhaserTypes.GameObjects.Image;
 type Text = PhaserTypes.GameObjects.Text;
-export type SheetHit2 = "share" | "home" | "break" | "shields" | "inside" | "outside";
-type CtlId = "share" | "home" | "break" | "shields" | "postcard" | "month" | "milestone" | "gift";
+export type SheetHit2 = "share" | "home" | "break" | "shields" | "rank" | "inside" | "outside";
+type CtlId = "share" | "home" | "break" | "shields" | "rank" | "postcard" | "month" | "milestone" | "gift";
 
 /** Below this height (pt) the sheet goes compact (one stats row, tighter padding). */
 const COMPACT_H = 720;
@@ -169,6 +169,8 @@ export class ResultSheet {
     this.mileTxt = s.add.image(0, 0, "__DEFAULT").setOrigin(0, 0.5).setVisible(false);
     this.giftImg = s.add.image(0, 0, "__DEFAULT").setVisible(false);
     this.homeBtn = s.add.image(0, 0, "__DEFAULT");
+    // R4 rankings: the trophy pill in the sheet's top row (Game Center, opt-in: src/game/ranking.ts)
+    this.rankBtn = s.add.image(0, 0, "__DEFAULT");
     this.breakBtn = s.add.image(0, 0, "__DEFAULT").setVisible(false);
     // v11: the words (labels, button text); text objects live in the sheet's container
     const mk = (): Text => makeText(s, depth).setVisible(true);
@@ -178,6 +180,7 @@ export class ResultSheet {
     this.lblMonth = mk();
     this.shareTxt = mk();
     this.homeTxt = mk();
+    this.rankTxt = mk();
     this.demo = s.add.container(0, 0).setVisible(false);
     this.demoBg = s.add.image(0, 0, "__DEFAULT");
     for (let k = 0; k < 3; k++) this.demoDays.push(s.add.image(0, 0, "__DEFAULT"));
@@ -186,7 +189,7 @@ export class ResultSheet {
     this.root.add([
       this.panel, this.cardImg, this.monthImg, this.mileImg, this.mileTxt, this.giftImg, this.time, this.streak, ...this.shields,
       this.shareBtn, this.shareGlyph, this.homeBtn, this.breakBtn, this.demo, this.demoFly,
-      this.lblTime, this.lblStreak, this.lblShield, this.lblMonth, this.shareTxt, this.homeTxt,
+      this.lblTime, this.lblStreak, this.lblShield, this.lblMonth, this.shareTxt, this.homeTxt, this.rankBtn, this.rankTxt,
     ]);
     // (the sheet can open before this answer — e.g. a relaunch straight onto a solved daily:
     // then the bubble starts as soon as the answer is in)
@@ -250,7 +253,8 @@ export class ResultSheet {
     styleText(this.lblShield, t("res.shieldsLbl"), { pt: lpt, u, weight: lw, color: ink, cap: 1.3 });
     styleText(this.lblMonth, t("res.month"), { pt: compact ? 15 : 16, u, weight: lw, color: cream, cap: 1.3 });
     for (const l of [this.lblTime, this.lblStreak, this.lblShield, this.lblMonth]) l.setOrigin(0, 0.5);
-    const grab = (compact ? 16 : 22) * u;
+    // R4: the top row also holds the trophy pill (rankings), so it is a little taller than the grabber alone
+    const grab = (compact ? 34 : 40) * u;
     const gap = (compact ? 10 : 14) * u;
     const bs = Math.round((compact ? 52 : 56) * u);
     const pad = (compact ? 10 : 16) * u;
@@ -309,6 +313,13 @@ export class ResultSheet {
     fit(this.lblTime, this.time.width);
     fit(this.lblStreak, this.streak.width);
     fit(this.lblShield, shS * 0.45 + shPitch * (this.row.length - 1) + shS * 0.5);
+    // the trophy pill: right of the grabber, over the card's right edge
+    styleText(this.rankTxt, `🏆 ${t("cap.rank")}`, { pt: 14, u, weight: "700", color: cream, cap: 1.2 });
+    const rw = Math.round(this.rankTxt.displayWidth + 22 * u);
+    const rh = Math.round(28 * u);
+    this.rankBox = { x: cardX + cw - rw, y: Math.round((grab - rh) / 2), w: rw, h: rh };
+    this.rankBtn.setTexture(secondaryPill(this.bank, rw, rh, u)).setPosition(this.rankBox.x + rw / 2, this.rankBox.y + rh / 2);
+    this.rankTxt.setOrigin(0.5, 0.5).setPosition(this.rankBox.x + rw / 2, this.rankBox.y + rh / 2);
     // month strip: "This month" + one quiet baked row of dots under the card
     const my0 = cardY + geo.h + gap * 0.8;
     if (month.length) {
@@ -390,6 +401,9 @@ export class ResultSheet {
     return { spec: postcardSpec(this.result, this.extras.cells ?? [], this.extras.hintAt ?? [], showTime), words: postcardWords(this.dateISO) };
   }
   private shareBox = { x: 0, y: 0, w: 0, h: 0 };
+  private rankBox = { x: 0, y: 0, w: 0, h: 0 };
+  private rankBtn: Image;
+  private rankTxt!: Text;
   private homeBox = { x: 0, y: 0, w: 0, h: 0 };
   private lblTime!: Text;
   private lblStreak!: Text;
@@ -561,6 +575,7 @@ export class ResultSheet {
     const inBox = (b: { x: number; y: number; w: number; h: number }): boolean => x >= b.x - 4 * this.u && x <= b.x + b.w + 4 * this.u && y >= b.y - 6 * this.u && y <= b.y + b.h + 6 * this.u;
     if (inBox(this.shareBox)) return "share";
     if (inBox(this.homeBox)) return "home";
+    if (inBox(this.rankBox)) return "rank";
     if (this.breakOn && near(this.breakBtn)) return "break";
     if (this.row.some((sh) => Math.hypot(x - sh.x, y - sh.y) <= 26 * this.u)) return "shields";
     return y >= 0 ? "inside" : "outside";
@@ -573,7 +588,7 @@ export class ResultSheet {
     type C = { id: CtlId; x: number; y: number; w: number; h: number; vars?: Record<string, number> };
     const at = (id: C["id"], b: Image): C => ({ id, x: this.cx + b.x - r, y: this.cy + b.y - r, w: 2 * r, h: 2 * r });
     const box2 = (id: C["id"], b: { x: number; y: number; w: number; h: number }): C => ({ id, x: this.cx + b.x, y: this.cy + b.y, w: b.w, h: b.h });
-    const out = [box2("share", this.shareBox), box2("home", this.homeBox)];
+    const out = [box2("share", this.shareBox), box2("home", this.homeBox), box2("rank", this.rankBox)];
     if (this.breakOn) out.push(at("break", this.breakBtn));
     // VoiceOver: "Shields: n left this month, one per missed day"; activating replays the bubble
     const s0 = this.row[0]!;

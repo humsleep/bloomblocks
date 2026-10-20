@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import { LANGS } from "../src/a11y/strings.ts";
 import { RESIDENTS } from "../src/village/catalog.ts";
 import type { ResidentState } from "../src/village/model.ts";
-import { CHAPTERS, pageBit, setBit, STORY, storyState, unreadPages } from "../src/village/story.ts";
+import { CHAPTERS, FESTIVAL_FLOORS, festivalLit, pageBit, setBit, STORY, storyState, unreadPages } from "../src/village/story.ts";
+import { towerRoomOf } from "../src/village/model.ts";
 
 const rs = (o: Partial<Record<string, { movedIn: boolean; friendship: number; points?: number }>>): ResidentState[] =>
   RESIDENTS.map((r) => ({ r, movedIn: o[r.id]?.movedIn ?? false, moveInDay: null, friendship: o[r.id]?.friendship ?? 0, points: o[r.id]?.points ?? 0 }));
@@ -40,8 +41,27 @@ describe("storybook pages", () => {
   });
 });
 
+describe("the Lantern Festival (R4 D)", () => {
+  const all = Object.fromEntries(RESIDENTS.map((r) => [r.id, { movedIn: true, friendship: 3, points: 9 }]));
+  const everySet = RESIDENTS.map((r) => setBit(r.index));
+  it("page 1 after Wick's chapter; the great lantern wakes with 10 tower floors", () => {
+    const f = (floors: number): boolean[] => storyState(rs(all), everySet, [], floors)[7]!.map((p) => p.open);
+    expect(storyState(rs(all), everySet.slice(1), [], 99)[7]!.map((p) => p.open)).toEqual([false, false, false]); // Wick's set missing
+    expect(f(FESTIVAL_FLOORS - 1)).toEqual([true, false, false]);
+    expect(storyState(rs(all), everySet, [], 7)[7]![1]!.hint).toEqual({ kind: "tower", n: 3 });
+    expect(f(FESTIVAL_FLOORS)).toEqual([true, true, true]);
+    expect(festivalLit(storyState(rs(all), everySet, [], FESTIVAL_FLOORS))).toBe(true);
+    expect(festivalLit(storyState(rs(all), everySet, [], 0))).toBe(false);
+  });
+  it("the tower-top room starts empty on its own wallpaper and floor", () => {
+    const r = towerRoomOf(undefined);
+    expect(r.slots.every((x) => x === null)).toBe(true);
+    expect([r.wallpaper, r.floor]).toEqual([2, 2]);
+  });
+});
+
 describe("story text", () => {
-  it("every locale has 7 titles and 21 pages, and the same UI placeholders as English", () => {
+  it("every locale has 8 titles and 24 pages, and the same UI placeholders as English", () => {
     const ph = (s: string): string[] => (s.match(/\{\w+\}/g) ?? []).sort();
     for (const l of LANGS) {
       const t = STORY[l];

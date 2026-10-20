@@ -16,6 +16,7 @@ import { Preferences } from "@capacitor/preferences";
 import type { Lang } from "../a11y/strings.ts";
 import { HORIZON_DAYS, idFor, KEEP_FINISHES, type Planned, planReminders, reconcile, reminderMinute } from "./plan.ts";
 import { reminderBody } from "./texts.ts";
+import { RESIDENTS, type ResidentId } from "../village/catalog.ts";
 
 export type PermState = "granted" | "denied" | "prompt";
 
@@ -200,6 +201,23 @@ function listen(): void {
   })?.catch(() => undefined);
 }
 
+/**
+ * R4: the village friends who already live there (their voices take turns in the reminders). Lit days ≈ the
+ * larger of the village's lit-day bits and the counted dailies; a missing village save = Wick and Momo.
+ */
+async function movedIn(played: readonly string[]): Promise<ResidentId[]> {
+  let pd = 0;
+  try {
+    const r = await Preferences.get({ key: "village" });
+    const o = r.value ? (JSON.parse(r.value) as { sv?: { pd?: unknown } }) : null;
+    pd = Array.isArray(o?.sv?.pd) ? o.sv.pd.length : 0;
+  } catch {
+    /* Wick and Momo */
+  }
+  const lit = Math.max(pd, played.length);
+  return RESIDENTS.filter((x) => x.moveIn <= lit).map((x) => x.id);
+}
+
 export interface PlanCtx {
   today: string;
   /** local minute of the day right now */
@@ -297,6 +315,7 @@ export const notify = {
     const fired = p.planned.filter((x) => x.date < c.today || (x.date === c.today && x.minute <= c.nowMinute));
     const ignored = reconcile({ fired, tapped: new Set(p.tapped), played: new Set(c.played), ignored: p.ignored });
     await cancelAll(p.planned);
+    const residents = await movedIn(c.played);
     let planned: Planned[] = [];
     if (p.on && (await notify.isOn())) {
       const minute = reminderMinute(c.finishMinutes.slice(-KEEP_FINISHES));
@@ -308,7 +327,7 @@ export const notify = {
               id: x.id,
               title: "",
               // the streak this day would continue (positive framing only; texts.ts uses it from 3 days on)
-              body: reminderBody(c.lang, dayIndex(x.date), c.streak + dayIndex(x.date) - dayIndex(c.today) - (c.todayDone ? 1 : 0)),
+              body: reminderBody(c.lang, dayIndex(x.date), c.streak + dayIndex(x.date) - dayIndex(c.today) - (c.todayDone ? 1 : 0), residents),
               schedule: { at: c.at(x.date, x.minute), allowWhileIdle: false },
               extra: { date: x.date },
             })),

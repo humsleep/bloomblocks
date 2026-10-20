@@ -1479,6 +1479,9 @@ export class LanternsScene extends Phaser.Scene {
       void adsApi.onUnitComplete({ track: s.homeTrack, daily: true, playSeconds: res.seconds, dailyStreak: counted ? res.streak : 0, dailyDate: date, counted }).then(() => {
         if (adsApi.offerBreak()) this.card?.showBreak();
       });
+      // R4 rankings (only once the player turned them on): today's time board + the two totals
+      const best = st.best;
+      void import("./ranking.ts").then((m) => m.sendDaily({ dateISO: date, seconds: res.seconds, hints: res.hints, dailyN: dailyNumber(date) }, this.rankTotals(best))).catch(() => undefined);
     }
     this.scenery.moonBreath = false;
     this.dailyShields = dm.shieldsLeft(st, today);
@@ -1705,6 +1708,9 @@ export class LanternsScene extends Phaser.Scene {
     } else if (h === "shields") {
       cue("tap");
       c.replayShields(now);
+    } else if (h === "rank") {
+      cue("tap");
+      void this.openRankings();
     } else if (h === "break") {
       cue("tap");
       c.hideBreak();
@@ -2502,6 +2508,21 @@ export class LanternsScene extends Phaser.Scene {
         this.townOpen = false;
       },
     );
+  }
+
+  /** R4 rankings: the trophy on the result sheet (Game Center sign-in the first time, then today's board). */
+  private async openRankings(): Promise<void> {
+    try {
+      const m = await import("./ranking.ts");
+      const best = this.dm ? (await this.dm.loadStreak()).best : 0;
+      await m.openRankings(this.rankTotals(best));
+    } catch (e) {
+      console.warn("[rank]", e);
+    }
+  }
+  private rankTotals(bestStreak: number): { bestStreak: number; solved: number } {
+    const s = this.deps.session;
+    return { bestStreak, solved: s.cleared("gentle") + s.cleared("deduce") };
   }
 
   /** R4: back from the village — re-bake the board when the lantern skin / board theme changed, then say what the visit brought. */

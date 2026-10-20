@@ -956,6 +956,21 @@ const COZY: Record<Lang, Dict> = {
 };
 for (const l of LANGS) Object.assign(BASE[l], COZY[l]);
 
+// R4 rankings (Game Center, opt-in): the result sheet's trophy pill — caption + spoken label.
+const RANK: Record<Lang, Dict> = {
+  en: { "cap.rank": "Ranking", rank: "Rankings: today's fastest times (Game Center)" },
+  ko: { "cap.rank": "순위", rank: "순위: 오늘 가장 빠른 기록 (Game Center)" },
+  ja: { "cap.rank": "ランキング", rank: "ランキング：今日のベストタイム（Game Center）" },
+  de: { "cap.rank": "Rangliste", rank: "Rangliste: die schnellsten Zeiten heute (Game Center)" },
+  fr: { "cap.rank": "Classement", rank: "Classement : les meilleurs temps du jour (Game Center)" },
+  es: { "cap.rank": "Ranking", rank: "Ranking: los tiempos más rápidos de hoy (Game Center)" },
+  "pt-BR": { "cap.rank": "Ranking", rank: "Ranking: os tempos mais rápidos de hoje (Game Center)" },
+  it: { "cap.rank": "Classifica", rank: "Classifica: i tempi migliori di oggi (Game Center)" },
+  "zh-Hans": { "cap.rank": "排行榜", rank: "排行榜：今日最快纪录（Game Center）" },
+  "zh-Hant": { "cap.rank": "排行榜", rank: "排行榜：今日最快紀錄（Game Center）" },
+};
+for (const l of LANGS) Object.assign(BASE[l], RANK[l]);
+
 export const STRINGS: Readonly<Record<Lang, Dict>> = BASE;
 
 /**

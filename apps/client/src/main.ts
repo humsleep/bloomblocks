@@ -109,6 +109,7 @@ async function boot(): Promise<void> {
     });
     void loadShareTime();
     void refreshUnlocks(); // R4: the village's unlock bits (third shield, cozy evening) — after the first frame
+    void import("./game/ranking.ts").then((m) => m.resumeRankings()).catch(() => undefined); // R4: only if rankings are on
     // Focus loss (notification shade, consent, ads) is not a session end: just
     // drop the half tap, remember when, and skip animations on return.
     let pausedAt = 0;

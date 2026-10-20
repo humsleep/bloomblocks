@@ -30,7 +30,7 @@
 //                              strings (a regional variant such as es-419 is fine when its language ships).
 // Read-only: never edits src/ or ios/.
 import { execFileSync } from "node:child_process";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 const root = new URL("../", import.meta.url);
 const read = (p) => readFileSync(new URL(p, root), "utf8");
@@ -174,8 +174,10 @@ const APPLINKS = ["applinks:humsleep.github.io"];
 const ent = tryPlist("ios/App/App/App.entitlements", "entitlements plist");
 if (ent) {
   storeChecks++;
-  const ALLOWED_ENT = new Set(["com.apple.developer.ubiquity-kvstore-identifier", "com.apple.developer.associated-domains"]);
-  for (const k of Object.keys(ent)) if (!ALLOWED_ENT.has(k)) hard.push(`App.entitlements has "${k}" — an unused capability (only iCloud KVS and Associated Domains are used)`);
+  // R4: Game Center (rankings, ios/App/App/GameCenter.swift) joins iCloud KVS and Associated Domains
+  const ALLOWED_ENT = new Set(["com.apple.developer.ubiquity-kvstore-identifier", "com.apple.developer.associated-domains", "com.apple.developer.game-center"]);
+  for (const k of Object.keys(ent)) if (!ALLOWED_ENT.has(k)) hard.push(`App.entitlements has "${k}" — an unused capability (only iCloud KVS, Associated Domains and Game Center are used)`);
+  if ("com.apple.developer.game-center" in ent && !existsSync(new URL("ios/App/App/GameCenter.swift", root))) hard.push("App.entitlements has Game Center but GameCenter.swift is missing");
   if (!ent["com.apple.developer.ubiquity-kvstore-identifier"]) hard.push("App.entitlements lacks com.apple.developer.ubiquity-kvstore-identifier (iCloud sync)");
   const ad = ent["com.apple.developer.associated-domains"];
   if (JSON.stringify(ad) !== JSON.stringify(APPLINKS))

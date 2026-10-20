@@ -11,13 +11,17 @@ import type { ResidentId } from "./catalog.ts";
 import { FRIEND_LEVELS, type ResidentState } from "./model.ts";
 import type { Bits } from "./vstate.ts";
 
-export const CHAPTERS: readonly ResidentId[] = ["momo", "sage", "luna", "pip", "kuri", "yuki", "wick"];
+/** R4 D: after Wick's chapter, the finale — the Lantern Festival (its pages 2–3 open with 10 tower floors lit) */
+export type ChapterId = ResidentId | "festival";
+export const CHAPTERS: readonly ChapterId[] = ["momo", "sage", "luna", "pip", "kuri", "yuki", "wick", "festival"];
+/** tower floors (deduce boards cleared) the festival needs */
+export const FESTIVAL_FLOORS = 10;
 /** v.st bit of a page */
 export const pageBit = (chapter: number, page: number): number => chapter * 3 + page;
 /** v.cz bit: this resident's set was completed at least once (R4 C → B) */
 export const setBit = (residentIndex: number): number => 20 + residentIndex;
 
-export type Hint = { kind: "moveIn" } | { kind: "friend"; n: number } | { kind: "set" } | { kind: "chapters"; n: number } | { kind: "later" };
+export type Hint = { kind: "moveIn" } | { kind: "friend"; n: number } | { kind: "set" } | { kind: "chapters"; n: number } | { kind: "tower"; n: number } | { kind: "later" };
 export interface PageState {
   open: boolean;
   read: boolean;
@@ -26,10 +30,10 @@ export interface PageState {
 }
 
 /** Every page's state, chapter by chapter (CHAPTERS order). */
-export function storyState(rs: readonly ResidentState[], cz: Bits, st: Bits): PageState[][] {
+export function storyState(rs: readonly ResidentState[], cz: Bits, st: Bits, towerFloors = 0): PageState[][] {
   const czs = new Set(cz);
   const read = new Set(st);
-  const byId = new Map(rs.map((r) => [r.r.id, r]));
+  const byId = new Map<ChapterId, ResidentState>(rs.map((r) => [r.r.id, r]));
   const out: PageState[][] = [];
   const page = (c: number, p: number, open: boolean, hint: Hint): PageState => ({ open, read: open && read.has(pageBit(c, p)), hint: open ? null : hint });
   CHAPTERS.slice(0, 6).forEach((id, c) => {
@@ -48,8 +52,16 @@ export function storyState(rs: readonly ResidentState[], cz: Bits, st: Bits): Pa
   const w2 = done >= 6;
   const w3 = w2 && !!wick && czs.has(setBit(wick.r.index));
   out.push([page(6, 0, w1, { kind: "chapters", n: 3 - done }), page(6, 1, w2, w1 ? { kind: "chapters", n: 6 - done } : { kind: "later" }), page(6, 2, w3, w2 ? { kind: "set" } : { kind: "later" })]);
+  // the festival: Wick's chapter done → page 1; the tower's 10 floors lit → the great lantern wakes (pages 2–3)
+  const f1 = w3;
+  const f2 = f1 && towerFloors >= FESTIVAL_FLOORS;
+  const tower: Hint = { kind: "tower", n: Math.max(1, FESTIVAL_FLOORS - towerFloors) };
+  out.push([page(7, 0, f1, { kind: "later" }), page(7, 1, f2, f1 ? tower : { kind: "later" }), page(7, 2, f2, f1 ? tower : { kind: "later" })]);
   return out;
 }
+
+/** The great lantern is lit again (the festival's pages 2–3 are open). */
+export const festivalLit = (s: readonly PageState[][]): boolean => !!s[7]?.[1]?.open;
 
 /** Open pages not read yet (the storybook's amber dot). */
 export const unreadPages = (s: readonly PageState[][]): number => s.flat().filter((p) => p.open && !p.read).length;
@@ -57,9 +69,12 @@ export const unreadPages = (s: readonly PageState[][]): number => s.flat().filte
 // ---------------------------------------------------------------- text
 
 interface StoryText {
-  ui: { book: string; question: string; chapter: string; pages: string; moveIn: string; friend: string; set: string; chapters: string; list: string; caption: string; dotNew: string };
-  title: Record<ResidentId, string>;
-  pages: Record<ResidentId, readonly [string, string, string]>;
+  ui: {
+    book: string; question: string; chapter: string; pages: string; moveIn: string; friend: string; set: string; chapters: string; list: string; caption: string; dotNew: string;
+    tower: string; festTitle: string; festLine: string; festRoom: string; festGo: string; towerRoom: string; cottage: string;
+  };
+  title: Record<ChapterId, string>;
+  pages: Record<ChapterId, readonly [string, string, string]>;
 }
 
 const EN: StoryText = {
@@ -67,8 +82,10 @@ const EN: StoryText = {
     book: "Storybook", question: "Why did the great lantern go dark?", chapter: "Chapter {n}", pages: "{read} of 3 pages",
     moveIn: "Opens when {name} moves in", friend: "Talk with {name} on {n} more days", set: "Complete {name}'s set: {items}",
     chapters: "Finish {n} more chapters", list: "All chapters", caption: "Story", dotNew: "Storybook: a new page",
+    tower: "Light {n} more floors of the tower", festTitle: "The Lantern Festival", festLine: "The great lantern is lit again! Everyone gave back a little spark.",
+    festRoom: "A little room at the top of the tower is yours now.", festGo: "Go up", towerRoom: "Tower-top room", cottage: "Cottage",
   },
-  title: { momo: "The Night the Bell Stopped", sage: "Seeds Under the Tower", luna: "A Map of Stars", pip: "The Smallest Spark", kuri: "Yarn for the Bell", yuki: "First Snow on the Tower", wick: "Where the Great Light Went" },
+  title: { momo: "The Night the Bell Stopped", sage: "Seeds Under the Tower", luna: "A Map of Stars", pip: "The Smallest Spark", kuri: "Yarn for the Bell", yuki: "First Snow on the Tower", wick: "Where the Great Light Went" , festival: "The Lantern Festival" },
   pages: {
     momo: [
       "Long ago, the great lantern on the tower lit all of Duskwick. Then one winter night it went dark, and I hid behind a teapot until morning.",
@@ -105,6 +122,11 @@ const EN: StoryText = {
       "That winter was so cold. The houses were dark and everyone was shivering. So I gave my light away, a spark for each home.",
       "I was the great lantern. Now the light lives in every house you lit. If we all give a little back, maybe the tower can shine again. Will you help?",
     ],
+    festival: [
+      "Wick: So that's my secret. Every house you lit keeps a little of my spark. If each friend gives a bit back, the great lantern can wake. The tower has ten floors. Light them all, and we'll climb together.",
+      "The bell rang for the first time in years. Kuri's rope held. One by one the sparks flew up the tower: Momo's, Sage's, Luna's, Pip's, Yuki's… and yours.",
+      "The great lantern is lit again, and Duskwick glows all the way to the hills. At the very top of the tower there's a little room now. Wick says it's yours.",
+    ],
   },
 };
 
@@ -113,8 +135,10 @@ const KO: StoryText = {
     book: "이야기책", question: "큰 등불은 왜 꺼졌을까?", chapter: "{n}장", pages: "3쪽 중 {read}쪽",
     moveIn: "{name}의 이사 후에 열려요", friend: "{name}에게 {n}일 더 말 걸기", set: "{name}의 세트 완성하기: {items}",
     chapters: "다른 이야기 {n}장 더 완성하기", list: "모든 장", caption: "이야기", dotNew: "이야기책: 새 쪽",
+    tower: "탑을 {n}층 더 밝히기", festTitle: "등불 축제", festLine: "큰 등불이 다시 켜졌어요! 모두가 불씨를 조금씩 돌려줬어요.",
+    festRoom: "탑 꼭대기의 작은 방이 이제 당신 거예요.", festGo: "올라가 보기", towerRoom: "탑 꼭대기 방", cottage: "오두막",
   },
-  title: { momo: "종이 멈춘 밤", sage: "탑 아래의 씨앗", luna: "별 지도", pip: "가장 작은 불씨", kuri: "종을 위한 실", yuki: "탑 위의 첫눈", wick: "큰 등불이 간 곳" },
+  title: { momo: "종이 멈춘 밤", sage: "탑 아래의 씨앗", luna: "별 지도", pip: "가장 작은 불씨", kuri: "종을 위한 실", yuki: "탑 위의 첫눈", wick: "큰 등불이 간 곳" , festival: "등불 축제" },
   pages: {
     momo: [
       "옛날에는 탑 꼭대기의 큰 등불이 더스크윅 전체를 밝혔어요. 그런데 어느 겨울밤 불이 꺼졌고, 저는 아침까지 찻주전자 뒤에 숨어 있었어요.",
@@ -151,6 +175,11 @@ const KO: StoryText = {
       "그 겨울은 정말 추웠어요. 집들은 어둡고 다들 떨고 있었죠. 그래서 제 불을 나눠 줬어요. 집마다 불씨 하나씩.",
       "제가 그 큰 등불이었어요. 이제 그 빛은 당신이 밝힌 집집마다 살아요. 모두가 조금씩 돌려준다면 탑이 다시 빛날지도 몰라요. 도와줄래요?",
     ],
+    festival: [
+      "윅: 그게 제 비밀이었어요. 당신이 밝힌 집마다 제 불씨가 조금씩 남아 있어요. 친구들이 조금씩 돌려주면 큰 등불이 깨어날 수 있어요. 탑은 10층이에요. 모두 밝히면 함께 올라가요.",
+      "몇 년 만에 처음으로 종이 울렸어요. 쿠리의 밧줄은 튼튼했죠. 불씨들이 하나씩 탑 위로 날아올랐어요. 모모, 세이지, 루나, 핍, 유키… 그리고 당신의 불씨도요.",
+      "큰 등불이 다시 켜졌고, 더스크윅은 언덕 너머까지 환해졌어요. 탑 맨 꼭대기에는 이제 작은 방이 하나 있어요. 윅은 그 방이 당신 거래요.",
+    ],
   },
 };
 
@@ -159,8 +188,10 @@ const JA: StoryText = {
     book: "おはなしの本", question: "大きなランタンは、なぜ消えたの？", chapter: "第{n}章", pages: "3ページ中{read}ページ",
     moveIn: "{name}が引っこしてくると開きます", friend: "あと{n}日、{name}とおしゃべりする", set: "{name}のセットをそろえる：{items}",
     chapters: "ほかのお話をあと{n}章読む", list: "すべての章", caption: "おはなし", dotNew: "おはなしの本：新しいページ",
+    tower: "塔をあと{n}階灯す", festTitle: "ランタン祭り", festLine: "大きなランタンがまた灯りました！みんなが火の粉を少しずつ返してくれました。",
+    festRoom: "塔のてっぺんの小さな部屋は、今日からあなたのものです。", festGo: "のぼってみる", towerRoom: "塔のてっぺんの部屋", cottage: "小屋",
   },
-  title: { momo: "鐘が止まった夜", sage: "塔の下のたね", luna: "星の地図", pip: "いちばん小さな火の粉", kuri: "鐘のための糸", yuki: "塔の上の初雪", wick: "大きな光のゆくえ" },
+  title: { momo: "鐘が止まった夜", sage: "塔の下のたね", luna: "星の地図", pip: "いちばん小さな火の粉", kuri: "鐘のための糸", yuki: "塔の上の初雪", wick: "大きな光のゆくえ" , festival: "ランタン祭り" },
   pages: {
     momo: [
       "むかし、塔の上の大きなランタンがDuskwickじゅうを照らしていました。ある冬の夜にその光が消えて、わたしは朝までティーポットのかげにかくれていました。",
@@ -197,6 +228,11 @@ const JA: StoryText = {
       "あの冬はほんとうに寒かった。家はまっ暗で、みんなふるえていました。だからぼくは、自分の光をくばったんです。家ごとに火の粉をひとつずつ。",
       "ぼくが、あの大きなランタンだったんです。今その光は、あなたが灯した家のひとつひとつに生きています。みんなが少しずつ返してくれたら、塔はまた輝けるかもしれません。手伝ってくれますか？",
     ],
+    festival: [
+      "ウィック：それがぼくのひみつです。あなたが灯した家には、ぼくの火の粉が少しずつ残っています。なかまが少しずつ返してくれたら、大きなランタンは目をさませます。塔は10階。ぜんぶ灯したら、いっしょにのぼりましょう。",
+      "何年ぶりかで、鐘が鳴りました。クリのロープはしっかりしていました。火の粉がひとつずつ塔へのぼっていきます。モモの、セージの、ルナの、ピピの、ユキの…そして、あなたのも。",
+      "大きなランタンがまた灯り、Duskwickは丘の向こうまで明るくなりました。塔のいちばん上には、小さな部屋ができました。ウィックは、そこはあなたの部屋だと言っています。",
+    ],
   },
 };
 
@@ -205,8 +241,10 @@ const DE: StoryText = {
     book: "Geschichtenbuch", question: "Warum ist die große Laterne erloschen?", chapter: "Kapitel {n}", pages: "{read} von 3 Seiten",
     moveIn: "Öffnet sich, wenn {name} einzieht", friend: "Noch an {n} Tagen mit {name} reden", set: "Vervollständige das Set von {name}: {items}",
     chapters: "Noch {n} Kapitel abschließen", list: "Alle Kapitel", caption: "Geschichte", dotNew: "Geschichtenbuch: eine neue Seite",
+    tower: "Noch {n} Stockwerke des Turms erhellen", festTitle: "Das Laternenfest", festLine: "Die große Laterne leuchtet wieder! Alle haben einen kleinen Funken zurückgegeben.",
+    festRoom: "Ein kleines Zimmer ganz oben im Turm gehört jetzt dir.", festGo: "Hinaufgehen", towerRoom: "Turmzimmer", cottage: "Hütte",
   },
-  title: { momo: "Die Nacht, in der die Glocke schwieg", sage: "Samen unter dem Turm", luna: "Eine Sternenkarte", pip: "Der kleinste Funke", kuri: "Garn für die Glocke", yuki: "Erster Schnee auf dem Turm", wick: "Wohin das große Licht ging" },
+  title: { momo: "Die Nacht, in der die Glocke schwieg", sage: "Samen unter dem Turm", luna: "Eine Sternenkarte", pip: "Der kleinste Funke", kuri: "Garn für die Glocke", yuki: "Erster Schnee auf dem Turm", wick: "Wohin das große Licht ging" , festival: "Das Laternenfest" },
   pages: {
     momo: [
       "Früher erhellte die große Laterne auf dem Turm ganz Duskwick. Dann erlosch sie in einer Winternacht, und ich versteckte mich bis zum Morgen hinter einer Teekanne.",
@@ -243,6 +281,11 @@ const DE: StoryText = {
       "Jener Winter war so kalt. Die Häuser waren dunkel und alle froren. Also habe ich mein Licht verschenkt, einen Funken für jedes Zuhause.",
       "Ich war die große Laterne. Jetzt lebt das Licht in jedem Haus, das du erhellt hast. Wenn alle ein wenig zurückgeben, kann der Turm vielleicht wieder leuchten. Hilfst du mit?",
     ],
+    festival: [
+      "Wick: Das ist also mein Geheimnis. In jedem Haus, das du erhellt hast, steckt ein wenig von meinem Funken. Wenn jeder Freund etwas zurückgibt, kann die große Laterne erwachen. Der Turm hat zehn Stockwerke. Erhelle sie alle, dann steigen wir zusammen hinauf.",
+      "Zum ersten Mal seit Jahren läutete die Glocke. Kuris Seil hielt. Einer nach dem anderen flogen die Funken den Turm hinauf: von Momo, Sage, Luna, Pip, Yuki … und deiner.",
+      "Die große Laterne leuchtet wieder, und Duskwick strahlt bis zu den Hügeln. Ganz oben im Turm gibt es jetzt ein kleines Zimmer. Wick sagt, es gehört dir.",
+    ],
   },
 };
 
@@ -251,8 +294,10 @@ const FR: StoryText = {
     book: "Livre d'histoires", question: "Pourquoi la grande lanterne s'est-elle éteinte ?", chapter: "Chapitre {n}", pages: "{read} page(s) sur 3",
     moveIn: "S'ouvre quand {name} emménage", friend: "Parlez avec {name} encore {n} jour(s)", set: "Complétez l'ensemble de {name} : {items}",
     chapters: "Terminez encore {n} chapitre(s)", list: "Tous les chapitres", caption: "Histoire", dotNew: "Livre d'histoires : une nouvelle page",
+    tower: "Allumez encore {n} étage(s) de la tour", festTitle: "La fête des lanternes", festLine: "La grande lanterne brille de nouveau ! Chacun a rendu une petite étincelle.",
+    festRoom: "Une petite chambre tout en haut de la tour est à vous désormais.", festGo: "Monter", towerRoom: "Chambre de la tour", cottage: "Chaumière",
   },
-  title: { momo: "La nuit où la cloche s'est tue", sage: "Des graines sous la tour", luna: "Une carte des étoiles", pip: "La plus petite étincelle", kuri: "Du fil pour la cloche", yuki: "Première neige sur la tour", wick: "Où est partie la grande lumière" },
+  title: { momo: "La nuit où la cloche s'est tue", sage: "Des graines sous la tour", luna: "Une carte des étoiles", pip: "La plus petite étincelle", kuri: "Du fil pour la cloche", yuki: "Première neige sur la tour", wick: "Où est partie la grande lumière" , festival: "La fête des lanternes" },
   pages: {
     momo: [
       "Autrefois, la grande lanterne de la tour éclairait tout Duskwick. Puis, une nuit d'hiver, elle s'est éteinte, et je me suis cachée derrière une théière jusqu'au matin.",
@@ -289,6 +334,11 @@ const FR: StoryText = {
       "Cet hiver-là, il faisait si froid. Les maisons étaient sombres et tout le monde grelottait. Alors j'ai donné ma lumière, une étincelle pour chaque foyer.",
       "C'était moi, la grande lanterne. Maintenant, la lumière vit dans chaque maison que vous avez allumée. Si chacun en rend un peu, la tour pourra peut-être briller de nouveau. Vous m'aidez ?",
     ],
+    festival: [
+      "Wick : Voilà mon secret. Chaque maison que vous avez allumée garde un peu de mon étincelle. Si chaque ami en rend un peu, la grande lanterne peut se réveiller. La tour a dix étages. Allumez-les tous, et nous monterons ensemble.",
+      "Pour la première fois depuis des années, la cloche a sonné. La corde de Kuri a tenu. Une à une, les étincelles ont monté la tour : celles de Momo, de Sage, de Luna, de Pip, de Yuki… et la vôtre.",
+      "La grande lanterne brille de nouveau, et Duskwick rayonne jusqu'aux collines. Tout en haut de la tour, il y a maintenant une petite chambre. Wick dit qu'elle est à vous.",
+    ],
   },
 };
 
@@ -297,8 +347,10 @@ const ES: StoryText = {
     book: "Libro de cuentos", question: "¿Por qué se apagó el gran farol?", chapter: "Capítulo {n}", pages: "{read} de 3 páginas",
     moveIn: "Se abre cuando {name} se mude", friend: "Habla con {name} {n} día(s) más", set: "Completa el conjunto de {name}: {items}",
     chapters: "Termina {n} capítulo(s) más", list: "Todos los capítulos", caption: "Historia", dotNew: "Libro de cuentos: una página nueva",
+    tower: "Ilumina {n} piso(s) más de la torre", festTitle: "La fiesta de los faroles", festLine: "¡El gran farol vuelve a brillar! Todos devolvieron una chispita.",
+    festRoom: "Una habitación pequeña en lo alto de la torre ahora es tuya.", festGo: "Subir", towerRoom: "Habitación de la torre", cottage: "Cabaña",
   },
-  title: { momo: "La noche en que calló la campana", sage: "Semillas bajo la torre", luna: "Un mapa de estrellas", pip: "La chispa más pequeña", kuri: "Hilo para la campana", yuki: "Primera nevada en la torre", wick: "Adónde fue la gran luz" },
+  title: { momo: "La noche en que calló la campana", sage: "Semillas bajo la torre", luna: "Un mapa de estrellas", pip: "La chispa más pequeña", kuri: "Hilo para la campana", yuki: "Primera nevada en la torre", wick: "Adónde fue la gran luz" , festival: "La fiesta de los faroles" },
   pages: {
     momo: [
       "Hace mucho, el gran farol de la torre iluminaba todo Duskwick. Una noche de invierno se apagó, y me escondí detrás de una tetera hasta la mañana.",
@@ -335,6 +387,11 @@ const ES: StoryText = {
       "Aquel invierno hacía tanto frío. Las casas estaban a oscuras y todos temblaban. Así que regalé mi luz, una chispa para cada hogar.",
       "Yo era el gran farol. Ahora la luz vive en cada casa que encendiste. Si todos devolvemos un poquito, quizá la torre vuelva a brillar. ¿Me ayudas?",
     ],
+    festival: [
+      "Wick: Ese es mi secreto. Cada casa que encendiste guarda un poquito de mi chispa. Si cada amigo devuelve un poco, el gran farol puede despertar. La torre tiene diez pisos. Ilumínalos todos y subiremos juntos.",
+      "Por primera vez en años, la campana sonó. La cuerda de Kuri aguantó. Una a una, las chispas subieron por la torre: la de Momo, la de Sage, la de Luna, la de Pip, la de Yuki… y la tuya.",
+      "El gran farol vuelve a brillar, y Duskwick resplandece hasta las colinas. En lo más alto de la torre ahora hay una habitación pequeña. Wick dice que es tuya.",
+    ],
   },
 };
 
@@ -343,8 +400,10 @@ const PT: StoryText = {
     book: "Livro de histórias", question: "Por que a grande lanterna se apagou?", chapter: "Capítulo {n}", pages: "{read} de 3 páginas",
     moveIn: "Abre quando {name} se mudar", friend: "Converse com {name} por mais {n} dia(s)", set: "Complete o conjunto de {name}: {items}",
     chapters: "Termine mais {n} capítulo(s)", list: "Todos os capítulos", caption: "História", dotNew: "Livro de histórias: uma página nova",
+    tower: "Ilumine mais {n} andar(es) da torre", festTitle: "A festa das lanternas", festLine: "A grande lanterna brilha de novo! Todos devolveram uma faisquinha.",
+    festRoom: "Um quartinho no alto da torre agora é seu.", festGo: "Subir", towerRoom: "Quarto da torre", cottage: "Cabana",
   },
-  title: { momo: "A noite em que o sino parou", sage: "Sementes sob a torre", luna: "Um mapa das estrelas", pip: "A menor faísca", kuri: "Linha para o sino", yuki: "Primeira neve na torre", wick: "Para onde foi a grande luz" },
+  title: { momo: "A noite em que o sino parou", sage: "Sementes sob a torre", luna: "Um mapa das estrelas", pip: "A menor faísca", kuri: "Linha para o sino", yuki: "Primeira neve na torre", wick: "Para onde foi a grande luz" , festival: "A festa das lanternas" },
   pages: {
     momo: [
       "Há muito tempo, a grande lanterna da torre iluminava toda Duskwick. Numa noite de inverno ela se apagou, e eu me escondi atrás de um bule até de manhã.",
@@ -381,6 +440,11 @@ const PT: StoryText = {
       "Aquele inverno foi tão frio. As casas estavam escuras e todos tremiam. Então eu dei a minha luz, uma faísca para cada lar.",
       "Eu era a grande lanterna. Agora a luz vive em cada casa que você acendeu. Se todos devolverem um pouquinho, talvez a torre volte a brilhar. Você me ajuda?",
     ],
+    festival: [
+      "Wick: Esse é o meu segredo. Cada casa que você acendeu guarda um pouquinho da minha faísca. Se cada amigo devolver um pouco, a grande lanterna pode acordar. A torre tem dez andares. Ilumine todos, e subiremos juntos.",
+      "Pela primeira vez em anos, o sino tocou. A corda de Kuri aguentou. Uma a uma, as faíscas subiram a torre: a de Momo, a de Sage, a de Luna, a de Pip, a de Yuki… e a sua.",
+      "A grande lanterna brilha de novo, e Duskwick ilumina até as colinas. No alto da torre agora existe um quartinho. Wick diz que ele é seu.",
+    ],
   },
 };
 
@@ -389,8 +453,10 @@ const IT: StoryText = {
     book: "Libro delle storie", question: "Perché la grande lanterna si è spenta?", chapter: "Capitolo {n}", pages: "{read} pagine su 3",
     moveIn: "Si apre quando {name} si trasferisce", friend: "Parla con {name} per altri {n} giorni", set: "Completa il set di {name}: {items}",
     chapters: "Finisci altri {n} capitoli", list: "Tutti i capitoli", caption: "Storia", dotNew: "Libro delle storie: una pagina nuova",
+    tower: "Illumina altri {n} piani della torre", festTitle: "La festa delle lanterne", festLine: "La grande lanterna brilla di nuovo! Ognuno ha restituito una piccola scintilla.",
+    festRoom: "Una stanzetta in cima alla torre ora è tua.", festGo: "Sali", towerRoom: "Stanza della torre", cottage: "Casetta",
   },
-  title: { momo: "La notte in cui tacque la campana", sage: "Semi sotto la torre", luna: "Una mappa di stelle", pip: "La scintilla più piccola", kuri: "Filo per la campana", yuki: "Prima neve sulla torre", wick: "Dove andò la grande luce" },
+  title: { momo: "La notte in cui tacque la campana", sage: "Semi sotto la torre", luna: "Una mappa di stelle", pip: "La scintilla più piccola", kuri: "Filo per la campana", yuki: "Prima neve sulla torre", wick: "Dove andò la grande luce" , festival: "La festa delle lanterne" },
   pages: {
     momo: [
       "Tanto tempo fa, la grande lanterna sulla torre illuminava tutta Duskwick. Poi, una notte d'inverno, si spense, e io mi nascosi dietro una teiera fino al mattino.",
@@ -427,6 +493,11 @@ const IT: StoryText = {
       "Quell'inverno faceva così freddo. Le case erano buie e tutti tremavano. Così ho regalato la mia luce, una scintilla per ogni casa.",
       "La grande lanterna ero io. Ora la luce vive in ogni casa che hai acceso. Se ognuno ne restituisce un po', forse la torre potrà brillare di nuovo. Mi aiuti?",
     ],
+    festival: [
+      "Wick: Ecco il mio segreto. Ogni casa che hai acceso custodisce un po' della mia scintilla. Se ogni amico ne restituisce un po', la grande lanterna può risvegliarsi. La torre ha dieci piani. Illuminali tutti e saliremo insieme.",
+      "Per la prima volta dopo anni, la campana suonò. La corda di Kuri resse. Una dopo l'altra, le scintille salirono sulla torre: quella di Momo, di Sage, di Luna, di Pip, di Yuki… e la tua.",
+      "La grande lanterna brilla di nuovo, e Duskwick risplende fino alle colline. In cima alla torre ora c'è una stanzetta. Wick dice che è tua.",
+    ],
   },
 };
 
@@ -435,8 +506,10 @@ const ZHS: StoryText = {
     book: "故事书", question: "大灯笼为什么熄灭了？", chapter: "第 {n} 章", pages: "3 页中的 {read} 页",
     moveIn: "{name}搬来后开启", friend: "再和{name}聊 {n} 天", set: "集齐{name}的套组：{items}",
     chapters: "再读完 {n} 章其他故事", list: "全部章节", caption: "故事", dotNew: "故事书：有新的一页",
+    tower: "再点亮塔的 {n} 层", festTitle: "灯笼节", festLine: "大灯笼重新亮起来了！大家都还回了一点点火花。",
+    festRoom: "塔顶的小房间，现在属于你了。", festGo: "上去看看", towerRoom: "塔顶小屋", cottage: "小屋",
   },
-  title: { momo: "钟声停止的夜晚", sage: "塔下的种子", luna: "星星地图", pip: "最小的火花", kuri: "给钟的毛线", yuki: "塔上的初雪", wick: "大光去了哪里" },
+  title: { momo: "钟声停止的夜晚", sage: "塔下的种子", luna: "星星地图", pip: "最小的火花", kuri: "给钟的毛线", yuki: "塔上的初雪", wick: "大光去了哪里" , festival: "灯笼节" },
   pages: {
     momo: [
       "很久以前，塔顶的大灯笼照亮着整个 Duskwick。可是一个冬夜，它熄灭了，我在茶壶后面躲到了天亮。",
@@ -473,6 +546,11 @@ const ZHS: StoryText = {
       "那个冬天真的好冷。家家户户一片漆黑，大家都在发抖。所以我把自己的光分了出去，每户一颗火花。",
       "我就是那盏大灯笼。现在，那道光住在你点亮的每一间屋子里。如果大家都还回一点点，也许塔会再次亮起来。你愿意帮忙吗？",
     ],
+    festival: [
+      "小烛：这就是我的秘密。你点亮的每一间屋子里，都留着我的一点火花。只要每个朋友还回一点点，大灯笼就能醒来。塔有十层。把它们全部点亮，我们就一起上去。",
+      "好多年来，钟声第一次响起。栗栗的绳子很结实。火花一颗接一颗飞上塔顶：桃桃的、叶叶的、月月的、皮皮的、雪雪的……还有你的。",
+      "大灯笼重新亮了，Duskwick 一直亮到山丘那头。塔的最顶端，现在有了一个小房间。小烛说，那是你的。",
+    ],
   },
 };
 
@@ -481,8 +559,10 @@ const ZHT: StoryText = {
     book: "故事書", question: "大燈籠為什麼熄滅了？", chapter: "第 {n} 章", pages: "3 頁中的 {read} 頁",
     moveIn: "{name}搬來後開啟", friend: "再和{name}聊 {n} 天", set: "集齊{name}的套組：{items}",
     chapters: "再讀完 {n} 章其他故事", list: "全部章節", caption: "故事", dotNew: "故事書：有新的一頁",
+    tower: "再點亮塔的 {n} 層", festTitle: "燈籠節", festLine: "大燈籠重新亮起來了！大家都還回了一點點火花。",
+    festRoom: "塔頂的小房間，現在屬於你了。", festGo: "上去看看", towerRoom: "塔頂小屋", cottage: "小屋",
   },
-  title: { momo: "鐘聲停止的夜晚", sage: "塔下的種子", luna: "星星地圖", pip: "最小的火花", kuri: "給鐘的毛線", yuki: "塔上的初雪", wick: "大光去了哪裡" },
+  title: { momo: "鐘聲停止的夜晚", sage: "塔下的種子", luna: "星星地圖", pip: "最小的火花", kuri: "給鐘的毛線", yuki: "塔上的初雪", wick: "大光去了哪裡" , festival: "燈籠節" },
   pages: {
     momo: [
       "很久以前，塔頂的大燈籠照亮著整個 Duskwick。可是一個冬夜，它熄滅了，我在茶壺後面躲到了天亮。",
@@ -518,6 +598,11 @@ const ZHT: StoryText = {
       "你聽完了大家的故事，對吧？那現在輪到我講我的了。",
       "那個冬天真的好冷。家家戶戶一片漆黑，大家都在發抖。所以我把自己的光分了出去，每戶一顆火花。",
       "我就是那盞大燈籠。現在，那道光住在你點亮的每一間屋子裡。如果大家都還回一點點，也許塔會再次亮起來。你願意幫忙嗎？",
+    ],
+    festival: [
+      "小燭：這就是我的秘密。你點亮的每一間屋子裡，都留著我的一點火花。只要每個朋友還回一點點，大燈籠就能醒來。塔有十層。把它們全部點亮，我們就一起上去。",
+      "好多年來，鐘聲第一次響起。栗栗的繩子很結實。火花一顆接一顆飛上塔頂：桃桃的、葉葉的、月月的、皮皮的、雪雪的……還有你的。",
+      "大燈籠重新亮了，Duskwick 一直亮到山丘那頭。塔的最頂端，現在有了一個小房間。小燭說，那是你的。",
     ],
   },
 };

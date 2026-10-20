@@ -28,10 +28,10 @@ import {
   activeRequests, fulfilled, isoOfDay, marketOffers, marketState, nextAsk, roomCategories, visitors,
   autoSlot, cards, COTTAGE, coverOf, dayOf, deliver, roomOf, emptyRoom, encodeRoom, eve, FLOOR_COLS, FLOOR_SLOTS, itemOfBit, jarProgress, drops, litDayList,
   type Mail, mailOrder, mails, overflow, owned, partnerSlot, place, placedBits, removeAt, residents, type ResidentState, type RoomLayout, slotWhere, SLOTS, type VillageInput,
-  COZY_AT, cozyLevel, cozyScore, setOfItem, setProgress, setsDone,
+  COZY_AT, cozyLevel, cozyScore, setOfItem, setProgress, setsDone, TOWER_ROOM, towerRoomOf,
 } from "./model.ts";
 import { cozyText, type CozyKey } from "./strings.ts";
-import { CHAPTERS, type Hint, pageBit, setBit, storyState, STORY, storyUi, unreadPages } from "./story.ts";
+import { CHAPTERS, type ChapterId, festivalLit, type Hint, pageBit, setBit, storyState, STORY, storyUi, unreadPages } from "./story.ts";
 import {
   boardTheme, type BoardTheme, chooseSkin, chooseTheme, cozyBit, EVENING_LEVEL, friendBit, type LanternSkin, lanternSkin, notePending, noteUnlocks,
   SKIN_NEEDS, SKINS, skinUnlocked, THEME_NEEDS, THEMES, themeUnlocked,
@@ -134,7 +134,7 @@ export interface VillageLaunch {
   onShown?: () => void;
 }
 
-type Screen = "village" | "letter" | "gift" | "room" | "market" | "story";
+type Screen = "village" | "letter" | "gift" | "room" | "market" | "story" | "festival";
 interface Hit {
   id: string;
   /** a drawer grid card: moves with the grid scroll, only live inside its window */
@@ -212,6 +212,8 @@ export class VillageScene extends Phaser.Scene {
   private openMail: Mail | null = null;
   private openReturn = false;
   private room: RoomLayout = emptyRoom();
+  /** which room the cottage screen shows: the cottage, or (R4 D, after the festival) the tower-top room */
+  private roomId = COTTAGE;
   private highlight = -1;
   private drawer: { slot: number; tab: string; cw: Partial<Record<ItemId, Colorway>> } | null = null;
   private stateLog: string[] = [];
@@ -304,7 +306,7 @@ export class VillageScene extends Phaser.Scene {
     this.unsub = onVillageChange((s) => {
       // a merge from another device landed (or our own write): redraw what depends on it
       this.d.save = s;
-      if (!this.drawer && this.screenNow === "room") this.room = roomOf(s.sv.r[COTTAGE]?.s);
+      if (!this.drawer && this.screenNow === "room") this.room = this.loadRoom();
       this.render();
     });
 
@@ -406,16 +408,27 @@ export class VillageScene extends Phaser.Scene {
     // R4: rewards reached so far (a room decorated before 1.1, friendships), then the cozy evening (level 5, once a day)
     this.syncUnlocks();
     if (this.d.save.sv.cz.includes(cozyBit(EVENING_LEVEL)) && adsApi.cozyEvening()) notePending("evening");
+    // R4 D: the first visit after the great lantern woke up opens on the festival (once per device)
+    if (festivalLit(this.storyNow()) && !once.has("festival")) {
+      loc.once = [...loc.once, "festival"];
+      void updateVillage((x) => void (x.loc.once = [...new Set([...x.loc.once, "festival"])]));
+      this.card = null;
+      this.screenNow = "festival";
+      cue("nearComplete");
+      haptic.success();
+      this.log("festival");
+    }
   }
 
   /** R4: write the rewards reached (this room's cozy levels, residents at friendship 3) as synced bits; returns the new ones. */
   private syncUnlocks(): number[] {
     const want = new Set<number>();
-    const lvl = cozyLevel(cozyScore(this.room));
+    const cottage = this.roomId === COTTAGE ? this.room : roomOf(this.d.save.sv.r[COTTAGE]?.s);
+    const lvl = cozyLevel(cozyScore(cottage));
     for (let k = 1; k <= lvl; k++) want.add(cozyBit(k));
     for (const r of this.residentsNow()) if (r.movedIn && r.friendship >= 3) want.add(friendBit(r.r.index));
     // R4 B: a set completed once keeps its story page open (whatever the room holds later)
-    for (const x of setsDone(this.room)) want.add(setBit(RESIDENTS.find((r) => r.id === x.r)!.index));
+    for (const x of setsDone(cottage)) want.add(setBit(RESIDENTS.find((r) => r.id === x.r)!.index));
     const have = new Set(this.d.save.sv.cz);
     const add = [...want].filter((b) => !have.has(b));
     if (add.length) {
@@ -556,6 +569,7 @@ export class VillageScene extends Phaser.Scene {
     else if (s === "market") this.renderMarket();
     else if (s === "room" && this.cozyOpen && !this.drawer) this.renderCozy();
     else if (s === "story") this.renderStory();
+    else if (s === "festival") this.renderFestival();
     else this.overlay.setVisible(false);
     if (s !== "room" || !this.drawer) {
       this.drawerImg.setVisible(false);
@@ -1351,7 +1365,8 @@ export class VillageScene extends Phaser.Scene {
     if (!m) return;
     const bit = pieceBit(m.piece);
     this.openMail = null;
-    this.room = roomOf(this.d.save.sv.r[COTTAGE]?.s);
+    this.roomId = COTTAGE;
+    this.room = this.loadRoom();
     const already = placedBits(this.room).has(bit);
     const slot = already ? -1 : autoSlot(this.room, bit);
     this.screenNow = "room";
@@ -1378,7 +1393,8 @@ export class VillageScene extends Phaser.Scene {
   private goRoom(): void {
     cue("tap");
     this.card = null;
-    this.room = roomOf(this.d.save.sv.r[COTTAGE]?.s);
+    this.roomId = COTTAGE;
+    this.room = this.loadRoom();
     this.screenNow = "room";
     this.highlight = -1;
     this.firstCabin();
@@ -1586,7 +1602,8 @@ export class VillageScene extends Phaser.Scene {
       g.fillStyle = "#141A33";
       g.fillRect(0, 0, W, H);
       // G1 #13 (designer): the cottage stands outside at dusk, not on a flat page
-      art.drawCottageOutside?.(g, { x: 0, y: 0, w: W, h: H }, b);
+      if (this.roomId === COTTAGE) art.drawCottageOutside?.(g, { x: 0, y: 0, w: W, h: H }, b);
+      else this.paintTowerTop(g, W, H, b);
       // header
       this.disc(g, 16 + 22, this.top + 10 + 22, 22, "back");
       if (!this.drawer) {
@@ -1600,8 +1617,9 @@ export class VillageScene extends Phaser.Scene {
         g.stroke();
         g.restore();
         this.text(g, [vt(lang, "postcard")], pd.x, pd.y + pd.r + 4, pd.cap, { align: "center", color: UI.caption });
-        // R4: the cozy chip (left column, under the back disc): level + five dots
+        // R4: the cozy chip (left column, under the back disc): level + five dots — the cottage's own
         const cc = this.cozyChip();
+        if (this.roomId === COTTAGE) {
         const lvl = cozyLevel(cozyScore(room));
         g.save();
         g.fillStyle = "rgba(30,26,61,0.82)";
@@ -1619,11 +1637,12 @@ export class VillageScene extends Phaser.Scene {
         }
         g.restore();
         this.text(g, [cozyText(lang, "chip", { n: lvl })], cc.x + 12, cc.y + (cc.h - 13) / 2, 13, { color: UI.caption, weight: 700 });
+        }
       }
       // the title sits between the back disc and the postcard disc (never under them)
       const tl = 16 + 44 + 8;
       const tr = this.postcardDisc().x - 22 - 8;
-      const tfit = fitPill(vt(lang, "cottage"), Math.max(60, tr - tl), 1, this.measureAt(g, 700), lang);
+      const tfit = fitPill(this.roomId === COTTAGE ? vt(lang, "cottage") : storyUi(lang, "towerRoom"), Math.max(60, tr - tl), 1, this.measureAt(g, 700), lang);
       this.text(g, tfit.lines, (tl + tr) / 2, this.top + 32 - tfit.size / 2, Math.min(19, tfit.size + 2), { align: "center", color: UI.caption, weight: 700 });
       art.drawRoom(g, b, { wallpaper: room.wallpaper, floor: room.floor });
       // rug layer under the floor pieces
@@ -1701,6 +1720,20 @@ export class VillageScene extends Phaser.Scene {
       // the caption stays on screen (it may be wider than the disc: right-aligned to the edge then)
       const capW = this.measureAt(g)(capPx)(vt(lang, "rugChip"));
       this.text(g, [vt(lang, "rugChip")], Math.min(rd.x, W - 8 - capW / 2), rd.y + rd.r + 4, capPx, { align: "center", color: UI.caption });
+      // R4 D: the room switch (right column), once the festival opened the tower-top room — over the roof
+      if (!this.drawer && this.towerOpen()) {
+        const sw = this.roomSwitch();
+        g.save();
+        g.fillStyle = "rgba(30,26,61,0.86)";
+        g.beginPath();
+        g.roundRect(sw.x, sw.y, sw.w, sw.h, sw.h / 2);
+        g.fill();
+        g.strokeStyle = "rgba(244,211,138,0.65)";
+        g.lineWidth = 1.5;
+        g.stroke();
+        g.restore();
+        this.text(g, [sw.label], sw.x + sw.w / 2, sw.y + (sw.h - 13) / 2, 13, { align: "center", color: UI.caption, weight: 700 });
+      }
       // R4 C: the set-complete line, an amber paper strip under the header — painted last, over the room
       const t = this.roomToast;
       if (t && !this.drawer && performance.now() < t.until) {
@@ -1756,19 +1789,157 @@ export class VillageScene extends Phaser.Scene {
       });
       // last = on top of the room's own tap areas (the chip overlaps the roof)
       const cc = this.cozyChip();
-      this.hits.push({ id: "cozy", x: cc.x, y: cc.y - 7, w: cc.w, h: cc.h + 14, label: cozyText(lang, "chipA11y", { n: cozyLevel(cozyScore(room)) }), act: () => this.openCozy() });
+      if (this.roomId === COTTAGE) this.hits.push({ id: "cozy", x: cc.x, y: cc.y - 7, w: cc.w, h: cc.h + 14, label: cozyText(lang, "chipA11y", { n: cozyLevel(cozyScore(room)) }), act: () => this.openCozy() });
+      if (this.towerOpen()) {
+        const sw = this.roomSwitch();
+        this.hits.push({ id: "room-switch", x: sw.x, y: sw.y - 7, w: sw.w, h: sw.h + 14, label: sw.label, act: () => this.switchRoom(this.roomId === COTTAGE ? TOWER_ROOM : COTTAGE) });
+      }
       this.drawerImg.setVisible(false);
     } else this.renderDrawer();
   }
 
 
 
+
+  // --- R4 D: the Lantern Festival and the tower-top room
+
+  private loadRoom(): RoomLayout {
+    const stored = this.d.save.sv.r[this.roomId]?.s;
+    return this.roomId === COTTAGE ? roomOf(stored) : towerRoomOf(stored);
+  }
+
+  private towerOpen(): boolean {
+    return festivalLit(this.storyNow());
+  }
+
+  /** the room switch pill: right column, level with the cozy chip (pt); its label names the other room */
+  private roomSwitch(): { x: number; y: number; w: number; h: number; label: string } {
+    const lang = this.d.lang;
+    const label = `${this.roomId === COTTAGE ? storyUi(lang, "towerRoom") : storyUi(lang, "cottage")} ›`;
+    const w = Math.min(this.W * 0.5, Math.ceil(this.measureAt(this.scratch(), 700)(13)(label)) + 24);
+    // under the postcard / rug captions (they end ≈ top + 72)
+    return { x: this.W - 12 - w, y: this.top + 80, w, h: 30, label };
+  }
+
+  private switchRoom(id: string): void {
+    cue("tap");
+    this.card = null;
+    this.drawer = null;
+    this.cozyOpen = false;
+    this.highlight = -1;
+    this.roomId = id;
+    this.room = this.loadRoom();
+    this.screenNow = "room";
+    this.log(`room ${id}`);
+    this.render();
+  }
+
+  /** Outside the tower-top room: the night sky, stars, the great lantern's warm glow above, the tower's stone rim below. */
+  private paintTowerTop(g: CanvasRenderingContext2D, W: number, H: number, b: { x: number; y: number; w: number; h: number }): void {
+    const sky = g.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, "#0E1230");
+    sky.addColorStop(0.6, "#1D1B45");
+    sky.addColorStop(1, "#2A2350");
+    g.fillStyle = sky;
+    g.fillRect(0, 0, W, H);
+    let seed = 7;
+    const rnd = (): number => ((seed = (Math.imul(seed, 1103515245) + 12345) >>> 0) / 4294967296);
+    for (let i = 0; i < 70; i++) {
+      g.fillStyle = `rgba(244,235,208,${0.25 + rnd() * 0.6})`;
+      g.beginPath();
+      g.arc(rnd() * W, rnd() * H * 0.9, 0.6 + rnd() * 1.3, 0, Math.PI * 2);
+      g.fill();
+    }
+    const gx = W / 2;
+    const gy = b.y - 6;
+    const glow = g.createRadialGradient(gx, gy, 0, gx, gy, W * 0.7);
+    glow.addColorStop(0, "rgba(255,206,120,0.55)");
+    glow.addColorStop(0.35, "rgba(255,180,100,0.18)");
+    glow.addColorStop(1, "rgba(255,180,100,0)");
+    g.fillStyle = glow;
+    g.fillRect(0, 0, W, H);
+    // the tower's top: a band of dressed stones under the room
+    const sy = b.y + b.h - 6;
+    g.fillStyle = "#2B2D52";
+    g.fillRect(0, sy, W, H - sy);
+    g.strokeStyle = "rgba(10,10,30,0.55)";
+    g.lineWidth = 1.5;
+    for (let row = 0; row * 22 < H - sy; row++) {
+      const y = sy + row * 22;
+      g.beginPath();
+      g.moveTo(0, y);
+      g.lineTo(W, y);
+      g.stroke();
+      for (let x = (row % 2) * 24; x < W; x += 48) {
+        g.beginPath();
+        g.moveTo(x, y);
+        g.lineTo(x, y + 22);
+        g.stroke();
+      }
+    }
+  }
+
+  /** The festival moment (once): the great lantern lit, every friend's spark back, the tower-top room. */
+  private renderFestival(): void {
+    const { W, H } = this;
+    const lang = this.d.lang;
+    const meas = this.measureAt(this.scratch());
+    const colW = Math.min(W, 520) - 48;
+    const lh = Math.min(170, H * 0.24);
+    const ly = this.top + 70;
+    const tY = ly + lh + 26;
+    const lineF = fitText(storyUi(lang, "festLine"), { maxW: colW, maxLines: 3, sizes: [17, 16, 15, 14], measureAt: meas, lang });
+    const roomF = fitText(storyUi(lang, "festRoom"), { maxW: colW, maxLines: 3, sizes: [15, 14, 13], measureAt: meas, lang });
+    const lY = tY + 42;
+    const rY = lY + lineF.lines.length * lineF.size * 1.3 + 14;
+    const bw = Math.min(260, W - 64);
+    const by = Math.min(this.bottom - 64, rY + roomF.lines.length * roomF.size * 1.3 + 36);
+    const key = this.tex("village-overlay", W, H, (g) => {
+      g.fillStyle = "rgba(14,12,32,0.92)";
+      g.fillRect(0, 0, W, H);
+      const cx = W / 2;
+      const cy = ly + lh * 0.56;
+      const glow = g.createRadialGradient(cx, cy, 0, cx, cy, W * 0.75);
+      glow.addColorStop(0, "rgba(255,206,120,0.75)");
+      glow.addColorStop(0.3, "rgba(255,180,100,0.3)");
+      glow.addColorStop(1, "rgba(255,180,100,0)");
+      g.fillStyle = glow;
+      g.fillRect(0, 0, W, H);
+      // every friend's spark rising toward the lantern
+      let seed = 3;
+      const rnd = (): number => ((seed = (Math.imul(seed, 1103515245) + 12345) >>> 0) / 4294967296);
+      for (let i = 0; i < 28; i++) {
+        const a = rnd() * Math.PI * 2;
+        const d = lh * (0.7 + rnd() * 1.4);
+        g.fillStyle = `rgba(255,${200 + Math.floor(rnd() * 40)},${120 + Math.floor(rnd() * 60)},${0.5 + rnd() * 0.5})`;
+        const sy = cy + Math.sin(a) * d * 0.8;
+        const r0 = 1.5 + rnd() * 2.5;
+        if (sy > tY - 14) continue; // sparks stay above the words
+        g.beginPath();
+        g.arc(cx + Math.cos(a) * d, sy, r0, 0, Math.PI * 2);
+        g.fill();
+      }
+      g.save();
+      g.translate(cx - lh * 0.4, ly);
+      drawFramedLantern(g, lh, 1);
+      g.restore();
+      this.text(g, [storyUi(lang, "festTitle")], W / 2, tY, 26, { align: "center", color: "#F4D38A", weight: 700 });
+      this.text(g, lineF.lines, W / 2, lY, lineF.size, { align: "center", color: UI.caption, weight: 600, lineH: 1.3 });
+      this.text(g, roomF.lines, W / 2, rY, roomF.size, { align: "center", color: "rgba(244,235,208,0.8)", weight: 500, lineH: 1.3 });
+      this.pill(g, (W - bw) / 2, by, bw, 48, storyUi(lang, "festGo"), true);
+    });
+    this.show(this.overlay, key, 0, 0);
+    this.children.bringToTop(this.overlay);
+    this.hits.push({ id: "festival-text", x: 24, y: tY, w: W - 48, h: by - tY - 8, label: `${storyUi(lang, "festTitle")}. ${storyUi(lang, "festLine")} ${storyUi(lang, "festRoom")}`, act: () => undefined });
+    this.hits.push({ id: "festival-go", x: (W - bw) / 2, y: by, w: bw, h: 48, label: storyUi(lang, "festGo"), act: () => this.switchRoom(TOWER_ROOM) });
+  }
+
   // --- R4 B storybook
 
   private storyChapter: number | null = null;
 
   private storyNow(): ReturnType<typeof storyState> {
-    return storyState(this.residentsNow(), this.d.save.sv.cz, this.d.save.sv.st);
+    return storyState(this.residentsNow(), this.d.save.sv.cz, this.d.save.sv.st, this.d.inp.cleared.deduce);
   }
 
   private storyDisc(g: CanvasRenderingContext2D, cx: number, cy: number, r: number, dot: boolean): void {
@@ -1833,13 +2004,14 @@ export class VillageScene extends Phaser.Scene {
     this.render();
   }
 
-  private hintText(h: Hint, who: ResidentId): string {
+  private hintText(h: Hint, who: ChapterId): string {
     const lang = this.d.lang;
+    if (h.kind === "tower") return storyUi(lang, "tower", { n: h.n });
+    if (who === "festival" || h.kind === "later") return "· · ·";
     const name = residentName(lang, who);
     if (h.kind === "moveIn") return storyUi(lang, "moveIn", { name });
     if (h.kind === "friend") return storyUi(lang, "friend", { name, n: h.n });
     if (h.kind === "chapters") return storyUi(lang, "chapters", { n: Math.max(1, h.n) });
-    if (h.kind === "later") return "· · ·";
     const set = SETS.find((x) => x.r === who)!;
     return storyUi(lang, "set", { name, items: set.items.map((i) => itemName(lang, i)).join(", ") });
   }
@@ -2568,21 +2740,22 @@ export class VillageScene extends Phaser.Scene {
 
   /** Save the room (per-room LWW stamp: Lamport n + monotonic at — vstate.roomStamp). */
   private commitRoom(next: RoomLayout, placedBit: number): void {
-    const setsBefore = new Set(setsDone(this.room).map((x) => x.r));
+    const inCottage = this.roomId === COTTAGE;
+    const setsBefore = new Set(inCottage ? setsDone(this.room).map((x) => x.r) : []);
     this.room = next;
     const s = encodeRoom(next);
     const dev = roomDev(this.d.dev);
     const apply = (x: VillageSave): void => {
-      const prev = x.sv.r[COTTAGE];
+      const prev = x.sv.r[this.roomId];
       if (prev?.s === s) return;
-      x.sv.r[COTTAGE] = { s, ...roomStamp(prev, Date.now()), dev };
+      x.sv.r[this.roomId] = { s, ...roomStamp(prev, Date.now()), dev };
       if (placedBit >= 0) x.loc.fresh = x.loc.fresh.filter((b) => b !== placedBit);
     };
     apply(this.d.save);
     void updateVillage(apply);
     this.checkRequests();
     // R4 C: a set just completed — its resident comes over (drawn as a visitor) and says its visit line
-    const fresh = setsDone(next).find((x) => !setsBefore.has(x.r));
+    const fresh = inCottage ? setsDone(next).find((x) => !setsBefore.has(x.r)) : undefined;
     if (fresh) {
       const lang = this.d.lang;
       const text = cozyText(lang, "setDone", { name: residentName(lang, fresh.r) });

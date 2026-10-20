@@ -245,6 +245,12 @@ export function starterRoom(): RoomLayout {
   return r;
 }
 
+/** R4 D: the tower-top room (opens with the Lantern Festival): starts empty, on the starry wallpaper / dark floor. */
+export const TOWER_ROOM = "1";
+export function towerRoomOf(stored: string | undefined): RoomLayout {
+  return stored ? decodeRoom(stored) : { ...emptyRoom(), wallpaper: 2, floor: 2 };
+}
+
 /** The room as stored, or the starter room when it was never edited. */
 export function roomOf(stored: string | undefined): RoomLayout {
   return stored ? decodeRoom(stored) : starterRoom();

@@ -2,7 +2,7 @@ import Capacitor
 import UIKit
 import WebKit
 
-/// Root VC: registers the app-local plugins (A11yPrefs, CloudKV, AdAudio, NotifyAuth, ReviewPrompt; ColdStartProbe only in
+/// Root VC: registers the app-local plugins (A11yPrefs, CloudKV, AdAudio, NotifyAuth, ReviewPrompt, GameCenter; ColdStartProbe only in
 /// Debug/Measure builds) and keeps the WebView
 /// a fixed, non-scrolling game surface.
 class MainViewController: CAPBridgeViewController {
@@ -13,6 +13,7 @@ class MainViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(AdAudioPlugin()) // no load(); touches GMA only on configure()
         bridge?.registerPluginInstance(NotifyAuthPlugin()) // no load(); prompts only on request()
         bridge?.registerPluginInstance(ReviewPromptPlugin()) // no load(); the system rating sheet only on request()
+        bridge?.registerPluginInstance(GameCenterPlugin()) // no load(); GameKit only when the player turned rankings on
         #if PERF_PROBE
         bridge?.registerPluginInstance(ColdStartProbe())
         #endif

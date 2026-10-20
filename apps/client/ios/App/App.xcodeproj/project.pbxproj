@@ -10,6 +10,7 @@
 		C10D00000000000000000002 /* CloudKV.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10D00000000000000000001 /* CloudKV.swift */; };
 		AD0A00000000000000000002 /* AdAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0A00000000000000000001 /* AdAudio.swift */; };
 		RE0A00000000000000000002 /* ReviewPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = RE0A00000000000000000001 /* ReviewPrompt.swift */; };
+		GC0A00000000000000000002 /* GameCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = GC0A00000000000000000001 /* GameCenter.swift */; };
 		AD0A00000000000000000004 /* NotifyAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0A00000000000000000003 /* NotifyAuth.swift */; };
 		D05C00000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D05C00000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		D05C00000000000000000004 /* A11yPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05C00000000000000000003 /* A11yPrefs.swift */; };
@@ -31,6 +32,7 @@
 		C10D00000000000000000001 /* CloudKV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKV.swift; sourceTree = "<group>"; };
 		AD0A00000000000000000001 /* AdAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdAudio.swift; sourceTree = "<group>"; };
 		RE0A00000000000000000001 /* ReviewPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPrompt.swift; sourceTree = "<group>"; };
+		GC0A00000000000000000001 /* GameCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenter.swift; sourceTree = "<group>"; };
 		AD0A00000000000000000003 /* NotifyAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotifyAuth.swift; sourceTree = "<group>"; };
 		C10D00000000000000000003 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		D05C00000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				C10D00000000000000000001 /* CloudKV.swift */,
 				AD0A00000000000000000001 /* AdAudio.swift */,
 				RE0A00000000000000000001 /* ReviewPrompt.swift */,
+				GC0A00000000000000000001 /* GameCenter.swift */,
 				AD0A00000000000000000003 /* NotifyAuth.swift */,
 				C10D00000000000000000003 /* App.entitlements */,
 				D05C00000000000000000001 /* PrivacyInfo.xcprivacy */,
@@ -221,6 +224,7 @@
 				C10D00000000000000000002 /* CloudKV.swift in Sources */,
 				AD0A00000000000000000002 /* AdAudio.swift in Sources */,
 				RE0A00000000000000000002 /* ReviewPrompt.swift in Sources */,
+				GC0A00000000000000000002 /* GameCenter.swift in Sources */,
 				AD0A00000000000000000004 /* NotifyAuth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
