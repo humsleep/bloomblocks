@@ -23,7 +23,7 @@ import { textScale } from "../game/uiText.ts";
 import { UI } from "../render/palette.ts";
 import { vis } from "../render/vis.ts";
 import { type Environment, loadArt, type VillageArt } from "./art.ts";
-import { COLORWAYS, DRAWER_TABS, type Colorway, itemById, type ItemId, type Piece, pieceBit, pieceOfBit, RESIDENTS, type ResidentId } from "./catalog.ts";
+import { COLORWAYS, DRAWER_TABS, type Colorway, itemById, type ItemId, type Piece, pieceBit, pieceOfBit, RESIDENTS, type ResidentId, SETS } from "./catalog.ts";
 import {
   activeRequests, fulfilled, isoOfDay, marketOffers, marketState, nextAsk, roomCategories, visitors,
   autoSlot, cards, COTTAGE, coverOf, dayOf, deliver, roomOf, emptyRoom, encodeRoom, eve, FLOOR_COLS, FLOOR_SLOTS, itemOfBit, jarProgress, drops, litDayList,
@@ -31,6 +31,7 @@ import {
   COZY_AT, cozyLevel, cozyScore, setOfItem, setProgress, setsDone,
 } from "./model.ts";
 import { cozyText, type CozyKey } from "./strings.ts";
+import { CHAPTERS, type Hint, pageBit, setBit, storyState, STORY, storyUi, unreadPages } from "./story.ts";
 import {
   boardTheme, type BoardTheme, chooseSkin, chooseTheme, cozyBit, EVENING_LEVEL, friendBit, type LanternSkin, lanternSkin, notePending, noteUnlocks,
   SKIN_NEEDS, SKINS, skinUnlocked, THEME_NEEDS, THEMES, themeUnlocked,
@@ -133,7 +134,7 @@ export interface VillageLaunch {
   onShown?: () => void;
 }
 
-type Screen = "village" | "letter" | "gift" | "room" | "market";
+type Screen = "village" | "letter" | "gift" | "room" | "market" | "story";
 interface Hit {
   id: string;
   /** a drawer grid card: moves with the grid scroll, only live inside its window */
@@ -413,13 +414,15 @@ export class VillageScene extends Phaser.Scene {
     const lvl = cozyLevel(cozyScore(this.room));
     for (let k = 1; k <= lvl; k++) want.add(cozyBit(k));
     for (const r of this.residentsNow()) if (r.movedIn && r.friendship >= 3) want.add(friendBit(r.r.index));
+    // R4 B: a set completed once keeps its story page open (whatever the room holds later)
+    for (const x of setsDone(this.room)) want.add(setBit(RESIDENTS.find((r) => r.id === x.r)!.index));
     const have = new Set(this.d.save.sv.cz);
     const add = [...want].filter((b) => !have.has(b));
     if (add.length) {
       const apply = (x: VillageSave): void => void (x.sv.cz = normBits([...x.sv.cz, ...add]));
       apply(this.d.save);
       void updateVillage(apply);
-      notePending("reward");
+      if (add.some((b) => b < 20)) notePending("reward");
       this.log(`unlocks ${add.join(",")}`);
     }
     noteUnlocks(this.d.save.sv.cz);
@@ -552,6 +555,7 @@ export class VillageScene extends Phaser.Scene {
     else if (s === "gift") this.renderGift();
     else if (s === "market") this.renderMarket();
     else if (s === "room" && this.cozyOpen && !this.drawer) this.renderCozy();
+    else if (s === "story") this.renderStory();
     else this.overlay.setVisible(false);
     if (s !== "room" || !this.drawer) {
       this.drawerImg.setVisible(false);
@@ -630,12 +634,19 @@ export class VillageScene extends Phaser.Scene {
       drawVillageDisc(g, r * 2, jar.size > 0 ? jar.have / jar.size : 0);
       g.restore();
       this.text(g, [`${jar.have}/${jar.size}`], W - 16 - r, by + r + 4, 13, { align: "center", color: UI.caption });
+      // R4 B: the storybook disc beside the back disc (the sky right holds the moon; an amber dot = a page to read)
+      const sx = bx + 2 * r + 18;
+      this.storyDisc(g, sx, by, r, unreadPages(this.storyNow()) > 0);
+      this.text(g, [storyUi(this.d.lang, "caption")], sx, by + r + 4, 13, { align: "center", color: UI.caption });
     });
     this.show(this.hud, hk, 0, 0);
     this.hud.setVisible(this.screenNow !== "room");
     if (this.screenNow === "village") {
       this.hits.push({ id: "back", x: bx - r - 6, y: by - r - 6, w: 2 * r + 12, h: 2 * r + 30, label: vt(this.d.lang, "back"), act: () => this.close() });
       this.hits.push({ id: "jar", x: W - 56, y: by - 24, w: 48, h: 64, label: vt(this.d.lang, "jar", { have: jar.have, size: jar.size }), act: () => undefined });
+      const sx = bx + 2 * r + 18;
+      const unread = unreadPages(this.storyNow());
+      this.hits.push({ id: "story", x: sx - r - 6, y: by - r - 6, w: 2 * r + 12, h: 2 * r + 30, label: unread ? storyUi(this.d.lang, "dotNew") : storyUi(this.d.lang, "book"), act: () => this.openStory() });
     }
   }
 
@@ -1750,6 +1761,228 @@ export class VillageScene extends Phaser.Scene {
     } else this.renderDrawer();
   }
 
+
+
+  // --- R4 B storybook
+
+  private storyChapter: number | null = null;
+
+  private storyNow(): ReturnType<typeof storyState> {
+    return storyState(this.residentsNow(), this.d.save.sv.cz, this.d.save.sv.st);
+  }
+
+  private storyDisc(g: CanvasRenderingContext2D, cx: number, cy: number, r: number, dot: boolean): void {
+    g.save();
+    g.fillStyle = "rgba(20,26,51,0.55)";
+    g.beginPath();
+    g.arc(cx, cy, r, 0, Math.PI * 2);
+    g.fill();
+    // an open book: two pages from a spine
+    g.strokeStyle = UI.caption;
+    g.lineWidth = 2.2;
+    g.lineJoin = "round";
+    for (const d of [-1, 1]) {
+      g.beginPath();
+      g.moveTo(cx, cy - r * 0.26);
+      g.quadraticCurveTo(cx + d * r * 0.28, cy - r * 0.42, cx + d * r * 0.52, cy - r * 0.32);
+      g.lineTo(cx + d * r * 0.52, cy + r * 0.34);
+      g.quadraticCurveTo(cx + d * r * 0.28, cy + r * 0.24, cx, cy + r * 0.38);
+      g.closePath();
+      g.stroke();
+    }
+    g.beginPath();
+    g.moveTo(cx, cy - r * 0.26);
+    g.lineTo(cx, cy + r * 0.38);
+    g.stroke();
+    if (dot) {
+      g.fillStyle = UI.primary;
+      g.beginPath();
+      g.arc(cx + r * 0.72, cy - r * 0.72, 5, 0, Math.PI * 2);
+      g.fill();
+    }
+    g.restore();
+  }
+
+  private openStory(): void {
+    cue("tap");
+    this.card = null;
+    this.storyChapter = null;
+    this.screenNow = "story";
+    this.log("story");
+    this.render();
+  }
+
+  private closeStory(): void {
+    cue("tap");
+    this.storyChapter = null;
+    this.screenNow = "village";
+    this.render();
+  }
+
+  /** Open a chapter: its open pages count as read (synced v.st). */
+  private openChapter(c: number): void {
+    cue("tap");
+    this.storyChapter = c;
+    const st = this.storyNow()[c]!;
+    const add = st.flatMap((p, k) => (p.open && !p.read ? [pageBit(c, k)] : []));
+    if (add.length) {
+      const apply = (x: VillageSave): void => void (x.sv.st = normBits([...x.sv.st, ...add]));
+      apply(this.d.save);
+      void updateVillage(apply);
+    }
+    this.render();
+  }
+
+  private hintText(h: Hint, who: ResidentId): string {
+    const lang = this.d.lang;
+    const name = residentName(lang, who);
+    if (h.kind === "moveIn") return storyUi(lang, "moveIn", { name });
+    if (h.kind === "friend") return storyUi(lang, "friend", { name, n: h.n });
+    if (h.kind === "chapters") return storyUi(lang, "chapters", { n: Math.max(1, h.n) });
+    if (h.kind === "later") return "· · ·";
+    const set = SETS.find((x) => x.r === who)!;
+    return storyUi(lang, "set", { name, items: set.items.map((i) => itemName(lang, i)).join(", ") });
+  }
+
+  private renderStory(): void {
+    const { W, H } = this;
+    const lang = this.d.lang;
+    const st = this.storyNow();
+    const meas = this.measureAt(this.scratch());
+    const colW = Math.min(W, 520) - 32;
+    const x0 = (W - colW) / 2;
+    const bw = Math.min(260, W - 64);
+    const by = this.bottom - 60;
+    const c = this.storyChapter;
+    if (c === null) {
+      // the chapter list
+      const titleY = this.top + 16;
+      const qY = titleY + 30;
+      const rowH = Math.min(62, (by - 16 - (qY + 34)) / CHAPTERS.length);
+      const y0 = qY + 34;
+      const key = this.tex("village-overlay", W, H, (g) => {
+        g.fillStyle = "rgba(14,12,32,0.95)";
+        g.fillRect(0, 0, W, H);
+        this.text(g, [storyUi(lang, "book")], W / 2, titleY, 21, { align: "center", color: UI.caption, weight: 700 });
+        this.text(g, [storyUi(lang, "question")], W / 2, qY, 14, { align: "center", color: "#F4D38A", weight: 600 });
+        CHAPTERS.forEach((who, i) => {
+          const y = y0 + i * rowH;
+          const pages = st[i]!;
+          const any = pages[0]!.open;
+          g.save();
+          g.fillStyle = any ? "rgba(255,243,222,0.1)" : "rgba(255,255,255,0.04)";
+          g.beginPath();
+          g.roundRect(x0, y, colW, rowH - 8, 12);
+          g.fill();
+          g.restore();
+          const tc = any ? UI.caption : "rgba(244,235,208,0.45)";
+          this.text(g, [storyUi(lang, "chapter", { n: i + 1 })], x0 + 14, y + 8, 11, { color: tc, weight: 600 });
+          const tf = fitPill(any ? STORY[lang].title[who] : "· · ·", colW - 14 - 80, 1, meas, lang);
+          this.text(g, tf.lines.slice(0, 1), x0 + 14, y + 24, Math.min(16, tf.size + 1), { color: tc, weight: 700 });
+          pages.forEach((p, k) => {
+            const dx = x0 + colW - 62 + k * 20;
+            const dy = y + (rowH - 8) / 2;
+            g.save();
+            g.beginPath();
+            g.arc(dx, dy, 6, 0, Math.PI * 2);
+            if (p.open) {
+              g.fillStyle = p.read ? "#F4D38A" : "rgba(244,211,138,0.25)";
+              g.fill();
+              if (!p.read) {
+                g.strokeStyle = "#F4D38A";
+                g.lineWidth = 2;
+                g.stroke();
+              }
+            } else {
+              g.strokeStyle = "rgba(244,235,208,0.3)";
+              g.lineWidth = 1.5;
+              g.stroke();
+            }
+            g.restore();
+          });
+        });
+        this.pill(g, (W - bw) / 2, by, bw, 48, vt(lang, "close"), false);
+      });
+      this.show(this.overlay, key, 0, 0);
+      this.children.bringToTop(this.overlay);
+      CHAPTERS.forEach((who, i) => {
+        const pages = st[i]!;
+        const read = pages.filter((p) => p.read).length;
+        const label = `${storyUi(lang, "chapter", { n: i + 1 })}: ${pages[0]!.open ? STORY[lang].title[who] : "…"}, ${storyUi(lang, "pages", { read })}`;
+        this.hits.push({ id: `chapter-${i}`, x: x0, y: y0 + i * rowH, w: colW, h: rowH - 8, label, act: () => this.openChapter(i) });
+      });
+      this.hits.push({ id: "story-close", x: (W - bw) / 2, y: by, w: bw, h: 48, label: vt(lang, "close"), act: () => this.closeStory() });
+      return;
+    }
+    // one chapter: its three pages on paper
+    const who = CHAPTERS[c]!;
+    const pages = st[c]!;
+    const sizes = [15, 14, 13, 12];
+    const padX = 18;
+    const fits = pages.map((p, k) => (p.open ? fitText(STORY[lang].pages[who][k]!, { maxW: colW - 2 * padX, maxLines: 6, sizes, measureAt: meas, lang }) : fitText(this.hintText(p.hint!, who), { maxW: colW - 2 * padX - 16, maxLines: 3, sizes: [13, 12], measureAt: meas, lang })));
+    const titleY = this.top + 14;
+    const paperY = titleY + 62;
+    const blockH = fits.map((f) => f.lines.length * f.size * 1.35);
+    const paperH = Math.min(by - 14 - paperY, blockH.reduce((a, b) => a + b, 0) + 3 * 18 + 28);
+    const key = this.tex("village-overlay", W, H, (g) => {
+      g.fillStyle = "rgba(14,12,32,0.95)";
+      g.fillRect(0, 0, W, H);
+      this.text(g, [storyUi(lang, "chapter", { n: c + 1 })], W / 2, titleY, 13, { align: "center", color: "#F4D38A", weight: 600 });
+      const tf = fitPill(pages[0]!.open ? STORY[lang].title[who] : "· · ·", colW, 1, meas, lang);
+      this.text(g, tf.lines.slice(0, 2), W / 2, titleY + 20, Math.min(20, tf.size + 3), { align: "center", color: UI.caption, weight: 700 });
+      g.save();
+      g.fillStyle = PAPER;
+      g.beginPath();
+      g.roundRect(x0, paperY, colW, paperH, 14);
+      g.fill();
+      g.restore();
+      let y = paperY + 16;
+      pages.forEach((p, k) => {
+        const f = fits[k]!;
+        if (p.open) this.text(g, f.lines, x0 + padX, y, f.size, { color: INK, weight: 500, lineH: 1.35 });
+        else {
+          // a locked page: a lock and what opens it
+          g.save();
+          g.fillStyle = UI.inkSoft;
+          g.strokeStyle = UI.inkSoft;
+          g.lineWidth = 1.6;
+          g.beginPath();
+          g.arc(x0 + padX + 5, y + f.size * 0.55 - 3, 3.4, Math.PI, 0);
+          g.stroke();
+          g.beginPath();
+          g.roundRect(x0 + padX, y + f.size * 0.55 - 3, 10, 8, 1.5);
+          g.fill();
+          g.restore();
+          this.text(g, f.lines, x0 + padX + 16, y, f.size, { color: UI.inkSoft, weight: 600, lineH: 1.35 });
+        }
+        y += blockH[k]! + 18;
+        if (k < 2) {
+          g.save();
+          g.strokeStyle = "rgba(59,44,69,0.14)";
+          g.lineWidth = 1;
+          g.beginPath();
+          g.moveTo(x0 + padX, y - 10);
+          g.lineTo(x0 + colW - padX, y - 10);
+          g.stroke();
+          g.restore();
+        }
+      });
+      this.pill(g, (W - bw) / 2, by, bw, 48, storyUi(lang, "list"), false);
+    });
+    this.show(this.overlay, key, 0, 0);
+    this.children.bringToTop(this.overlay);
+    let y = paperY + 16;
+    pages.forEach((p, k) => {
+      const text = p.open ? STORY[lang].pages[who][k]! : this.hintText(p.hint!, who);
+      this.hits.push({ id: `page-${k}`, x: x0, y, w: colW, h: blockH[k]!, label: text, act: () => undefined });
+      y += blockH[k]! + 18;
+    });
+    this.hits.push({ id: "story-list", x: (W - bw) / 2, y: by, w: bw, h: 48, label: storyUi(lang, "list"), act: () => {
+      cue("tap");
+      this.storyChapter = null;
+      this.render();
+    } });
+  }
 
   // --- R4 cozy rewards
 

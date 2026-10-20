@@ -9,7 +9,8 @@
 //   q   requests: bit 2·id asked, 2·id+1 done (catalog REQUESTS, 14)  bits, OR
 //   w   watering days (1.1)                      bits, OR   (reserved)
 //   cz  R4 rewards reached: 1–5 cozy levels,     bits, OR   (a reward never goes away)
-//       10 + resident index = its lantern (friendship 3)
+//       10 + resident index = its lantern (friendship 3), 20 + index = its set completed once
+//   st  R4 storybook pages read (chapter × 3 + page)  bits, OR
 //   r   rooms: id → {s, n, at, dev}              last writer wins PER ROOM by (n, at, dev, s)
 //
 // Clock-rollback safety: a room edit carries a Lamport counter `n` = (highest n this device has
@@ -44,10 +45,11 @@ export interface VState {
   q: Bits;
   w: Bits;
   cz: Bits;
+  st: Bits;
   r: Record<string, RoomRec>;
 }
 
-export const BIT_KEYS = ["pd", "ch", "lr", "u", "mk", "q", "w", "cz"] as const;
+export const BIT_KEYS = ["pd", "ch", "lr", "u", "mk", "q", "w", "cz", "st"] as const;
 export type BitKey = (typeof BIT_KEYS)[number];
 /** rooms per device record (1.0 uses room 0, the cottage; 1.1 adds one per resident) */
 export const MAX_ROOMS = 8;
@@ -55,7 +57,7 @@ const MAX_BITS = 40_000;
 export const ROOM_RE = /^[0-9a-z]{40}$/;
 
 export function emptyV(): VState {
-  return { pd: [], ch: [], lr: [], u: [], mk: [], q: [], w: [], cz: [], r: {} };
+  return { pd: [], ch: [], lr: [], u: [], mk: [], q: [], w: [], cz: [], st: [], r: {} };
 }
 
 export function isEmptyV(v: VState): boolean {

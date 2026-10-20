@@ -28,7 +28,7 @@ function maxV(): VState {
   const r: VState["r"] = {};
   for (let i = 0; i < 8; i++) r[String(i)] = { s, n: 9999, at: NOW, dev: `othrdev${i}` };
   // cz (R4 rewards): every cozy level and every resident's lantern
-  return { pd: days, ch: days, mk: days, q: days, w: days, lr: Array.from({ length: 2000 }, (_, i) => 2 * i), u: Array.from({ length: 256 }, (_, i) => i), cz: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16], r };
+  return { pd: days, ch: days, mk: days, q: days, w: days, lr: Array.from({ length: 2000 }, (_, i) => 2 * i), u: Array.from({ length: 256 }, (_, i) => i), cz: [1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26], st: Array.from({ length: 21 }, (_, i) => i), r };
 }
 
 describe("G7: village state in the KVS record", () => {
